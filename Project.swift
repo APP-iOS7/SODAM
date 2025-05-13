@@ -16,7 +16,9 @@ let sodamApp: Target = .target(
     ),
     sources: ["SODAM/Sources/**"],
     resources: ["SODAM/Resources/**"],
-    dependencies: []
+    dependencies: [
+        .target(name: "UICommonExtension")
+    ]
 )
 
 let sodamAppTests: Target = .target(
@@ -30,11 +32,23 @@ let sodamAppTests: Target = .target(
     dependencies: [.target(name: "SODAM")]
 )
 
+// TODO: 커스텀 컬러 사용을 위한 라이브러리
+let uiCommonExtension: Target = .target(
+    name: "UICommonExtension",
+    destinations: .iOS,
+    product: .staticLibrary,
+    bundleId: "io.tuist.UICommonExtension",
+    infoPlist: .default,
+    sources: ["SODAM/UICommon/**"],
+    dependencies: []
+)
+
 
 let project = Project(
     name: "SODAM",
     targets: [
         sodamApp,
-        sodamAppTests
+        sodamAppTests,
+        uiCommonExtension,
     ]
 )
