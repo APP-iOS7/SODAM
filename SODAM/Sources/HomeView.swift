@@ -17,6 +17,9 @@ struct HomeView: View {
     let address: String = "서울특별시 종로구"
     let title: String = "고대 중세 한국사 속으로"
     let nearSpots: [Spot] = [Spot(name: "안산 대부도", address: "경기도 안산시", position: 54.8),Spot(name: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),Spot(name: "오이도", address: "경기도 사흥시", position: 38.7)]
+    let visitedSpots: [Spot] = [Spot(name: "안산 대부도", address: "경기도 안산시", position: 54.8),Spot(name: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),Spot(name: "오이도", address: "경기도 사흥시", position: 38.7),Spot(name: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),Spot(name: "오이도", address: "경기도 사흥시", position: 38.7)]
+    let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
+    
     var body: some View {
         RoundedRectangle(cornerRadius: 0)
             .frame(height: 250)
@@ -64,6 +67,28 @@ struct HomeView: View {
             }
         }
         .padding(15)
+        
+        VStack {
+            HStack {
+                Text("방문한 관광지")
+                    .fontWeight(.bold)
+                Spacer()
+                Button {
+                    //TODO: 전체보기로 네비게이션
+                    print("click 전체보기")
+                } label: {
+                    Text("전체보기")
+                        .font(.caption)
+                        .foregroundStyle(Color.gray)
+                }
+            }
+            LazyVGrid(columns: columns) {
+                ForEach(visitedSpots) { spot in
+                    GridListCell2View(spot: spot)
+                }
+            }
+        }
+        .padding(15)
     }
 }
 
@@ -92,6 +117,25 @@ struct GridListCellView: View {
                 }
                 .padding(.top, 3)
                 
+            }
+            .padding(.leading, 5)
+            Spacer()
+        }
+    }
+}
+
+struct GridListCell2View: View {
+    let spot: Spot
+    var body: some View {
+        VStack (alignment: .center) {
+            RoundedRectangle(cornerRadius: 100)
+                .frame(width: 60, height: 60)
+            VStack(alignment: .center) {
+                Text(spot.name)
+                    .font(.caption)
+                Text(spot.address)
+                    .font(.caption2)
+                    .foregroundStyle(.gray)
             }
             .padding(.leading, 5)
             Spacer()
