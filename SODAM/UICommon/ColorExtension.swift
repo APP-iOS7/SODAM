@@ -23,10 +23,37 @@ public extension Color {
         Color(hex: "FF4B4B")
     }
     
-    // MARK: Satus Bar 색상
-    static var statusColor: Color {
+    // MARK: Error 색상
+    static var errorColor: Color {
         Color(hex: "FF0000")
     }
+    
+    // MARK: Text, Icon, Line 기본 색상
+    static var black90: Color {
+        Color(hex: "111111")
+    }
+    
+    static var black80: Color {
+        Color(hex: "444444")
+    }
+    
+    static var black60: Color {
+        Color(hex: "666666")
+    }
+    
+    static var black50: Color {
+        Color(hex: "CCCCCC")
+    }
+    
+    static var black40: Color {
+        Color(hex: "EEEEEE")
+    }
+    
+    static var black30: Color {
+        Color(hex: "F8F8F8")
+    }
+    
+    // white는 제거 했습니다. Color.white를 사용해주세요
 }
 
 
