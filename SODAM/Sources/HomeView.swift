@@ -30,7 +30,6 @@ struct HomeView: View {
             VStack {
                 NavigationLink{
                     //TODO: DetailView로 연결
-                    TestView()
                 } label: {
                     AsyncImage(url: URL(string: todaySpot.imageUrl)) { image in
                         image.resizable()
@@ -70,7 +69,6 @@ struct HomeView: View {
                         Spacer()
                         NavigationLink{
                             //TODO: 전체보기 목록뷰으로 연결
-                            TestView()
                         } label: {
                             Text("전체보기")
                                 .font(.caption)
@@ -81,7 +79,6 @@ struct HomeView: View {
                         ForEach(nearSpots) { spot in
                             NavigationLink{
                                 //TODO: DetailView로 연결
-                                TestView()
                             } label: {
                                 NearSpotListCellView(spot: spot)
                             }
@@ -97,7 +94,6 @@ struct HomeView: View {
                         Spacer()
                         NavigationLink{
                             //TODO: 전체보기 목록뷰으로 연결
-                            TestView()
                         } label: {
                             Text("전체보기")
                                 .font(.caption)
@@ -109,7 +105,6 @@ struct HomeView: View {
                             
                             NavigationLink{
                                 //TODO: DetailView로 연결
-                                TestView()
                             } label: {
                                 VisitedSpotListCellView(spot: spot)
                             }
@@ -188,11 +183,4 @@ struct VisitedSpotListCellView: View {
     }
 }
 
-struct TestView :View {
-    var body: some View {
-        VStack {
-            Text("next")
-        }
-    }
-}
 
