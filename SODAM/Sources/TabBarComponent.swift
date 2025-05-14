@@ -18,7 +18,7 @@ struct TabBarComponent: View {
     }
 
     var body: some View {
-        ZStack(alignment: .bottom) {
+        VStack {
             Group {
                 switch selectedTab {
                 case .home:
