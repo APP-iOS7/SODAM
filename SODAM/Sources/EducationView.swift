@@ -23,6 +23,7 @@ struct EducationView: View {
             VStack {
                     ForEach(educations) { education in
                         NavigationLink {
+                            //TODO: 디테일뷰 이동
                             EducationListView()
                         } label: {
                             RoundedRectangle(cornerRadius: 10)
@@ -55,9 +56,4 @@ struct EducationView: View {
     EducationView()
 }
 
-struct TestView: View {
-    var body: some View {
-        Text("test")
-    }
-}
 

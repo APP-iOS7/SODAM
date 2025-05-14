@@ -9,11 +9,11 @@ import SwiftUI
 
 struct EducationListView: View {
     var spots: [Spot] = [
-        Spot(name: "안산 대부도", address: "경기도 안산시", position: 54.8),
-        Spot(name: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),
-        Spot(name: "오이도", address: "경기도 사흥시", position: 38.7),
-        Spot(name: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),
-        Spot(name: "오이도", address: "경기도 사흥시", position: 38.7)
+        Spot(title: "안산 대부도", address: "경기도 안산시", position: 54.8),
+        Spot(title:"수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),
+        Spot(title: "오이도", address: "경기도 사흥시", position: 38.7),
+        Spot(title: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),
+        Spot(title: "오이도", address: "경기도 사흥시", position: 38.7)
     ]
     var body: some View {
         NavigationStack {
@@ -46,7 +46,7 @@ struct EducationListCellView: View {
                 .frame(width: 70, height: 70)
                 .cornerRadius(10)
                 VStack(alignment: .leading) {
-                    Text(spot.name)
+                    Text(spot.title)
                         .foregroundStyle(Color.black)
                     Text(spot.address)
                         .font(.caption)
