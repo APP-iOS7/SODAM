@@ -7,24 +7,27 @@
 
 import SwiftUI
 struct Spot: Identifiable {
-    let name: String
-    let address: String
-    let position: Double
+    var title: String
+    var address: String
+    var position: Double
+    var imageUrl: String  = "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/9072.jpg"
+    var audioTitle: String? = nil
     let id: UUID = UUID()
 }
 struct HomeView: View {
-    let name: String = "창덕궁"
-    let address: String = "서울특별시 종로구"
-    let title: String = "고대 중세 한국사 속으로"
-    let imageUrl: String = "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/9072.jpg"
-    let nearSpots: [Spot] = [Spot(name: "안산 대부도", address: "경기도 안산시", position: 54.8),Spot(name: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),Spot(name: "오이도", address: "경기도 사흥시", position: 38.7)]
-    let visitedSpots: [Spot] = [Spot(name: "안산 대부도", address: "경기도 안산시", position: 54.8),Spot(name: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),Spot(name: "오이도", address: "경기도 사흥시", position: 38.7),Spot(name: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),Spot(name: "오이도", address: "경기도 사흥시", position: 38.7)]
+    let todaySpot: Spot = Spot(title: "창덕궁", address: "서울특별시 종로구", position: 0.0, audioTitle: "고대 중세 한국사 속으로")
+    
+    //내 주변 관광지 배열 3개
+    let nearSpots: [Spot] = [Spot(title: "안산 대부도", address: "경기도 안산시", position: 54.8),Spot(title: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),Spot(title: "오이도", address: "경기도 사흥시", position: 38.7)]
+    
+    //방문한 관광지 배열 최대 5개
+    let visitedSpots: [Spot] = [Spot(title: "안산 대부도", address: "경기도 안산시", position: 54.8),Spot(title: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),Spot(title: "오이도", address: "경기도 사흥시", position: 38.7),Spot(title: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),Spot(title: "오이도", address: "경기도 사흥시", position: 38.7)]
     let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     
     var body: some View {
         NavigationStack {
             VStack {
-                AsyncImage(url: URL(string: imageUrl)) { image in
+                AsyncImage(url: URL(string: todaySpot.imageUrl)) { image in
                     image.resizable()
                 } placeholder: {
                     ProgressView()
@@ -41,12 +44,12 @@ struct HomeView: View {
                                 .foregroundStyle(Color.white)
                                 .padding(.top, 10)
                             Spacer()
-                            Text(name)
+                            Text(todaySpot.title)
                                 .font(.title)
                                 .fontWeight(.bold)
                                 .foregroundStyle(Color.white)
                                 .padding(.bottom, 5)
-                            Text("\(address) | \(title)")
+                            Text("\(todaySpot.address) | \(todaySpot.audioTitle ?? "")")
                                 .font(.caption)
                                 .foregroundStyle(Color.white)
                                 .padding(.bottom, 10)
@@ -110,10 +113,9 @@ struct HomeView: View {
 
 struct NearSpotListCellView: View {
     let spot: Spot
-    let imageUrl: String = "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/9072.jpg"
     var body: some View {
         HStack(alignment: .top) {
-                    AsyncImage(url: URL(string: imageUrl)) { image in
+            AsyncImage(url: URL(string: spot.imageUrl)) { image in
                         image.resizable()
                     } placeholder: {
                         ProgressView()
@@ -121,7 +123,7 @@ struct NearSpotListCellView: View {
                     .frame(width: 70, height: 70)
                     .cornerRadius(10)
             VStack(alignment: .leading) {
-                Text(spot.name)
+                Text(spot.title)
                 Text(spot.address)
                     .font(.caption)
                     .foregroundStyle(.gray)
@@ -144,10 +146,9 @@ struct NearSpotListCellView: View {
 
 struct VisitedSpotListCellView: View {
     let spot: Spot
-    let imageUrl: String = "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/9072.jpg"
     var body: some View {
         VStack (alignment: .center) {
-            AsyncImage(url: URL(string: imageUrl)) { image in
+            AsyncImage(url: URL(string: spot.imageUrl)) { image in
                 image.resizable()
             } placeholder: {
                 ProgressView()
@@ -156,7 +157,7 @@ struct VisitedSpotListCellView: View {
             .cornerRadius(100)
                 
             VStack(alignment: .center) {
-                Text(spot.name)
+                Text(spot.title)
                     .lineLimit(1)
                     .font(.caption)
                 Text(spot.address)
