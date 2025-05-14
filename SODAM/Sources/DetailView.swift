@@ -19,7 +19,7 @@ public struct DetailView: View {
         VStack(alignment: .leading, spacing: 0) {
             DetailHeaderView(selectedTab: $selectedTab)
             ScrollView {
-                if let firstItem = viewModel.items?.first {
+                if let firstItem = viewModel.item {
                     DetailImageView(url: firstItem.imageUrl ?? "")
                     DetailInfoView(model: firstItem)
                 } else {
