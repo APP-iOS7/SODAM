@@ -12,13 +12,28 @@ let sodamApp: Target = .target(
                 "UIColorName": "",
                 "UIImageName": "",
             ],
+            "KAKAO_APP_KEY": "$(KAKAO_APP_KEY)"
         ]
     ),
     sources: ["SODAM/Sources/**"],
     resources: ["SODAM/Resources/**"],
     dependencies: [
-        .target(name: "UICommonExtension")
-    ]
+        .target(name: "UICommonExtension"),
+        .external(name: "KakaoMapsSDK-SPM")
+    ],
+    settings: .settings(
+        base: [:],
+        configurations: [
+            .debug(
+                name: "Debug",
+                xcconfig: .relativeToRoot("Configurations/config.xcconfig")
+            ),
+            .release(
+                name: "Release",
+                xcconfig: .relativeToRoot("Configurations/config.xcconfig")
+            )
+        ]
+    )
 )
 
 let sodamAppTests: Target = .target(
