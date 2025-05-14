@@ -12,7 +12,9 @@ let sodamApp: Target = .target(
                 "UIColorName": "",
                 "UIImageName": "",
             ],
-            "KAKAO_APP_KEY": "$(KAKAO_APP_KEY)"
+            "KAKAO_APP_KEY": "$(KAKAO_APP_KEY)",
+            "TOUR_API_KEY": "$(TOUR_API_KEY)",
+            "GEOCODER_API_KEY": "$(GEOCODER_API_KEY)"
         ]
     ),
     sources: ["SODAM/Sources/**"],
