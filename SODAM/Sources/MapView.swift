@@ -2,7 +2,7 @@
 //  MapView.swift
 //  SODAM
 //
-//  Created by 김용해 on 5/14/25.
+//  Created by 김용해 on 05/14/25.
 //
 
 import SwiftUI
