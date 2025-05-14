@@ -21,10 +21,9 @@ struct EducationView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Grid() {
                     ForEach(educations) { education in
                         NavigationLink {
-                            TestView()
+                            EducationListView()
                         } label: {
                             RoundedRectangle(cornerRadius: 10)
                                 .frame(height: 150)
@@ -47,7 +46,6 @@ struct EducationView: View {
                         }
                         
                     }
-                }
             }
         }
     }
