@@ -10,19 +10,28 @@ import SwiftUI
 
 public struct DetailView: View {
     
-    let sample = """
-돌담 너머로 보이는 창덕궁 북촌 여행의 재미 중 하나는 북촌의 가장 아름다운 경치 8곳을 지정해놓은 ‘북촌 8경’을 돌아보는 것입니다. 그러면 북촌 1경부터 먼저 찾아가 볼까요? 북촌 1경은 돌담 너머로 보이는 ‘창덕궁 전경’입니다. 북촌문화센터를 지나 위로 올라가다 보면 작은 사거리가 나타납니다. 사거리 오른쪽 언덕이 창덕궁으로 이어지는 길인데요. 언덕 꼭대기가 가까워지면 마치 숨겨진 선물처럼 창덕궁이 서서히 모습을 드러냅니다. 담장 너머로 가장 먼저 보이는 높은 건물은 왕들이 정무를 보았던 창덕궁의 정전인 ‘인정전’의 측면입니다. 그 앞으로 보이는 것은 왕실의 도서관과 연구소 역할을 했던 ‘규장각’ 건물들과 선대 왕들의 초상화를 모시고 제사를 지내던 ‘선원전’입니다. 창덕궁은 경복궁에 이어 조선왕조에서 두 번째로 지어진 궁궐로 왕들이 가장 오래 머물렀던 곳입니다. 1997년에는 유네스코 세계문화유산에 등재되기도 했는데요. 조선의 여러 궁궐 중에서 창덕궁이 유일하게 유네스코 세계문화유산에 등재된 이유가 궁금하지 않으세요? 과거 왕들은 궁궐을 질서정연하고 웅장하게 지어서 왕실의 권위를 세우려고 했답니다. 중국의 자금성이 대표적인 예라고 할 수 있어요. 조선의 첫 번째 궁궐인 경복궁도 각 건물이 일직선 상에 좌우대칭으로 놓여 질서정연합니다. 하지만 창덕궁은 높낮이가 다른 자연 그대로의 지형을 유지한 채 건물을 지었기 때문에 자연과 아름다운 조화를 이루고 있습니다. 조선의 궁궐 중 원형이 가장 잘 보존된 곳이기도 하지요. 이 때문에 우리나라 궁궐로서는 처음으로 유네스코 세계문화유산에 등재된 것입니다. 또한 창덕궁은 왕과 왕비들이 특히 사랑했던 궁궐이라고 합니다. 경복궁은 왕의 처소와 집무 공간이 가까워 좁은 공간만을 계속 왔다 갔다 해야 했지만 창덕궁은 왕이 쉴 수 있는 정원을 넓게 만들어 한결 여유로웠기 때문이라고 하네요. 그래서 조선 전기의 왕 중 정사를 돌보는 데에 특히 온 힘을 쏟았던 세종대왕을 제외하고는 대부분 경복궁보다 창덕궁을 더 좋아했다는 이야기가 전해집니다.
-"""
+    @State private var selectedTab: DetailHeaderView.Tab = .photo
+    @State private var keyword: String = "송파"
+    
+    @StateObject private var viewModel = DetailViewModel()
     
     public var body: some View {
-        ScrollView {
-            VStack(alignment: .leading) {
-                DetailHeaderView()
-                DetailImageView()
-                DetailInfoView(sampleText: sample)
+        VStack(alignment: .leading, spacing: 0) {
+            DetailHeaderView(selectedTab: $selectedTab)
+            ScrollView {
+                if let firstItem = viewModel.items?.first {
+                    DetailImageView(url: firstItem.imageUrl ?? "")
+                    DetailInfoView(model: firstItem)
+                } else {
+                    Text("데이터를 불러오는 중입니다.")
+                }
             }
             .padding(8)
             .frame(maxHeight: .infinity, alignment: .top)
+        }
+        .onAppear {
+            viewModel.fetchDetailInfo(keyword: keyword)
+            // viewModel.fetch()
         }
     }
 }
@@ -33,18 +42,43 @@ public struct DetailView: View {
 
 // MARK: segmented control UI
 struct DetailHeaderView: View {
+    @Binding var selectedTab: Tab
+    
+    enum Tab {
+        case photo
+        case map
+    }
+    
     var body: some View {
         HStack(spacing: 0) {
             VStack {
-                Button("사진") {}
+                Button(action: {
+                    selectedTab = .photo
+                    print("clicked photo")
+                }) {
+                    Text("사진")
+                        .foregroundColor(selectedTab == .photo ? .black : .gray)
+                        .fontWeight(selectedTab == .photo ? .bold : .regular)
+                        .frame(maxWidth: .infinity)
+                }
                 Rectangle()
-                    .foregroundStyle(Color.gray)
+                    .fill(selectedTab == .photo ? Color.green : Color.clear)
                     .frame(height: 4)
             }
+            
             VStack {
-                Button("지도") {}
+                Button(action: {
+                    selectedTab = .map
+                    print("clicked map")
+                }) {
+                    Text("지도")
+                        .foregroundColor(selectedTab == .map ? .black : .gray)
+                        .fontWeight(selectedTab == .map ? .bold : .regular)
+                        .frame(maxWidth: .infinity)
+                }
+                .background(Color.red.opacity(0.1))
                 Rectangle()
-                    .foregroundStyle(Color.green)
+                    .fill(selectedTab == .map ? Color.green : Color.clear)
                     .frame(height: 4)
             }
         }
@@ -54,7 +88,7 @@ struct DetailHeaderView: View {
 
 // MARK: 장소 이미지
 struct DetailImageView: View {
-    var url: String = "https://lh3.googleusercontent.com/gps-cs-s/AC9h4nqQY2z1Dwhi0P9Mts8qKbXRyCKDQrEuq8xp_D-vG78C0CFqs3XYLzWgUqio7MfSFoxyIw5wkoSFI-HGQqvu8cR3Jlka5I0hJ_xyTCBBHu_XuAVaarjmskwIgi7wpbv1tlEfpNLb=w270-h312-n-k-no"
+    var url: String
     
     var body: some View {
         AsyncImage(url: URL(string: url)) { image in
@@ -71,9 +105,16 @@ struct DetailImageView: View {
 
 // MARK: 장소 이름, 주소, 거리, 버튼 영역
 struct DetailButtonView: View {
+    var model: DetailModel
     var body: some View {
         HStack {
-            Text("나와의 거리 00km")
+            let distance = haversineDistance(
+                lat1: 37.4981, lon1: 126.9220, // 서울
+                lat2: Double(model.mapY ?? "37.5") ?? 37.5, lon2: Double(model.mapX ?? "126.9") ?? 126.9
+            )
+            
+            let km = String(format: "%.2f", distance)
+            Text("나와의 거리 \(km)km")
                 .font(.system(size: 24, weight: .bold))
                 .foregroundStyle(.green)
             Spacer()
@@ -106,24 +147,52 @@ struct DetailButtonView: View {
 
 // MARK: script영역
 struct DetailInfoView: View {
-    let sampleText: String
+    let model: DetailModel
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("장소 이름")
+        VStack(alignment: .leading, spacing: 12) {
+            Text(model.title ?? "")
                 .font(.system(size: 24, weight: .bold))
-            Text("00시 00구 00로 123045")
-                .font(.system(size: 12))
-            DetailButtonView()
-            Text(sampleText.byCharWrapping)
-                .padding(.vertical, 8)
+                .padding([.top], 8)
+            if let addr1 =  model.addr1 {
+                Text("\(model.addr1 ?? "") \(model.addr2 ?? "")")
+                    .font(.system(size: 12))
+            }
+            DetailButtonView(model: model)
+            Text((model.script ?? "").byCharWrapping)
+                .padding(.vertical, 16)
         }
     }
 }
+
+// private func testButton(text: String,iconName: String ) -> some View{
 
 // MARK: 문장을 단어별로 끊지 않고, 문자별로 끊어서 표시
 extension String {
     var byCharWrapping: Self {
         map(String.init).joined(separator: "\u{200B}")
+    }
+}
+
+// MARK: 위경도로 두점 사이 거리 구하기
+func haversineDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double) -> Double {
+    let R = 6371.0 // 지구 반지름 (단위: km)
+
+    let dLat = (lat2 - lat1).degreesToRadians
+    let dLon = (lon2 - lon1).degreesToRadians
+
+    let a = sin(dLat / 2) * sin(dLat / 2) +
+            cos(lat1.degreesToRadians) * cos(lat2.degreesToRadians) *
+            sin(dLon / 2) * sin(dLon / 2)
+
+    let c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+    let distance = R * c
+    return distance
+}
+
+extension Double {
+    var degreesToRadians: Double {
+        return self * .pi / 180
     }
 }
