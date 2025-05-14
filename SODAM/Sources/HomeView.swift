@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-struct Spot: Identifiable {
+struct Spot: Identifiable, Hashable {
     var title: String
     var address: String
     var position: Double
@@ -24,49 +24,53 @@ struct HomeView: View {
     let visitedSpots: [Spot] = [Spot(title: "안산 대부도", address: "경기도 안산시", position: 54.8),Spot(title: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),Spot(title: "오이도", address: "경기도 사흥시", position: 38.7),Spot(title: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),Spot(title: "오이도", address: "경기도 사흥시", position: 38.7)]
     let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     
+    //TODO: API연동
     var body: some View {
         NavigationStack {
             VStack {
-                AsyncImage(url: URL(string: todaySpot.imageUrl)) { image in
-                    image.resizable()
-                } placeholder: {
-                    ProgressView()
-                }
-                .frame(height: 250)
-                .background(
-                    
-                )
-                .overlay(
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text("오늘의 이야기")
-                                .font(.headline)
-                                .foregroundStyle(Color.white)
-                                .padding(.top, 10)
-                            Spacer()
-                            Text(todaySpot.title)
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .foregroundStyle(Color.white)
-                                .padding(.bottom, 5)
-                            Text("\(todaySpot.address) | \(todaySpot.audioTitle ?? "")")
-                                .font(.caption)
-                                .foregroundStyle(Color.white)
-                                .padding(.bottom, 10)
-                        }
-                        .padding(.leading, 20)
-                        Spacer()
+                NavigationLink{
+                    //TODO: DetailView로 연결
+                    TestView()
+                } label: {
+                    AsyncImage(url: URL(string: todaySpot.imageUrl)) { image in
+                        image.resizable()
+                    } placeholder: {
+                        ProgressView()
                     }
-                )
+                    .frame(height: 250)
+                    .overlay(
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text("오늘의 이야기")
+                                    .font(.headline)
+                                    .foregroundStyle(Color.white)
+                                    .padding(.top, 10)
+                                Spacer()
+                                Text(todaySpot.title)
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                                    .foregroundStyle(Color.white)
+                                    .padding(.bottom, 5)
+                                Text("\(todaySpot.address) | \(todaySpot.audioTitle ?? "")")
+                                    .font(.caption)
+                                    .foregroundStyle(Color.white)
+                                    .padding(.bottom, 10)
+                            }
+                            .padding(.leading, 20)
+                            Spacer()
+                        }
+                    )
+                }
+                
                 
                 VStack {
                     HStack {
                         Text("내 주변 관광지")
                             .fontWeight(.bold)
                         Spacer()
-                        Button {
-                            //TODO: 전체보기로 네비게이션
-                            print("click 전체보기")
+                        NavigationLink{
+                            //TODO: 전체보기 목록뷰으로 연결
+                            TestView()
                         } label: {
                             Text("전체보기")
                                 .font(.caption)
@@ -75,7 +79,12 @@ struct HomeView: View {
                     }
                     Grid {
                         ForEach(nearSpots) { spot in
-                            NearSpotListCellView(spot: spot)
+                            NavigationLink{
+                                //TODO: DetailView로 연결
+                                TestView()
+                            } label: {
+                                NearSpotListCellView(spot: spot)
+                            }
                         }
                     }
                 }
@@ -86,9 +95,9 @@ struct HomeView: View {
                         Text("방문한 관광지")
                             .fontWeight(.bold)
                         Spacer()
-                        Button {
-                            //TODO: 전체보기로 네비게이션
-                            print("click 전체보기")
+                        NavigationLink{
+                            //TODO: 전체보기 목록뷰으로 연결
+                            TestView()
                         } label: {
                             Text("전체보기")
                                 .font(.caption)
@@ -97,7 +106,13 @@ struct HomeView: View {
                     }
                     LazyVGrid(columns: columns) {
                         ForEach(visitedSpots) { spot in
-                            VisitedSpotListCellView(spot: spot)
+                            
+                            NavigationLink{
+                                //TODO: DetailView로 연결
+                                TestView()
+                            } label: {
+                                VisitedSpotListCellView(spot: spot)
+                            }
                         }
                     }
                 }
@@ -116,14 +131,15 @@ struct NearSpotListCellView: View {
     var body: some View {
         HStack(alignment: .top) {
             AsyncImage(url: URL(string: spot.imageUrl)) { image in
-                        image.resizable()
-                    } placeholder: {
-                        ProgressView()
-                    }
-                    .frame(width: 70, height: 70)
-                    .cornerRadius(10)
+                image.resizable()
+            } placeholder: {
+                ProgressView()
+            }
+            .frame(width: 70, height: 70)
+            .cornerRadius(10)
             VStack(alignment: .leading) {
                 Text(spot.title)
+                    .foregroundStyle(.black)
                 Text(spot.address)
                     .font(.caption)
                     .foregroundStyle(.gray)
@@ -155,18 +171,28 @@ struct VisitedSpotListCellView: View {
             }
             .frame(width: 60, height: 60)
             .cornerRadius(100)
-                
+            
             VStack(alignment: .center) {
                 Text(spot.title)
                     .lineLimit(1)
                     .font(.caption)
+                    .foregroundStyle(Color.black)
                 Text(spot.address)
                     .lineLimit(1)
                     .font(.caption2)
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(Color.gray)
             }
             .padding(.leading, 5)
             Spacer()
         }
     }
 }
+
+struct TestView :View {
+    var body: some View {
+        VStack {
+            Text("next")
+        }
+    }
+}
+
