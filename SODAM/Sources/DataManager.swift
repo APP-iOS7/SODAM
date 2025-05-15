@@ -5,7 +5,6 @@
 //  Created by 박세라 on 5/15/25.
 //
 // SwiftData 연동을 위한 싱글톤 객체
-import Foundation
 import SwiftData
 
 @MainActor
@@ -16,7 +15,7 @@ final class DataManager {
         self.modelContext = modelContext
     }
 
-    enum SwiftDataError: Error {
+    enum DataManagerError: Error {
         case insertionFailed
         case deletionFailed
         case fetchFailed
@@ -36,7 +35,8 @@ final class DataManager {
         do {
             return try modelContext.fetch(FetchDescriptor<PlaceItem>())
         } catch {
-            throw SwiftDataError.fetchFailed
+            throw DataManagerError.fetchFailed
         }
     }
 }
+
