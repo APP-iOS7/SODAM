@@ -14,7 +14,16 @@ let sodamApp: Target = .target(
             ],
             "KAKAO_APP_KEY": "$(KAKAO_APP_KEY)",
             "TOUR_API_KEY": "$(TOUR_API_KEY)",
-            "GEOCODER_API_KEY": "$(GEOCODER_API_KEY)"
+            "GEOCODER_API_KEY": "$(GEOCODER_API_KEY)",
+            "NSAppTransportSecurity": [
+                "NSExceptionDomains": [
+                    "apis.data.go.kr": [
+                        "NSExceptionAllowsInsecureHTTPLoads": true,
+                        "NSIncludesSubdomains": true,
+                        "NSExceptionRequiresForwardSecrecy": false
+                    ]
+                ]
+            ]
         ]
     ),
     sources: ["SODAM/Sources/**"],
