@@ -1,5 +1,5 @@
 //
-//  VisitedPlaceItem.swift
+//  PlaceItem.swift
 //  SODAM
 //
 //  Created by 박세라 on 5/15/25.
@@ -8,7 +8,7 @@
 import SwiftData
 
 @Model
-class VisitedPlaceItem {
+class PlaceItem {
     var title: String
     var mapX: String
     var mapY: String
