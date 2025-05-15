@@ -26,7 +26,7 @@ struct TabBarComponent: View {
                 case .navigation:
                     MapView()
                 case .menu:
-                    MenuView()
+                    VisitedPlaceListView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

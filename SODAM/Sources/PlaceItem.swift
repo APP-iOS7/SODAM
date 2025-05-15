@@ -38,3 +38,15 @@ class PlaceItem {
     }
 }
 
+
+extension PlaceItem: CustomStringConvertible {
+    var description: String {
+        """
+        📍 \(title)
+        위치: (\(mapX), \(mapY))
+        loc: \(loc ?? "없음")
+        주소: \(addr1 ?? "") \(addr2 ?? "")
+        오디오 제목: \(audioTitle ?? "없음")
+        """
+    }
+}

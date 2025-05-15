@@ -11,6 +11,8 @@ import SwiftData
 @MainActor
 final class VisitedPlacesViewModel: ObservableObject {
     @Published var items: [PlaceItem] = []
+    @Published var listItems: [[PlaceItem]] = [[]]
+    
     private var dataManager: DataManager?
     
     func setContext(_ context: ModelContext) {
@@ -34,6 +36,18 @@ final class VisitedPlacesViewModel: ObservableObject {
             } catch {
                 print("Failed to add item:", error)
             }
+        }
+    }
+    
+    // fetch + grouping → [[PlaceItem]] 반환
+    func fetchGroupedItemsByLocation() {
+        do {
+            let fetchedItems = try dataManager?.fetchPlaceItems() ?? []
+            items = fetchedItems
+            let groupedDict = Dictionary(grouping: fetchedItems) { $0.loc ?? "Unknown" }
+            listItems = groupedDict.values.map { $0 }
+        } catch {
+            print("Failed to fetch and group items:", error)
         }
     }
 

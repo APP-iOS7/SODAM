@@ -17,8 +17,8 @@ public struct VisitedPlaceListView: View {
     
     public var body: some View {
         VStack {
-            if let testData = testViewModel.items.first {
-                Text(testData.title)
+            if let testData = testViewModel.listItems.first {
+                Text("🩷\(testData)")
             } else {
                 Text("테스트 데이터를 불러오는 중입니다.")
             }
@@ -26,8 +26,9 @@ public struct VisitedPlaceListView: View {
         .onAppear {
             testViewModel.setContext(modelContext)
             //fetchDummyData()
-            testViewModel.fetchItems()
-            print("🩷\(testViewModel.items.count)")
+            //testViewModel.fetchItems()
+            testViewModel.fetchGroupedItemsByLocation()
+            // print("🩷\(testViewModel.items.count)")
         }
     }
     
