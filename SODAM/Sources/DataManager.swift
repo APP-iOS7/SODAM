@@ -10,6 +10,7 @@ import SwiftData
 @MainActor
 final class DataManager {
     let modelContext: ModelContext
+    private let apiService = APIService()
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
@@ -21,9 +22,14 @@ final class DataManager {
         case fetchFailed
     }
 
-    func addPlaceItem(item: PlaceItem) throws {
-        modelContext.insert(item)
-        try modelContext.save()
+    func addPlaceItem(item: PlaceItem) async throws {
+        if let x = Double(item.mapX), let y = Double(item.mapY) {
+            let address = try await apiService.getAddress(x: x, y: y)
+            item.loc = address?.response.result?.first?.structure?.level1
+            print(address?.response.result?.first?.structure?.level1 ?? "X🩷X")
+            modelContext.insert(item)
+            try modelContext.save()
+        }
     }
 
     func deletePlaceItem(_ item: PlaceItem) throws {
