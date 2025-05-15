@@ -27,91 +27,99 @@ struct HomeView: View {
     //TODO: API연동
     var body: some View {
         NavigationStack {
-            VStack {
-                NavigationLink{
-                    //TODO: DetailView로 연결
-                } label: {
-                    AsyncImage(url: URL(string: todaySpot.imageUrl)) { image in
-                        image.resizable()
-                    } placeholder: {
-                        ProgressView()
-                    }
-                    .frame(height: 250)
-                    .overlay(
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Text("오늘의 이야기")
-                                    .font(.headline)
-                                    .foregroundStyle(Color.white)
-                                    .padding(.top, 10)
+            ScrollView {
+                VStack {
+                    NavigationLink{
+                        //TODO: DetailView로 연결
+                    } label: {
+                        AsyncImage(url: URL(string: todaySpot.imageUrl)) { image in
+                            image.resizable()
+                        } placeholder: {
+                            ProgressView()
+                        }
+                        .frame(height: 250)
+                        .overlay(
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text("오늘의 이야기")
+                                        .font(.headline)
+                                        .foregroundStyle(Color.white)
+                                        .padding(.top, 10)
+                                    Spacer()
+                                    Text(todaySpot.title)
+                                        .font(.title)
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(Color.white)
+                                        .padding(.bottom, 5)
+                                    Text("\(todaySpot.address) | \(todaySpot.audioTitle ?? "")")
+                                        .font(.caption)
+                                        .foregroundStyle(Color.white)
+                                        .padding(.bottom, 10)
+                                }
+                                .padding(.leading, 20)
                                 Spacer()
-                                Text(todaySpot.title)
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .foregroundStyle(Color.white)
-                                    .padding(.bottom, 5)
-                                Text("\(todaySpot.address) | \(todaySpot.audioTitle ?? "")")
-                                    .font(.caption)
-                                    .foregroundStyle(Color.white)
-                                    .padding(.bottom, 10)
                             }
-                            .padding(.leading, 20)
+                        )
+                    }
+                    
+                    
+                    VStack {
+                        HStack {
+                            Text("내 주변 관광지")
+                                .fontWeight(.bold)
                             Spacer()
-                        }
-                    )
-                }
-                
-                
-                VStack {
-                    HStack {
-                        Text("내 주변 관광지")
-                            .fontWeight(.bold)
-                        Spacer()
-                        NavigationLink{
-                            //TODO: 전체보기 목록뷰으로 연결
-                        } label: {
-                            Text("전체보기")
-                                .font(.caption)
-                                .foregroundStyle(Color.gray)
-                        }
-                    }
-                    Grid {
-                        ForEach(nearSpots) { spot in
                             NavigationLink{
-                                //TODO: DetailView로 연결
+                                //TODO: 전체보기 목록뷰으로 연결
                             } label: {
-                                NearSpotListCellView(spot: spot)
+                                Text("전체보기")
+                                    .font(.caption)
+                                    .foregroundStyle(Color.gray)
+                            }
+                        }
+                        Grid {
+                            ForEach(nearSpots) { spot in
+                                NavigationLink{
+                                    //TODO: DetailView로 연결
+                                } label: {
+                                    NearSpotListCellView(spot: spot)
+                                }
                             }
                         }
                     }
-                }
-                .padding(15)
-                
-                VStack {
-                    HStack {
-                        Text("방문한 관광지")
-                            .fontWeight(.bold)
-                        Spacer()
-                        NavigationLink{
-                            //TODO: 전체보기 목록뷰으로 연결
-                        } label: {
-                            Text("전체보기")
-                                .font(.caption)
-                                .foregroundStyle(Color.gray)
-                        }
-                    }
-                    LazyVGrid(columns: columns) {
-                        ForEach(visitedSpots) { spot in
-                            
+                    .padding(15)
+                    
+                    VStack {
+                        HStack {
+                            Text("방문한 관광지")
+                                .fontWeight(.bold)
+                            Spacer()
                             NavigationLink{
-                                //TODO: DetailView로 연결
+                                //TODO: 전체보기 목록뷰으로 연결
                             } label: {
-                                VisitedSpotListCellView(spot: spot)
+                                Text("전체보기")
+                                    .font(.caption)
+                                    .foregroundStyle(Color.gray)
+                            }
+                        }
+                        LazyVGrid(columns: columns) {
+                            ForEach(visitedSpots) { spot in
+                                
+                                NavigationLink{
+                                    //TODO: DetailView로 연결
+                                } label: {
+                                    VisitedSpotListCellView(spot: spot)
+                                }
                             }
                         }
                     }
+                    .padding([.leading,.trailing], 15)
+                    
+                    //TODO: 조건문 필요-Player가 켜져있을 떄만 필요한 부분입니다.
+                    RoundedRectangle(cornerRadius: 15)
+                        .fill(Color.clear)
+                        .frame(height: 20)
+                        .padding(5)
                 }
-                .padding([.leading,.trailing], 15)
             }
         }
     }
@@ -151,6 +159,7 @@ struct NearSpotListCellView: View {
             }
             .padding(.leading, 5)
             Spacer()
+            
         }
     }
 }
