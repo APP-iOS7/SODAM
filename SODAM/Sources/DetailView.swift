@@ -41,8 +41,21 @@ public struct DetailView: View {
         .onAppear {
             viewModel.fetchDetailInfo(keyword: keyword)
             testViewModel.setContext(modelContext)
-            testViewModel.addItem(item: PlaceItem(title: "하이", mapX: "127.5", mapY: "36.5", lanCode: "ko"))
+            //dummyData()
             testViewModel.fetchItems()
+            print("🩷\(testViewModel.items.count)")
+        }
+    }
+    
+    private func dummyData() {
+        let items = [
+            PlaceItem(title: "경주 불국사", mapX: "129.331719", mapY: "35.7923277", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg"),
+            PlaceItem(title: "공주 공산성", mapX: "127.1266933", mapY: "36.4630408", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11173.jpg"),
+            PlaceItem(title: "재궁", mapX: "126.9946507", mapY: "37.5739916", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg"),
+            PlaceItem(title: "공신당", mapX: "126.9940848", mapY: "37.5742758", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/341.jpg")
+        ]
+        for item in items {
+            testViewModel.addItem(item:item)
         }
     }
 }

@@ -27,11 +27,13 @@ final class VisitedPlacesViewModel: ObservableObject {
     }
 
     func addItem(item: PlaceItem) {
-        do {
-            try dataManager?.addPlaceItem(item: item)
-            fetchItems()
-        } catch {
-            print("Failed to add item:", error)
+        Task {
+            do {
+                try await dataManager?.addPlaceItem(item: item)
+                fetchItems()
+            } catch {
+                print("Failed to add item:", error)
+            }
         }
     }
 
