@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PlayerView: View {
     let spot: Spot = Spot(title: "창덕궁", address: "서울특별시 종로구", position: 0.0, audioTitle: "고대 중세 한국사 속으로")
+    @StateObject var playerViewModel = PlayerViewModel(url:   "https://sfj608538-sfj608538.ktcdn.co.kr/file/audio/56/998.mp3")
     @State var isAudioOn: Bool = false
     @State var isLongVer: Bool = true
     var body: some View {
@@ -39,7 +40,7 @@ struct PlayerView: View {
                             
                             if isAudioOn {
                                 Button {
-                                    //TODO: 오디오 재생 함수 필요
+                                    playerViewModel.pause()
                                     isAudioOn.toggle()
                                 } label: {
                                     Image(systemName: "pause.fill")
@@ -58,7 +59,7 @@ struct PlayerView: View {
                                 }
                             } else {
                                 Button {
-                                    //TODO: 오디오 일시정지 함수 필요
+                                    playerViewModel.play()
                                     isAudioOn.toggle()
                                 } label: {
                                     Image(systemName: "play.fill")
