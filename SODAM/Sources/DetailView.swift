@@ -16,9 +16,6 @@ public struct DetailView: View {
     
     @StateObject private var viewModel = DetailViewModel()
     
-    @Environment(\.modelContext) private var modelContext
-    @StateObject private var testViewModel = VisitedPlacesViewModel()
-    
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             DetailHeaderView(selectedTab: $selectedTab)
@@ -29,33 +26,12 @@ public struct DetailView: View {
                 } else {
                     Text("데이터를 불러오는 중입니다.")
                 }
-                if let testData = testViewModel.items.first {
-                    Text(testData.title)
-                } else {
-                    Text("테스트 데이터를 불러오는 중입니다.")
-                }
             }
             .padding(8)
             .frame(maxHeight: .infinity, alignment: .top)
         }
         .onAppear {
             viewModel.fetchDetailInfo(keyword: keyword)
-            testViewModel.setContext(modelContext)
-            //dummyData()
-            testViewModel.fetchItems()
-            print("🩷\(testViewModel.items.count)")
-        }
-    }
-    
-    private func dummyData() {
-        let items = [
-            PlaceItem(title: "경주 불국사", mapX: "129.331719", mapY: "35.7923277", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg"),
-            PlaceItem(title: "공주 공산성", mapX: "127.1266933", mapY: "36.4630408", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11173.jpg"),
-            PlaceItem(title: "재궁", mapX: "126.9946507", mapY: "37.5739916", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg"),
-            PlaceItem(title: "공신당", mapX: "126.9940848", mapY: "37.5742758", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/341.jpg")
-        ]
-        for item in items {
-            testViewModel.addItem(item:item)
         }
     }
 }
