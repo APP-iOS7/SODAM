@@ -7,6 +7,7 @@
 //  장소 상세화면
 
 import SwiftUI
+import SwiftData
 
 public struct DetailView: View {
     
@@ -14,6 +15,9 @@ public struct DetailView: View {
     @State private var keyword: String = "송파"
     
     @StateObject private var viewModel = DetailViewModel()
+    
+    @Environment(\.modelContext) private var modelContext
+    @StateObject private var testViewModel = VisitedPlacesViewModel()
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -25,13 +29,20 @@ public struct DetailView: View {
                 } else {
                     Text("데이터를 불러오는 중입니다.")
                 }
+                if let testData = testViewModel.items.first {
+                    Text(testData.title)
+                } else {
+                    Text("테스트 데이터를 불러오는 중입니다.")
+                }
             }
             .padding(8)
             .frame(maxHeight: .infinity, alignment: .top)
         }
         .onAppear {
             viewModel.fetchDetailInfo(keyword: keyword)
-            // viewModel.fetch()
+            testViewModel.setContext(modelContext)
+            testViewModel.addItem(item: PlaceItem(title: "하이", mapX: "127.5", mapY: "36.5", lanCode: "ko"))
+            testViewModel.fetchItems()
         }
     }
 }
