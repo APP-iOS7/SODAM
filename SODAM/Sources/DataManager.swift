@@ -8,21 +8,35 @@
 import Foundation
 import SwiftData
 
+@MainActor
 final class DataManager {
-    static let shared = DataManager(modelContext: <#ModelContext#>)
-    
     let modelContext: ModelContext
-    
-    private init(modelContext: ModelContext) {
+
+    init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
-    
+
     enum SwiftDataError: Error {
-        case modelContextUnavailable
         case insertionFailed
         case deletionFailed
         case fetchFailed
-        case invalidSchema
-        case migrationError
+    }
+
+    func addPlaceItem(item: PlaceItem) throws {
+        modelContext.insert(item)
+        try modelContext.save()
+    }
+
+    func deletePlaceItem(_ item: PlaceItem) throws {
+        modelContext.delete(item)
+        try modelContext.save()
+    }
+
+    func fetchPlaceItems() throws -> [PlaceItem] {
+        do {
+            return try modelContext.fetch(FetchDescriptor<PlaceItem>())
+        } catch {
+            throw SwiftDataError.fetchFailed
+        }
     }
 }
