@@ -21,8 +21,9 @@ class PlaceItem {
     var addr1: String?
     var addr2: String?
     var loc: String?
+    var distance: Double?
 
-    init(title: String, mapX: String, mapY: String, audioTitle: String? = nil, script: String? = nil, playTime: String? = nil, audioURL: String? = nil, lanCode: String? = nil, imageUrl: String? = nil, addr1: String? = nil, addr2: String? = nil, loc: String? = nil) {
+    init(title: String, mapX: String, mapY: String, audioTitle: String? = nil, script: String? = nil, playTime: String? = nil, audioURL: String? = nil, lanCode: String? = nil, imageUrl: String? = nil, addr1: String? = nil, addr2: String? = nil, loc: String? = nil, distance: Double? = nil) {
         self.title = title
         self.mapX = mapX
         self.mapY = mapY
@@ -35,6 +36,7 @@ class PlaceItem {
         self.addr1 = addr1
         self.addr2 = addr2
         self.loc = loc
+        self.distance = distance
     }
 }
 

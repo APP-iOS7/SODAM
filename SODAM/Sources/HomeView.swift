@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import SwiftData
+
 struct Spot: Identifiable, Hashable {
     var title: String
     var address: String
@@ -14,14 +16,28 @@ struct Spot: Identifiable, Hashable {
     var audioTitle: String? = nil
     let id: UUID = UUID()
 }
+
 struct HomeView: View {
-    let todaySpot: Spot = Spot(title: "창덕궁", address: "서울특별시 종로구", position: 0.0, audioTitle: "고대 중세 한국사 속으로")
+//    @Query var visitedSpots: [PlaceItem]
+    @Environment(\.modelContext) private var modelContext
+    let todaySpot: PlaceItem =
+    PlaceItem(title: "창덕궁", mapX: "129.331719", mapY: "35.7923277", audioTitle: "고대 중세 한국사 속으로", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg", addr1: "서울특별시 종로구")
     
     //내 주변 관광지 배열 3개
-    let nearSpots: [Spot] = [Spot(title: "안산 대부도", address: "경기도 안산시", position: 54.8),Spot(title: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),Spot(title: "오이도", address: "경기도 사흥시", position: 38.7)]
+    let nearSpots: [PlaceItem] = [
+        PlaceItem(title: "경주 불국사", mapX: "129.331719", mapY: "35.7923277", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg", addr1: "경상북도 경주시", distance: 5.1),
+        PlaceItem(title: "공주 공산성", mapX: "127.1266933", mapY: "36.4630408", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11173.jpg", addr1: "경상북도 경주시", distance: 5.4),
+        PlaceItem(title: "재궁", mapX: "126.9946507", mapY: "37.5739916", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg", addr1: "경상북도 경주시", distance: 6.1),
+        PlaceItem(title: "공신당", mapX: "126.9940848", mapY: "37.5742758", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/341.jpg", addr1: "경상북도 경주시", distance: 6.2)
+    ]
     
     //방문한 관광지 배열 최대 5개
-    let visitedSpots: [Spot] = [Spot(title: "안산 대부도", address: "경기도 안산시", position: 54.8),Spot(title: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),Spot(title: "오이도", address: "경기도 사흥시", position: 38.7),Spot(title: "수원 남문로데오 시장", address: "경기도 수원시", position: 29.9),Spot(title: "오이도", address: "경기도 사흥시", position: 38.7)]
+    let visitedSpots: [PlaceItem] = [
+        PlaceItem(title: "경주 불국사", mapX: "129.331719", mapY: "35.7923277", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg", addr1: "경상북도 경주시"),
+        PlaceItem(title: "공주 공산성", mapX: "127.1266933", mapY: "36.4630408", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11173.jpg", addr1: "경상북도 경주시"),
+        PlaceItem(title: "재궁", mapX: "126.9946507", mapY: "37.5739916", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg", addr1: "경상북도 경주시"),
+        PlaceItem(title: "공신당", mapX: "126.9940848", mapY: "37.5742758", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/341.jpg", addr1: "경상북도 경주시")
+    ]
     let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     
     //TODO: API연동
@@ -32,7 +48,7 @@ struct HomeView: View {
                     NavigationLink{
                         //TODO: DetailView로 연결
                     } label: {
-                        AsyncImage(url: URL(string: todaySpot.imageUrl)) { image in
+                        AsyncImage(url: URL(string: todaySpot.imageUrl ?? "")) { image in
                             image.resizable()
                         } placeholder: {
                             ProgressView()
@@ -51,7 +67,7 @@ struct HomeView: View {
                                         .fontWeight(.bold)
                                         .foregroundStyle(Color.white)
                                         .padding(.bottom, 5)
-                                    Text("\(todaySpot.address) | \(todaySpot.audioTitle ?? "")")
+                                    Text("\(todaySpot.addr1 ?? "") | \(todaySpot.audioTitle ?? "")")
                                         .font(.caption)
                                         .foregroundStyle(Color.white)
                                         .padding(.bottom, 10)
@@ -61,7 +77,6 @@ struct HomeView: View {
                             }
                         )
                     }
-                    
                     
                     VStack {
                         HStack {
@@ -76,16 +91,25 @@ struct HomeView: View {
                                     .foregroundStyle(Color.gray)
                             }
                         }
-                        Grid {
-                            ForEach(nearSpots) { spot in
-                                NavigationLink{
-                                    //TODO: DetailView로 연결
-                                } label: {
-                                    NearSpotListCellView(spot: spot)
+                        VStack {
+                            Divider()
+                            if !nearSpots.isEmpty {
+                                ForEach(nearSpots.prefix(3)) { spot in
+                                    NavigationLink{
+                                        //TODO: DetailView로 연결
+                                        
+                                    } label: {
+                                        NearSpotListCellView(spot: spot)
+                                    }
+                                    Divider()
                                 }
+                            } else {
+                                Text("주변에 관광지가 없습니다.")
+                                    .padding(60)
                             }
                         }
                     }
+                    .frame(height: 280, alignment: .top)
                     .padding(15)
                     
                     VStack {
@@ -101,17 +125,23 @@ struct HomeView: View {
                                     .foregroundStyle(Color.gray)
                             }
                         }
-                        LazyVGrid(columns: columns) {
-                            ForEach(visitedSpots) { spot in
-                                
-                                NavigationLink{
-                                    //TODO: DetailView로 연결
-                                } label: {
-                                    VisitedSpotListCellView(spot: spot)
+                        if !visitedSpots.isEmpty {
+                            LazyVGrid(columns: columns) {
+                                ForEach(visitedSpots.prefix(5)) { spot in
+                                    
+                                    NavigationLink{
+                                        //TODO: DetailView로 연결
+                                    } label: {
+                                        VisitedSpotListCellView(spot: spot)
+                                    }
                                 }
                             }
+                        } else {
+                            Text("방문한 관광지가 없습니다.")
+                                .padding(30)
                         }
                     }
+                    .frame(height: 130, alignment: .top)
                     .padding([.leading,.trailing], 15)
                     
                     //TODO: 조건문 필요-Player가 켜져있을 떄만 필요한 부분입니다.
@@ -130,10 +160,10 @@ struct HomeView: View {
 }
 
 struct NearSpotListCellView: View {
-    let spot: Spot
+    let spot: PlaceItem
     var body: some View {
         HStack(alignment: .top) {
-            AsyncImage(url: URL(string: spot.imageUrl)) { image in
+            AsyncImage(url: URL(string: spot.imageUrl ?? "")) { image in
                 image.resizable()
             } placeholder: {
                 ProgressView()
@@ -143,16 +173,24 @@ struct NearSpotListCellView: View {
             VStack(alignment: .leading) {
                 Text(spot.title)
                     .foregroundStyle(.black)
-                Text(spot.address)
+                    .padding(.top, 2)
+                Text(spot.addr1 ?? "")
                     .font(.caption)
                     .foregroundStyle(.gray)
                 HStack {
                     Image(systemName: "mappin.and.ellipse")
                         .font(.footnote)
                         .foregroundStyle(.gray)
-                    Text("\(String(format: "%.1f", spot.position)) Km")
-                        .font(.footnote)
-                        .foregroundStyle(.gray)
+                    if let distance = spot.distance {
+                        Text("\(String(format: "%.1f", distance)) Km")
+                            .font(.footnote)
+                            .foregroundStyle(.gray)
+                    } else {
+                        Text("거리를 알 수 없습니다.")
+                            .font(.footnote)
+                            .foregroundStyle(.gray)
+                    }
+                    
                 }
                 .padding(.top, 3)
                 
@@ -165,10 +203,10 @@ struct NearSpotListCellView: View {
 }
 
 struct VisitedSpotListCellView: View {
-    let spot: Spot
+    let spot: PlaceItem
     var body: some View {
         VStack (alignment: .center) {
-            AsyncImage(url: URL(string: spot.imageUrl)) { image in
+            AsyncImage(url: URL(string: spot.imageUrl ?? "")) { image in
                 image.resizable()
             } placeholder: {
                 ProgressView()
@@ -181,7 +219,7 @@ struct VisitedSpotListCellView: View {
                     .lineLimit(1)
                     .font(.caption)
                     .foregroundStyle(Color.black)
-                Text(spot.address)
+                Text(spot.addr1 ?? "")
                     .lineLimit(1)
                     .font(.caption2)
                     .foregroundStyle(Color.gray)
