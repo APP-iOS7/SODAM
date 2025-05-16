@@ -26,7 +26,7 @@ struct TabBarComponent: View {
                 case .navigation:
                     MapView()
                 case .menu:
-                    VisitedPlaceListView()
+                    MenuView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -93,13 +93,6 @@ struct HomeTestView: View {
 
 
 struct NavigationView: View {
-    var body: some View {
-        Text("hello world home Page")
-    }
-}
-
-
-struct MenuView: View {
     var body: some View {
         Text("hello world home Page")
     }
