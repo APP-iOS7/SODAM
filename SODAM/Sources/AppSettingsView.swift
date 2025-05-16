@@ -37,7 +37,7 @@ struct AppSettingsView: View {
                             }
                         } label: {
                             HStack(spacing: 4) {
-                                Text(selectedLanguage)
+                                Text(languages[selectedLanguage] ?? "한국어")
                                     .foregroundColor(.gray)
                                 Image(systemName: "chevron.down")
                                     .foregroundColor(.gray)
