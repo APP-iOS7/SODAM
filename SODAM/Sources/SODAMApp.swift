@@ -8,6 +8,7 @@ struct SODAMApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+              .environmentObject(UserLocation.shared)
         }
         .modelContainer(container)
     }

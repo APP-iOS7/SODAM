@@ -24,7 +24,9 @@ struct TabBarComponent: View {
                 case .home:
                     HomeTestView()
                 case .navigation:
-                    MapView()
+//                    MapView()
+                    // 250515 1010 KTG
+                    StartView()
                 case .menu:
                     MenuView()
                 }
