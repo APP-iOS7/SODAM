@@ -25,7 +25,7 @@ struct MenuView: View {
                             }
                         }
 
-                        NavigationLink(destination: EmptyView()) {
+                        NavigationLink(destination: AppSettingsView()) {
                             HStack {
                                 Text("설정")
                                     .padding(.leading)
