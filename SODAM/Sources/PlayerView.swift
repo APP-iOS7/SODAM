@@ -8,13 +8,16 @@
 import SwiftUI
 
 struct PlayerView: View {
+    
     let spot: Spot = Spot(title: "창덕궁", address: "서울특별시 종로구", position: 0.0, audioTitle: "고대 중세 한국사 속으로")
     @StateObject var playerViewModel = PlayerViewModel(url:   "https://sfj608538-sfj608538.ktcdn.co.kr/file/audio/56/998.mp3")
-    @State var isAudioOn: Bool = false
-    @State var isLongVer: Bool = true
+
+//    TODO: UserDefaults에 오디오 플레이어 On/Off상태 두고 그에 따라 오디오 플레이어 가져오기
+//    @State private var isAudioPlayerOn = UserDefaults.standard.integer(forKey: "AudioPlayer")
+//    UserDefaults.standard.set(true, forKey: "AudioPlayer")
     var body: some View {
         VStack {
-            if isLongVer {
+            if playerViewModel.isLongVer {
                 RoundedRectangle(cornerRadius: 15)
                     .fill(Color.primaryColor.opacity(0.8))
                     .frame(height: 60)
@@ -29,7 +32,7 @@ struct PlayerView: View {
                             .cornerRadius(10)
                             .frame(width: 45,height: 45)
                             .onTapGesture {
-                                isLongVer.toggle()
+                                playerViewModel.isLongVer .toggle()
                             }
                             .padding(.leading, 13)
                             Text(spot.title)
@@ -38,10 +41,9 @@ struct PlayerView: View {
                                 .padding(5)
                             Spacer()
                             
-                            if isAudioOn {
+                            if playerViewModel.isPlaying {
                                 Button {
                                     playerViewModel.pause()
-                                    isAudioOn.toggle()
                                 } label: {
                                     Image(systemName: "pause.fill")
                                         .font(.title)
@@ -60,7 +62,6 @@ struct PlayerView: View {
                             } else {
                                 Button {
                                     playerViewModel.play()
-                                    isAudioOn.toggle()
                                 } label: {
                                     Image(systemName: "play.fill")
                                         .font(.title)
@@ -86,7 +87,7 @@ struct PlayerView: View {
                                 .cornerRadius(10)
                                 .frame(width: 45,height: 45)
                                 .onTapGesture {
-                                    isLongVer.toggle()
+                                    playerViewModel.isLongVer.toggle()
                                 }
                             }
                         )
