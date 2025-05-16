@@ -9,9 +9,13 @@
 import SwiftUI
 
 struct AppSettingsView: View {
-    @State private var selectedLanguage = "한국어"
+    // [langCode: language] Dictionary
+    private let languages = ["ko":"한국어", "jn": "일본어", "cn":"중국어", "en":"영어"]
+    
+    // UserDefaults에 설정 된 값
+    @AppStorage("selectedLanguage") var selectedLanguage: String = "ko"
+    //@AppStorage("isLocationEnabled") private var isLocationEnabled: Bool = true
     @State private var isLocationEnabled = true
-    private let languages = ["한국어", "일본어", "중국어", "영어"]
     
     private var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "버전 정보 없음"
@@ -25,10 +29,10 @@ struct AppSettingsView: View {
                     HStack {
                         settingTitleView(text: "언어설정", iconName: "globe")
                         Menu {
-                            ForEach(languages, id: \.self) { language in
-                                Button(language) {
-                                    selectedLanguage = language
-                                    // TODO: 버튼 액션 추가
+                            ForEach(Array(languages), id: \.key) { key, value in
+                                Button(value) {
+                                    // 코드 값 선택되면 Userdefaults 값 설정
+                                    selectedLanguage = key
                                 }
                             }
                         } label: {
@@ -45,6 +49,9 @@ struct AppSettingsView: View {
                     HStack {
                         settingTitleView(text: "위치 정보 사용", iconName: "location.fill")
                         Toggle("", isOn: $isLocationEnabled)
+                            .onChange(of: isLocationEnabled) { newValue in
+                                // TODO: 시스템 위치권한과 연동
+                            }
                             .labelsHidden()
                     }
                     
