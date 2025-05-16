@@ -26,13 +26,13 @@ struct MapView: View {
       draw: $draw,
       markerCoordinate: userLocation.currentLocation?.coordinate
     )
-//    .onAppear{
-//      userLocation.startUpdatingLocation()
-//      draw = true
-//    }
-//    .onDisappear{
-//      draw = false
-//    }
+    .onAppear{
+      userLocation.startUpdatingLocation()
+      draw = true
+    }
+    .onDisappear{
+      draw = false
+    }
     .frame(
       maxWidth: .infinity,
       maxHeight: .infinity

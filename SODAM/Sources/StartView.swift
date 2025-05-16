@@ -16,13 +16,13 @@ struct StartView: View {
   var body: some View {
     MapView()
       .environmentObject(userLocation)
-      .onAppear {
-        userLocation.startUpdatingLocation()
-        draw = true
-      }
-      .onDisappear {
-        draw = false
-      }
+//      .onAppear {
+//        userLocation.startUpdatingLocation()
+//        draw = true
+//      }
+//      .onDisappear {
+//        draw = false
+//      }
   }
 }
 
