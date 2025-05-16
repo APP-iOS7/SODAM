@@ -18,29 +18,7 @@ struct Spot: Identifiable, Hashable {
 }
 
 struct HomeView: View {
-//    @Query var visitedSpots: [PlaceItem]
-    @Environment(\.modelContext) private var modelContext
-    let todaySpot: PlaceItem =
-    PlaceItem(title: "창덕궁", mapX: "129.331719", mapY: "35.7923277", audioTitle: "고대 중세 한국사 속으로", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg", addr1: "서울특별시 종로구")
-    
-    //내 주변 관광지 배열 3개
-    let nearSpots: [PlaceItem] = [
-        PlaceItem(title: "경주 불국사", mapX: "129.331719", mapY: "35.7923277", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg", addr1: "경상북도 경주시", distance: 5.1),
-        PlaceItem(title: "공주 공산성", mapX: "127.1266933", mapY: "36.4630408", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11173.jpg", addr1: "경상북도 경주시", distance: 5.4),
-        PlaceItem(title: "재궁", mapX: "126.9946507", mapY: "37.5739916", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg", addr1: "경상북도 경주시", distance: 6.1),
-        PlaceItem(title: "공신당", mapX: "126.9940848", mapY: "37.5742758", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/341.jpg", addr1: "경상북도 경주시", distance: 6.2)
-    ]
-    
-    //방문한 관광지 배열 최대 5개
-    let visitedSpots: [PlaceItem] = [
-        PlaceItem(title: "경주 불국사", mapX: "129.331719", mapY: "35.7923277", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg", addr1: "경상북도 경주시"),
-        PlaceItem(title: "공주 공산성", mapX: "127.1266933", mapY: "36.4630408", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11173.jpg", addr1: "경상북도 경주시"),
-        PlaceItem(title: "재궁", mapX: "126.9946507", mapY: "37.5739916", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg", addr1: "경상북도 경주시"),
-        PlaceItem(title: "공신당", mapX: "126.9940848", mapY: "37.5742758", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/341.jpg", addr1: "경상북도 경주시")
-    ]
-    let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
-    
-    //TODO: API연동
+    @StateObject private var homeViewModel: HomeViewModel = HomeViewModel()
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -48,34 +26,7 @@ struct HomeView: View {
                     NavigationLink{
                         //TODO: DetailView로 연결
                     } label: {
-                        AsyncImage(url: URL(string: todaySpot.imageUrl ?? "")) { image in
-                            image.resizable()
-                        } placeholder: {
-                            ProgressView()
-                        }
-                        .frame(height: 250)
-                        .overlay(
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text("오늘의 이야기")
-                                        .font(.headline)
-                                        .foregroundStyle(Color.white)
-                                        .padding(.top, 10)
-                                    Spacer()
-                                    Text(todaySpot.title)
-                                        .font(.title)
-                                        .fontWeight(.bold)
-                                        .foregroundStyle(Color.white)
-                                        .padding(.bottom, 5)
-                                    Text("\(todaySpot.addr1 ?? "") | \(todaySpot.audioTitle ?? "")")
-                                        .font(.caption)
-                                        .foregroundStyle(Color.white)
-                                        .padding(.bottom, 10)
-                                }
-                                .padding(.leading, 20)
-                                Spacer()
-                            }
-                        )
+                        TodaySpotView(spot: homeViewModel.GetTodaySpot())
                     }
                     
                     VStack {
@@ -93,8 +44,8 @@ struct HomeView: View {
                         }
                         VStack {
                             Divider()
-                            if !nearSpots.isEmpty {
-                                ForEach(nearSpots.prefix(3)) { spot in
+                            if !homeViewModel.IsNearSpotEmpty() {
+                                ForEach(homeViewModel.GetNearSpots()) { spot in
                                     NavigationLink{
                                         //TODO: DetailView로 연결
                                         
@@ -125,9 +76,9 @@ struct HomeView: View {
                                     .foregroundStyle(Color.gray)
                             }
                         }
-                        if !visitedSpots.isEmpty {
-                            LazyVGrid(columns: columns) {
-                                ForEach(visitedSpots.prefix(5)) { spot in
+                        if !homeViewModel.IsVisitedSpotEmpty() {
+                            LazyVGrid(columns: homeViewModel.columns) {
+                                ForEach(homeViewModel.GetVisitedSpots()) { spot in
                                     
                                     NavigationLink{
                                         //TODO: DetailView로 연결
@@ -231,3 +182,37 @@ struct VisitedSpotListCellView: View {
 }
 
 
+
+struct TodaySpotView: View {
+    let spot: PlaceItem
+    var body: some View {
+        AsyncImage(url: URL(string: spot.imageUrl ?? "")) { image in
+            image.resizable()
+        } placeholder: {
+            ProgressView()
+        }
+        .frame(height: 250)
+        .overlay(
+            HStack {
+                VStack(alignment: .leading) {
+                    Text("오늘의 이야기")
+                        .font(.headline)
+                        .foregroundStyle(Color.white)
+                        .padding(.top, 10)
+                    Spacer()
+                    Text(spot.title)
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundStyle(Color.white)
+                        .padding(.bottom, 5)
+                    Text("\(spot.addr1 ?? "") | \(spot.audioTitle ?? "")")
+                        .font(.caption)
+                        .foregroundStyle(Color.white)
+                        .padding(.bottom, 10)
+                }
+                .padding(.leading, 20)
+                Spacer()
+            }
+        )
+    }
+}
