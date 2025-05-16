@@ -10,6 +10,7 @@ import AVFoundation
 
 class PlayerViewModel: ObservableObject {
     @Published var isPlaying: Bool = false
+    @Published var isLongVer: Bool = true
     @Published var audioUrl: String
     @Published var audioData: Data?
     
@@ -41,4 +42,5 @@ class PlayerViewModel: ObservableObject {
         audioPlayer?.pause()
         self.isPlaying = false
     }
+
 }
