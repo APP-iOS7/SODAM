@@ -12,14 +12,11 @@ class DetailViewModel: ObservableObject {
     @Published var item: DetailModel?
     @Published var items: [DetailModel]?
     @Published var isLoading: Bool = false
-    
-    private let apiService = APIService()
-
     func fetchDetailInfo(keyword: String, pageNo: Int = 1) {
         Task {
             isLoading = true
             do {
-                let fetchedItems = try await apiService.getThemeSearchList(keyword: keyword, numOfRows: 1, pageNo: pageNo)
+                let fetchedItems = try await APIService.shared.getThemeSearchList(keyword: keyword, numOfRows: 1, pageNo: pageNo)
                 self.item = fetchedItems.first
             } catch {
                 print("오디오 리스트 불러오기 실패: \(error)")
@@ -33,7 +30,7 @@ class DetailViewModel: ObservableObject {
     func fetch() {
         Task {
             do {
-                try await apiService.getAddress(x: 126.9223, y: 37.4985)
+                try await APIService.shared.getAddress(x: 126.9223, y: 37.4985)
             } catch {
                 print("위치 불러오기 실패: \(error)")
             }

@@ -10,7 +10,6 @@ import SwiftData
 @MainActor
 final class DataManager {
     let modelContext: ModelContext
-    private let apiService = APIService()
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
@@ -24,7 +23,7 @@ final class DataManager {
 
     func addPlaceItem(item: PlaceItem) async throws {
         if let x = Double(item.mapX), let y = Double(item.mapY) {
-            let address = try await apiService.getAddress(x: x, y: y)
+            let address = try await APIService.shared.getAddress(x: x, y: y)
             item.loc = address?.response.result?.first?.structure?.level1
             print(address?.response.result?.first?.structure?.level1 ?? "X🩷X")
             modelContext.insert(item)

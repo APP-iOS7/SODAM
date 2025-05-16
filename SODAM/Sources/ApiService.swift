@@ -6,7 +6,10 @@
 //
 import Foundation
 
-public class APIService {
+final class APIService {
+    
+    static let shared = APIService()
+    private init() {}
     
     /** 관광지 기본 정보 목록 조회
      * - Parameters:
