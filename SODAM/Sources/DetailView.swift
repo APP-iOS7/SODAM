@@ -7,6 +7,7 @@
 //  장소 상세화면
 
 import SwiftUI
+import SwiftData
 
 public struct DetailView: View {
     
@@ -31,7 +32,6 @@ public struct DetailView: View {
         }
         .onAppear {
             viewModel.fetchDetailInfo(keyword: keyword)
-            // viewModel.fetch()
         }
     }
 }

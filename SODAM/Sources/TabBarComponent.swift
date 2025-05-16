@@ -99,10 +99,3 @@ struct NavigationView: View {
         Text("hello world home Page")
     }
 }
-
-
-struct MenuView: View {
-    var body: some View {
-        Text("hello world home Page")
-    }
-}
