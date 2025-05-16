@@ -11,9 +11,18 @@ import CoreLocation
 
 struct StartView: View {
   @StateObject private var userLocation = UserLocation.shared
+  @State private var draw = false
   
   var body: some View {
     MapView()
+      .environmentObject(userLocation)
+      .onAppear {
+        userLocation.startUpdatingLocation()
+        draw = true
+      }
+      .onDisappear {
+        draw = false
+      }
   }
 }
 
