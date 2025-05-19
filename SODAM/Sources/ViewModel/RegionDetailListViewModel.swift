@@ -52,8 +52,8 @@ class RegionDetailListViewModel: ObservableObject {
             let addr2 = region.addr2, !addr2.isEmpty {
                 continue
             }
-            let x = Double(region.mapX!)!
-            let y = Double(region.mapY!)!
+            let x = Double(region.mapX)!
+            let y = Double(region.mapY)!
             
             do {
                 let address = try await APIService.shared.getAddress(x: x, y: y)
