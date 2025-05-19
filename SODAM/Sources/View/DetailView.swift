@@ -9,29 +9,34 @@
 import SwiftUI
 import SwiftData
 
+enum Tab: String {
+    case photo = "사진"
+    case map = "지도"
+}
+
 public struct DetailView: View {
     
-    @State private var selectedTab: DetailHeaderView.Tab = .photo
-    @State private var keyword: String = "송파"
+    @State private var selectedTab: Tab = .photo
+    private var item: DetailModel?
     
-    @StateObject private var viewModel = DetailViewModel()
+    init(item: DetailModel? = nil) {
+        self.selectedTab = selectedTab
+        self.item = item
+    }
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             DetailHeaderView(selectedTab: $selectedTab)
-            ScrollView {
-                if let firstItem = viewModel.item {
-                    DetailImageView(url: firstItem.imageUrl ?? "")
-                    DetailInfoView(model: firstItem)
+            ScrollView(.vertical, showsIndicators: false) { // scroll Indicator 숨기기
+                if let detailItem = item {
+                    DetailImageView(url: detailItem.imageUrl ?? "", selectedTab: $selectedTab)
+                    DetailInfoView(model: detailItem)
                 } else {
-                    Text("데이터를 불러오는 중입니다.")
+                    Text("데이터가 없습니다.")
                 }
             }
             .padding(8)
             .frame(maxHeight: .infinity, alignment: .top)
-        }
-        .onAppear {
-            viewModel.fetchDetailInfo(keyword: keyword)
         }
     }
 }
@@ -44,62 +49,56 @@ public struct DetailView: View {
 struct DetailHeaderView: View {
     @Binding var selectedTab: Tab
     
-    enum Tab {
-        case photo
-        case map
-    }
-    
     var body: some View {
         HStack(spacing: 0) {
-            VStack {
-                Button(action: {
-                    selectedTab = .photo
-                    print("clicked photo")
-                }) {
-                    Text("사진")
-                        .foregroundColor(selectedTab == .photo ? .black : .gray)
-                        .fontWeight(selectedTab == .photo ? .bold : .regular)
-                        .frame(maxWidth: .infinity)
-                }
-                Rectangle()
-                    .fill(selectedTab == .photo ? Color.green : Color.clear)
-                    .frame(height: 4)
-            }
-            
-            VStack {
-                Button(action: {
-                    selectedTab = .map
-                    print("clicked map")
-                }) {
-                    Text("지도")
-                        .foregroundColor(selectedTab == .map ? .black : .gray)
-                        .fontWeight(selectedTab == .map ? .bold : .regular)
-                        .frame(maxWidth: .infinity)
-                }
-                .background(Color.red.opacity(0.1))
-                Rectangle()
-                    .fill(selectedTab == .map ? Color.green : Color.clear)
-                    .frame(height: 4)
-            }
+            segmentButton(type: .photo, isActive: selectedTab == .photo)
+            segmentButton(type: .map, isActive: selectedTab == .map)
         }
         .frame(height: 44)
+    }
+    
+    private func segmentButton(type: Tab, isActive: Bool) -> some View {
+        VStack {
+            Button(action: {
+                selectedTab = type
+                print("clicked \(type.rawValue)")
+            }) {
+                Text("\(type.rawValue)")
+                    .foregroundColor(isActive ? .black : .gray)
+                    .fontWeight(isActive ? .bold : .regular)
+                    .frame(maxWidth: .infinity)
+            }
+            Rectangle()
+                .fill(isActive ? Color.green : Color.clear)
+                .frame(height: 4)
+        }
     }
 }
 
 // MARK: 장소 이미지
 struct DetailImageView: View {
     var url: String
+    @Binding var selectedTab: Tab
     
     var body: some View {
-        AsyncImage(url: URL(string: url)) { image in
-            image
-                .resizable()
-                .scaledToFill()
-        } placeholder: {
-            Color.gray
+        if selectedTab == .photo {
+            AsyncImage(url: URL(string: url)) { image in
+                image
+                    .resizable()
+                    .scaledToFill()
+            } placeholder: {
+                Color.gray
+            }
+            .frame(maxWidth: .infinity, minHeight: 260, maxHeight: 260)
+            .clipped()
+        } else {
+            // TODO: 지도 영역 연동
+            Rectangle()
+                .foregroundStyle(Color.secondaryColorRed)
+                .frame(maxWidth: .infinity, minHeight: 260, maxHeight: 260)
+                .clipped()
         }
-        .frame(maxWidth: .infinity, minHeight: 260, maxHeight: 260)
-        .clipped()
+            
     }
 }
 
@@ -110,7 +109,7 @@ struct DetailButtonView: View {
         HStack {
             let distance = haversineDistance(
                 lat1: 37.4981, lon1: 126.9220, // 서울
-                lat2: Double(model.mapY ?? "37.5") ?? 37.5, lon2: Double(model.mapX ?? "126.9") ?? 126.9
+                lat2: Double(model.mapY) ?? 37.5, lon2: Double(model.mapX) ?? 126.9
             )
             
             let km = String(format: "%.2f", distance)
@@ -119,16 +118,19 @@ struct DetailButtonView: View {
                 .foregroundStyle(.green)
             Spacer()
             HStack(spacing: 12) {
-                Button {
-                    print("play button clicked")
-                    // TODO: 플레이어 재생
-                } label: {
-                    Image(systemName: "play.circle")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 32, height: 32)
+                // audioURL 있을때만 활성화
+                if let audioUrl = model.audioUrl {
+                    Button {
+                        print("play button clicked")
+                        // TODO: 플레이어 재생
+                    } label: {
+                        Image(systemName: "play.circle")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 32, height: 32)
+                    }
+                    .foregroundStyle(.green)
                 }
-                .foregroundStyle(.green)
                 
                 Button {
                     print("share button clicked")
@@ -151,11 +153,11 @@ struct DetailInfoView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(model.title ?? "")
+            Text(model.title)
                 .font(.system(size: 24, weight: .bold))
                 .padding([.top], 8)
             if let addr1 =  model.addr1 {
-                Text("\(model.addr1 ?? "") \(model.addr2 ?? "")")
+                Text("\(addr1) \(model.addr2 ?? "")")
                     .font(.system(size: 12))
             }
             DetailButtonView(model: model)

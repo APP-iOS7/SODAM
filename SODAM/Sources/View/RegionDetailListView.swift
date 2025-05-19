@@ -41,7 +41,7 @@ struct RegionDetailListView: View {
     }
     
     private func tourItem(item: DetailModel) -> some View {
-        guard let title = item.title, let image = item.imageUrl,let addr1 = item.addr1 else { return AnyView(ProgressView()) }
+        guard let image = item.imageUrl,let addr1 = item.addr1 else { return AnyView(ProgressView()) }
         print(image)
         return AnyView(
             HStack {
@@ -52,7 +52,7 @@ struct RegionDetailListView: View {
                     .clipShape(.rect(cornerRadius: 12))
                     
                 VStack(alignment: .leading) {
-                    Text(title)
+                    Text(item.title)
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .padding(.bottom, 1)
