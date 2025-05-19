@@ -63,6 +63,7 @@ struct RegionDetailListView: View {
     // MARK: 지역 관광지 각 Row
     private func tourItem(item: DetailModel) -> some View {
         guard let stlid = item.stlid else {return AnyView(ProgressView())}
+
         return AnyView(
             HStack {
                 AsyncImage(url: URL(string: item.imageUrl!)) {
