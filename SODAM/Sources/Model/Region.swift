@@ -12,5 +12,5 @@ struct Region: Identifiable {
     let name: String
     let latitude: Double
     let longitude: Double
-    let position: CGPoint
+    let imageName: String
 }
