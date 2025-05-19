@@ -8,13 +8,24 @@
 import SwiftUI
 
 struct PlayerView: View {
+    @AppStorage("playerState") var playerState: Bool = UserDefaults.standard.bool(forKey: "playerState")
     
-    let spot: Spot = Spot(title: "창덕궁", address: "서울특별시 종로구", position: 0.0, audioTitle: "고대 중세 한국사 속으로")
-    @StateObject var playerViewModel = PlayerViewModel(url:   "https://sfj608538-sfj608538.ktcdn.co.kr/file/audio/56/998.mp3")
+    @StateObject var playerViewModel: PlayerViewModel
+    
+/*    MARK: 플레이어 재생 가이드(ver.0519)
+ 1. 뷰에서 변수 세팅
+ @AppStorage("playerState") var playerState: Bool = UserDefaults.standard.bool(forKey: "playerState")
 
-//    TODO: UserDefaults에 오디오 플레이어 On/Off상태 두고 그에 따라 오디오 플레이어 가져오기
-//    @State private var isAudioPlayerOn = UserDefaults.standard.integer(forKey: "AudioPlayer")
-//    UserDefaults.standard.set(true, forKey: "AudioPlayer")
+ @AppStorage("playerTitle") var playerTitle: String = (UserDefaults.standard.string(forKey: "playerTitle") ?? "")
+ @AppStorage("playerImageURL") var playerImageURL: String = (UserDefaults.standard.string(forKey: "playerImageURL") ?? "")
+ @AppStorage("playerAudioURL") var playerAudioURL: String = (UserDefaults.standard.string(forKey: "playerAudioURL") ?? "")
+ 
+2. 재생을 위한 변수 전달(버튼의 액션이나 함수로 만들어주세요)
+ playerTitle = 오디오 제목
+ playerImageURL = 이미지 URL
+ playerAudioURL = 오디오 URL
+ playerState = ture
+ */
     var body: some View {
         VStack {
             if playerViewModel.isLongVer {
@@ -24,7 +35,7 @@ struct PlayerView: View {
                     .padding(5)
                     .overlay(
                         HStack {
-                            AsyncImage(url: URL(string: spot.imageUrl)) { image in
+                            AsyncImage(url: playerViewModel.getImageURL()) { image in
                                 image.resizable()
                             } placeholder: {
                                 ProgressView()
@@ -35,7 +46,7 @@ struct PlayerView: View {
                                 playerViewModel.isLongVer .toggle()
                             }
                             .padding(.leading, 13)
-                            Text(spot.title)
+                            Text(playerViewModel.getTitle())
                                 .font(.headline)
                                 .foregroundStyle(Color.white)
                                 .padding(5)
@@ -53,6 +64,8 @@ struct PlayerView: View {
                                 }
                                 Button {
                                     //TODO: 플레이어 닫기 함수
+                                    playerViewModel.pause()
+                                    playerState.toggle()
                                 } label: {
                                     Image(systemName: "xmark")
                                         .font(.title3)
@@ -79,7 +92,7 @@ struct PlayerView: View {
                         .padding(5)
                         .overlay(
                             HStack {
-                                AsyncImage(url: URL(string: spot.imageUrl)) { image in
+                                AsyncImage(url: playerViewModel.getImageURL()) { image in
                                     image.resizable()
                                 } placeholder: {
                                     ProgressView()
@@ -98,6 +111,6 @@ struct PlayerView: View {
     }
 }
 
-#Preview {
-    PlayerView()
-}
+//#Preview {
+//    PlayerView(playerViewModel: PlayerViewModel(title: playerTitle, imageUrl: playerImageURL, audioUrl: playeraudioURL))
+//}

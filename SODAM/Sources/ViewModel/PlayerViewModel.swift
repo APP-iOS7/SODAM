@@ -11,15 +11,21 @@ import AVFoundation
 class PlayerViewModel: ObservableObject {
     @Published var isPlaying: Bool = false
     @Published var isLongVer: Bool = true
+    @Published var title: String
+    @Published var imageUrl: String
     @Published var audioUrl: String
     @Published var audioData: Data?
-    
     var audioPlayer: AVPlayer?
-    init(url: String) {
-        self.audioUrl = url
+    init(title: String, imageUrl: String, audioUrl: String) {
+        self.title = title
+        self.audioUrl = audioUrl
+        self.imageUrl = imageUrl
         setPlayer()
+        play()
     }
 
+    /**플레이어 세팅
+     */
     private func setPlayer() {
         do {
             // 무음모드에서도 재생되도록 설정
@@ -33,14 +39,28 @@ class PlayerViewModel: ObservableObject {
         }
     }
     
+    /**오디오 재생
+     */
     func play() {
         audioPlayer?.play()
         self.isPlaying = true
        }
-
+    
+    /**오디오 정지
+     */
     func pause() {
         audioPlayer?.pause()
         self.isPlaying = false
     }
-
+    
+    /**이미지URL호출
+     */
+    func getImageURL() -> URL? {
+        //모델 변경 시 if let이나 guard let 사용
+            return URL(string: imageUrl)
+    }
+    
+    func getTitle() -> String {
+        return title
+    }
 }
