@@ -17,7 +17,7 @@ final class APIService {
      */
     func loadJSONData() -> [[DetailModel]]? {
         guard let url = Bundle.main.url(forResource: "data", withExtension: "json") else {
-            print("❌ JSON 파일을 찾을 수 없습니다.")
+            print("JSON 파일을 찾을 수 없습니다.")
             return nil
         }
         
@@ -45,7 +45,7 @@ final class APIService {
             
             return sortedGroups
         } catch {
-            print("❌ JSON 로딩 또는 디코딩 중 오류 발생: \(error)")
+            print("JSON 로딩 또는 디코딩 중 오류 발생: \(error)")
             return nil
         }
     }
