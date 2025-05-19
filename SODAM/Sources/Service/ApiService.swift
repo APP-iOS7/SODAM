@@ -11,6 +11,46 @@ final class APIService {
     static let shared = APIService()
     private init() {}
     
+    
+    /** 초등교육콘텐츠 목록 조회
+     * - Returns: 카테고리별로 묶인 이야기 목록
+     */
+    func loadJSONData() -> [[DetailModel]]? {
+        guard let url = Bundle.main.url(forResource: "data", withExtension: "json") else {
+            print("JSON 파일을 찾을 수 없습니다.")
+            return nil
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let response = try decoder.decode(StoryResponse.self, from: data)
+            let items = response.response.body.items.item
+            
+            // category가 nil이거나 빈 문자열이 아닌 경우만 필터링
+            let filteredItems = items.filter {
+                if let category = $0.category {
+                    return !category.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                }
+                return false
+            }
+            
+            // category 기준으로 그룹핑
+            let grouped = Dictionary(grouping: filteredItems, by: { $0.category! })
+            
+            // category 오름차순 정렬 후 배열화
+            let sortedGroups = grouped
+                .sorted { $0.key < $1.key }
+                .map { $0.value }
+            
+            return sortedGroups
+        } catch {
+            print("JSON 로딩 또는 디코딩 중 오류 발생: \(error)")
+            return nil
+        }
+    }
+    
+    
     /** 관광지 기본 정보 목록 조회
      * - Parameters:
      *      - numOfRows: 한 페이지 결과 수
@@ -65,7 +105,7 @@ final class APIService {
         let items = storyResponse.response.body.items.item
         return items
     }
-   
+    
     
     /** 이야기 기본 정보 목록 조회
      * - Parameters:
