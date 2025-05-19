@@ -5,7 +5,7 @@
 //  Created by 박세라 on 5/13/25.
 //  장소 상세 모델
 
-struct DetailModel: Codable { // 관광지 + 이야기 모델 -> 필수 아닌 항목들은 Optional 처리
+struct DetailModel: Codable, Hashable { // 관광지 + 이야기 모델 -> 필수 아닌 항목들은 Optional 처리
     
     init(tid: String?, tlid: String?, stid: String?, stlid: String?, themeCategory: String?, category: String?, addr1: String?, addr2: String?, title: String, mapX: String, mapY: String, audioTitle: String?, script: String?, playTime: String?, audioUrl: String?, langCheck: String?, langCode: String?, imageUrl: String?, createdTime: String?, modifiedtime: String?) {
         self.tid = tid
