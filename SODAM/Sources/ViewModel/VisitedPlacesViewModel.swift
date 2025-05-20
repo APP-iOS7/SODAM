@@ -12,6 +12,8 @@ import SwiftData
 final class VisitedPlacesViewModel: ObservableObject {
     @Published var items: [PlaceItem] = []
     @Published var listItems: [[PlaceItem]] = [[]]
+    @Published var isLoading: Bool = false
+    @Published var selectSegment: SegmentState = .list
     
     private var dataManager: DataManager?
     
