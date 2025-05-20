@@ -45,11 +45,11 @@ struct HomeView: View {
                         VStack {
                             Divider()
                             if !homeViewModel.IsNearSpotEmpty() {
-                                ForEach(homeViewModel.nearSpots, id: \.self) { spot in
+                                ForEach(homeViewModel.GetNearSpots(), id: \.self) { spot in
                                     NavigationLink{
                                         //TODO: DetailView로 연결
                                     } label: {
-                                        NearSpotListCellView(spot: spot)
+                                        NearSpotListCellView(homeViewModel: homeViewModel, spot: spot)
                                     }
                                     Divider()
                                 }
@@ -103,9 +103,6 @@ struct HomeView: View {
                 }
             }
         }
-        .task {
-                await homeViewModel.GetNearSpots()
-            }
     }
 }
 
@@ -114,6 +111,7 @@ struct HomeView: View {
 }
 
 struct NearSpotListCellView: View {
+    var homeViewModel: HomeViewModel
     let spot: DetailModel
     var body: some View {
         HStack(alignment: .top) {
@@ -187,7 +185,7 @@ struct VisitedSpotListCellView: View {
 
 
 struct TodaySpotView: View {
-    let spot: PlaceItem
+    let spot: DetailModel
     var body: some View {
         AsyncImage(url: URL(string: spot.imageUrl ?? "")) { image in
             image.resizable()
