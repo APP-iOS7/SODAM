@@ -120,7 +120,7 @@ private extension MenuView {
     // MenuItem 모델s
     var menus: [MenuItem] {
         [
-            MenuItem(title: "방문한\n관광지", color: Color.secondaryColorYellow,imageName: "mapLocationSet",destination: nil),
+            MenuItem(title: "방문한\n관광지", color: Color.secondaryColorYellow,imageName: "mapLocationSet",destination: AnyView(VisitedPlaceListView())),
             MenuItem(title: "초등교육\n관광지", color: Color.secondaryColorRed, imageName: "Learning",destination: nil)
         ]
     }
