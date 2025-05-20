@@ -45,10 +45,9 @@ struct HomeView: View {
                         VStack {
                             Divider()
                             if !homeViewModel.IsNearSpotEmpty() {
-                                ForEach(homeViewModel.GetNearSpots()) { spot in
+                                ForEach(homeViewModel.nearSpots, id: \.self) { spot in
                                     NavigationLink{
                                         //TODO: DetailView로 연결
-                                        
                                     } label: {
                                         NearSpotListCellView(spot: spot)
                                     }
@@ -70,6 +69,7 @@ struct HomeView: View {
                             Spacer()
                             NavigationLink{
                                 //TODO: 전체보기 목록뷰으로 연결
+//                                VisitedPlaceListView()
                             } label: {
                                 Text("전체보기")
                                     .font(.caption)
@@ -103,6 +103,9 @@ struct HomeView: View {
                 }
             }
         }
+        .task {
+                await homeViewModel.GetNearSpots()
+            }
     }
 }
 
@@ -111,7 +114,7 @@ struct HomeView: View {
 }
 
 struct NearSpotListCellView: View {
-    let spot: PlaceItem
+    let spot: DetailModel
     var body: some View {
         HStack(alignment: .top) {
             AsyncImage(url: URL(string: spot.imageUrl ?? "")) { image in
@@ -125,15 +128,15 @@ struct NearSpotListCellView: View {
                 Text(spot.title)
                     .foregroundStyle(.black)
                     .padding(.top, 2)
-                Text(spot.addr1 ?? "")
+                Text("\(spot.addr1 ?? "") \(spot.addr2 ?? "")")
                     .font(.caption)
                     .foregroundStyle(.gray)
                 HStack {
                     Image(systemName: "mappin.and.ellipse")
                         .font(.footnote)
                         .foregroundStyle(.gray)
-                    if let distance = spot.distance {
-                        Text("\(String(format: "%.1f", distance)) Km")
+                    if let distance = GetDistance(spot: spot) {
+                        Text("\(String(format: "%.2f", distance)) Km")
                             .font(.footnote)
                             .foregroundStyle(.gray)
                     } else {
@@ -170,7 +173,7 @@ struct VisitedSpotListCellView: View {
                     .lineLimit(1)
                     .font(.caption)
                     .foregroundStyle(Color.black)
-                Text(spot.addr1 ?? "")
+                Text("\(spot.addr1 ?? "") \(spot.addr2 ?? "")")
                     .lineLimit(1)
                     .font(.caption2)
                     .foregroundStyle(Color.gray)
