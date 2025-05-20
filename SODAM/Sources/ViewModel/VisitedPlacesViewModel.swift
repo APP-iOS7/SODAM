@@ -41,17 +41,27 @@ final class VisitedPlacesViewModel: ObservableObject {
         }
     }
     
-    // fetch + grouping → [[PlaceItem]] 반환
+    // fetch + grouping → 지역이름으로 정렬한 후 [[PlaceItem]] 반환
     func fetchGroupedItemsByLocation() {
         do {
             let fetchedItems = try dataManager?.fetchPlaceItems() ?? []
             items = fetchedItems
+
             let groupedDict = Dictionary(grouping: fetchedItems) { $0.loc ?? "Unknown" }
-            listItems = groupedDict.values.map { $0 }
+
+            // loc 기준 오름차순 정렬
+            listItems = groupedDict.values
+                .sorted {
+                    let loc1 = $0.first?.loc ?? "Unknown"
+                    let loc2 = $1.first?.loc ?? "Unknown"
+                    return loc1 < loc2
+                }
+
         } catch {
             print("Failed to fetch and group items:", error)
         }
     }
+
 
 }
 
