@@ -6,9 +6,11 @@
 //
 
 import SwiftData
+import Foundation
 
 @Model
-class PlaceItem {
+class PlaceItem: Identifiable {
+    var id = UUID()
     var title: String
     var mapX: String
     var mapY: String
