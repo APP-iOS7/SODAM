@@ -52,7 +52,7 @@ struct KakaoMapView: UIViewRepresentable {
   @Binding var draw: Bool
   let markerCoordinate: CLLocationCoordinate2D?
   var defaultLevel: Int = 17
-
+  
   func makeCoordinator() -> KakaoMapCoordinator {
     KakaoMapCoordinator(
       initialLocation: markerCoordinate,
@@ -89,7 +89,7 @@ struct KakaoMapView: UIViewRepresentable {
       }
     }
   }
-    
+  
   static func dismantleUIView(_ uiView: KMViewContainer, coordinator: KakaoMapCoordinator) {
     coordinator.controller?.pauseEngine()
   }
@@ -102,11 +102,22 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
   private let defaultLevel: Int
   private var initialLocation: CLLocationCoordinate2D?
   private var userPoi: Poi?
-    
+  
   init(initialLocation: CLLocationCoordinate2D?, defaultLevel: Int) {
     self.initialLocation = initialLocation
     self.defaultLevel = defaultLevel
     super.init()
+    
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(sheetHeightChanged(_:)),
+      name: .sheetVisibleHeightChanged,
+      object: nil
+    )
+  }
+  
+  deinit {
+    NotificationCenter.default.removeObserver(self)
   }
   
   func createController(_ view: KMViewContainer) {
@@ -116,6 +127,9 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
   }
   
   func addViews() {
+    // 250519 1755 KTG
+    // 임시 수정.
+//    let defaultPosition = MapPoint(longitude: 127.043638, latitude: 37.555632)
     let coord = initialLocation ?? CLLocationCoordinate2D(latitude:0, longitude:0)
     let defaultPosition: MapPoint = MapPoint(
       longitude: coord.longitude,
@@ -132,12 +146,55 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
   }
   
   func addViewSucceeded(_ viewName: String, viewInfoName: String) {
-    let view = controller?.getView("mapview")
-    view?.viewRect = container!.bounds
+    guard
+      let view = controller?.getView("mapview") as? KakaoMap
+    else {
+      return
+    }
+    
+    view.viewRect = container!.bounds
+    
+    // 250519 0000 KTG
+    // 추가 테스트 후 삭제 예정.
+    //    let centeredUpdate = CameraUpdate.make(
+    //      target: MapPoint(longitude: coord.longitude, latitude: coord.latitude),
+    //      mapView: view
+    //    )
+    //    view.moveCamera(centeredUpdate)
     
     if let coord = initialLocation {
       updateUserPoi(to: coord)
     }
+  }
+  
+  @objc private func sheetHeightChanged(_ note: Notification) {
+    guard
+      let bottomInset = note.object as? CGFloat,
+      let mapView = controller?.getView("mapview") as? KakaoMap
+    else {
+      return
+    }
+    
+    mapView.setMargins(
+      UIEdgeInsets(top:0, left: 0, bottom: bottomInset, right: 0)
+    )
+    
+    let centerPoint: MapPoint
+    if let poi = userPoi {
+      centerPoint = poi.position
+    } else {
+      centerPoint = MapPoint(
+        longitude: initialLocation?.longitude  ?? 0,
+        latitude:  initialLocation?.latitude   ?? 0
+      )
+    }
+    
+    let update = CameraUpdate.make(
+      target:    centerPoint,
+      mapView:   mapView
+    )
+    mapView.moveCamera(update)
+    
   }
   
   func containerDidResized(_ size: CGSize) {
