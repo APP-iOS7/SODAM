@@ -24,7 +24,7 @@ struct SegmentControlsComponent: View {
     @Binding var selectSegment: SegmentState
     let segments: [Segment] = [
         Segment(name: "목록", iconName: "person.fill", state: .list),
-        Segment(name: "지도", iconName: "person.fill", state: .map),
+        Segment(name: "지도", iconName: "map.fill", state: .map),
     ]
     
     var body: some View {
