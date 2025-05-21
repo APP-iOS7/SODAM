@@ -24,12 +24,10 @@ final class UserDefaultsManager {
         }
         
         /**오디오 플레이어를 위한 UserDefaults
-            playerState: 플레이어UI 켜져있으면 true
             playerTitle: 재생할/재생되고 있는 오디오제목
             playerImageURL: 재생할/재생되고 있는 이미지URL
             playeraudioURL: 재생할/재생되고 있는 오디오URL
          */
-        defaults.set(false, forKey: "playerState")
         defaults.set("", forKey: "playerTitle")
         defaults.set("", forKey: "playerImageURL")
         defaults.set("", forKey: "playeraudioURL")

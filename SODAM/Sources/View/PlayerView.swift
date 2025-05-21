@@ -12,10 +12,8 @@ struct PlayerView: View {
     
     @StateObject var playerViewModel: PlayerViewModel
     
-/*    MARK: 플레이어 재생 가이드(ver.0519)
+/*    MARK: 플레이어 재생 가이드(ver.0521)
  1. 뷰에서 변수 세팅
- @AppStorage("playerState") var playerState: Bool = UserDefaults.standard.bool(forKey: "playerState")
-
  @AppStorage("playerTitle") var playerTitle: String = (UserDefaults.standard.string(forKey: "playerTitle") ?? "")
  @AppStorage("playerImageURL") var playerImageURL: String = (UserDefaults.standard.string(forKey: "playerImageURL") ?? "")
  @AppStorage("playerAudioURL") var playerAudioURL: String = (UserDefaults.standard.string(forKey: "playerAudioURL") ?? "")
@@ -24,7 +22,7 @@ struct PlayerView: View {
  playerTitle = 오디오 제목
  playerImageURL = 이미지 URL
  playerAudioURL = 오디오 URL
- playerState = ture
+ sendPlayState(state: true)
  */
     var body: some View {
         VStack {
@@ -65,7 +63,7 @@ struct PlayerView: View {
                                 Button {
                                     //TODO: 플레이어 닫기 함수
                                     playerViewModel.pause()
-                                    playerState.toggle()
+                                    sendPlayState(state: false)
                                 } label: {
                                     Image(systemName: "xmark")
                                         .font(.title3)
