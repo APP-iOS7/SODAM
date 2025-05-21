@@ -18,84 +18,87 @@ struct RegionDetailListView: View {
         VStack {
             SegmentControlsComponent(selectSegment: $viewModel.selectSegment)
             switch viewModel.selectSegment {
-            case .list:
-                if viewModel.isLoading {
-                    ProgressView()
-                }else {
-                    ScrollView {
-                        ForEach(viewModel.regionList, id: \.tid) { item in
-                            tourItem(item: item)
-                            Divider()
+                case .list:
+                    if viewModel.isLoading {
+                        loadingView
+                    }else {
+                        if viewModel.filteredRegionList.isEmpty {
+                            isEmptyView
+                        }else {
+                            ScrollView {
+                                ForEach(viewModel.filteredRegionList, id: \.self) { item in
+                                    tourItem(item: item)
+                                    Divider()
+                                }
+                            }
                         }
                     }
+                case .map:
+                    ScrollView {
+                        Text("Map Page")
+                    }
                 }
-            case .map:
-                ScrollView {
-                    Text("Map Page")
-                }
-            }
         }
         .navigationTitle(viewModel.region.name)
         .navigationBarTitleDisplayMode(.inline)
         .padding()
     }
     
+    // MARK: isLoading이 true일 동안의 View
+    private var loadingView: some View {
+        VStack {
+            ProgressView()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    // MARK: regionList에 데이터가 없을 경우
+    private var isEmptyView: some View {
+        VStack {
+            Text("데이터가 없습니다 ㅠ..ㅠ")
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    // MARK: 지역 관광지 각 Row
     private func tourItem(item: DetailModel) -> some View {
-        guard let title = item.title, let image = item.imageUrl,let addr1 = item.addr1 else { return AnyView(ProgressView()) }
-        print(image)
+        guard let stlid = item.stlid else {return AnyView(ProgressView())}
+
         return AnyView(
             HStack {
-                Image("Seoul")
-                    .resizable()
-                    .aspectRatio(1,contentMode: .fit)
-                    .frame(minWidth: 70, maxHeight: 70)
-                    .clipShape(.rect(cornerRadius: 12))
-                    
+                AsyncImage(url: URL(string: item.imageUrl!)) {
+                    $0.resizable()
+                } placeholder: {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(minWidth: 70, maxHeight: 70)
+                }
+                .aspectRatio(1,contentMode: .fit)
+                .frame(minWidth: 70, maxHeight: 70)
+                .clipShape(.rect(cornerRadius: 12))
+                
                 VStack(alignment: .leading) {
-                    Text(title)
+                    Text(item.title ?? "제목이 없습니다")
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .padding(.bottom, 1)
-                    Text(addr1)
+                    Text(viewModel.allAddress[stlid] ?? "주소가 없습니다")
                         .font(.caption2)
                         .fontWeight(.semibold)
                         .foregroundStyle(Color.black60)
-                        
                     Spacer()
                 }
                 Spacer()
             }
-            .frame(maxWidth: .infinity, maxHeight: 80)
+                .frame(maxWidth: .infinity, maxHeight: 80)
         )
     }
 }
 
 #Preview {
-    RegionDetailListView(region: Region(name: "서울", latitude: 37.5665, longitude: 126.9780, imageName: "Seoul"))
-}
-
-
-class RegionDetailListViewModel: ObservableObject {
-    @Published var region: Region // region 받아오기
-    @Published var selectSegment: SegmentState = .list
-    @Published var regionList: [DetailModel] = []
-    @Published var isLoading: Bool = false
-    
-    init(region: Region) {
-        self.region = region
-        fetchRegionListData()
-    }
-    
-    // MARK: 위치 기반 관광지 데이터 가져오기
-    private func fetchRegionListData() {
-        Task {
-            isLoading = true
-            do {
-                regionList = try await APIService.shared.getThemeLocationBasedList(lng: region.longitude, lat: region.latitude, radius: 10000, numOfRows: 8, pageNo: 1)
-            } catch {
-                print("리스트 불러오기 실패: \(error)")
-            }
-            isLoading = false
-        }
-    }
+    RegionDetailListView(region:
+        Region(name: "서울", latitude: 37.5665, longitude: 126.9780, imageName: "Seoul")
+//        데이터가 없는 경우
+//        Region(name: "강원", latitude: 37.8228, longitude: 128.1555, imageName: "gangwon")
+    )
 }

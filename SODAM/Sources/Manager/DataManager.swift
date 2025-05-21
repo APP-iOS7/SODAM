@@ -25,7 +25,6 @@ final class DataManager {
         if let x = Double(item.mapX), let y = Double(item.mapY) {
             let address = try await APIService.shared.getAddress(x: x, y: y)
             item.loc = address?.response.result?.first?.structure?.level1
-            print(address?.response.result?.first?.structure?.level1 ?? "X🩷X")
             modelContext.insert(item)
             try modelContext.save()
         }
