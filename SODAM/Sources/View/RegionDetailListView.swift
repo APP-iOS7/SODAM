@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import CoreLocation
+import KakaoMapsSDK
 
 struct RegionDetailListView: View {
     @StateObject var viewModel: RegionDetailListViewModel
@@ -34,9 +36,7 @@ struct RegionDetailListView: View {
                         }
                     }
                 case .map:
-                    ScrollView {
-                        Text("Map Page")
-                    }
+                RegionMapView(regionLocation: CLLocationCoordinate2D(latitude: viewModel.region.latitude, longitude: viewModel.region.longitude), tourList: viewModel.filteredRegionList)
                 }
         }
         .navigationTitle(viewModel.region.name)
@@ -63,7 +63,6 @@ struct RegionDetailListView: View {
     // MARK: 지역 관광지 각 Row
     private func tourItem(item: DetailModel) -> some View {
         guard let stlid = item.stlid else {return AnyView(ProgressView())}
-
         return AnyView(
             HStack {
                 AsyncImage(url: URL(string: item.imageUrl!)) {
@@ -78,7 +77,7 @@ struct RegionDetailListView: View {
                 .clipShape(.rect(cornerRadius: 12))
                 
                 VStack(alignment: .leading) {
-                    Text(item.title ?? "제목이 없습니다")
+                    Text(item.title)
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .padding(.bottom, 1)
@@ -97,7 +96,7 @@ struct RegionDetailListView: View {
 
 #Preview {
     RegionDetailListView(region:
-        Region(name: "서울", latitude: 37.5665, longitude: 126.9780, imageName: "Seoul")
+        Region(name: "서울", latitude: 37.5665, longitude: 126.9780, imageName: "seoul")
 //        데이터가 없는 경우
 //        Region(name: "강원", latitude: 37.8228, longitude: 128.1555, imageName: "gangwon")
     )
