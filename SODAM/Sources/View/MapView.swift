@@ -129,7 +129,7 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
   func addViews() {
     // 250519 1755 KTG
     // 임시 수정.
-    //    let defaultPosition = MapPoint(longitude: 127.043638, latitude: 37.555632)
+//    let defaultPosition = MapPoint(longitude: 127.043638, latitude: 37.555632)
     let coord = initialLocation ?? CLLocationCoordinate2D(latitude:0, longitude:0)
     let defaultPosition: MapPoint = MapPoint(
       longitude: coord.longitude,
