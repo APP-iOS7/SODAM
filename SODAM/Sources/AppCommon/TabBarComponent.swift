@@ -22,7 +22,7 @@ struct TabBarComponent: View {
             Group {
                 switch selectedTab {
                 case .home:
-                    HomeTestView()
+                    HomeView()
                 case .navigation:
 //                    MapView()
                     // 250515 1010 KTG

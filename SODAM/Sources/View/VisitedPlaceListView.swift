@@ -10,25 +10,42 @@
 import SwiftUI
 import SwiftData
 
-public struct VisitedPlaceListView: View {
+struct VisitedPlaceListView: View {
     @Environment(\.modelContext) private var modelContext
-    @StateObject private var testViewModel = VisitedPlacesViewModel()
-
+    @StateObject private var viewModel = VisitedPlacesViewModel()
     
-    public var body: some View {
+    var body: some View {
         VStack {
-            if let testData = testViewModel.listItems.first {
-                Text("🩷\(testData)")
-            } else {
-                Text("테스트 데이터를 불러오는 중입니다.")
+            SegmentControlsComponent(selectSegment: $viewModel.selectSegment)
+            switch viewModel.selectSegment {
+            case .list:
+                if viewModel.isLoading {
+                    loadingView
+                } else {
+                    if viewModel.listItems.isEmpty {
+                        isEmptyView
+                    } else {
+                        ScrollView(.vertical, showsIndicators: false) {
+                            VStack(spacing: 20) {
+                                ForEach(viewModel.listItems, id: \.self) { item in
+                                    placeItemList(listItems: item)
+                                }
+                            }.padding()
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                }
+            case .map:
+                ScrollView {
+                    Text("Map Page")
+                }
             }
         }
+        .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            testViewModel.setContext(modelContext)
+            viewModel.setContext(modelContext)
             //fetchDummyData()
-            //testViewModel.fetchItems()
-            testViewModel.fetchGroupedItemsByLocation()
-            // print("🩷\(testViewModel.items.count)")
+            viewModel.fetchGroupedItemsByLocation()
         }
     }
     
@@ -40,7 +57,95 @@ public struct VisitedPlaceListView: View {
             PlaceItem(title: "공신당", mapX: "126.9940848", mapY: "37.5742758", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/341.jpg")
         ]
         for item in items {
-            testViewModel.addItem(item:item)
+            viewModel.addItem(item:item)
         }
     }
+    
+    // MARK: isLoading이 true일 동안의 View
+    private var loadingView: some View {
+        VStack {
+            ProgressView()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    // MARK: regionList에 데이터가 없을 경우
+    private var isEmptyView: some View {
+        VStack {
+            Text("데이터가 없습니다 ㅠ..ㅠ")
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    private func placeItemList(listItems: [PlaceItem]) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if let locationName = listItems.first?.loc {
+                Text(locationName)
+                    .font(Font.system(size: 20, weight: .bold))
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(listItems) { item in
+                            // MARK: 상세화면으로 모델링 해서 이동
+                            let detailItem = DetailModel(tid: nil, tlid: nil, stid: nil, stlid: nil, themeCategory: nil, category: nil, addr1: item.addr1, addr2: item.addr2, title: item.title, mapX: item.mapX, mapY: item.mapY, audioTitle: item.audioTitle, script: item.script, playTime: item.playTime, audioUrl: item.audioURL, langCheck: nil, langCode: item.lanCode, imageUrl: item.imageUrl, createdTime: nil, modifiedtime: nil)
+                            NavigationLink(destination: DetailView(item: detailItem )) {
+                                placeItem(item: item)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: 지역 관광지 각 Row
+    private func placeItem(item: PlaceItem) -> some View {
+        return AnyView(
+            VStack(spacing: 8) {
+                Spacer()
+                    .frame(height: 8)
+                // 원형 이미지
+                AsyncImage(url: URL(string: item.imageUrl ?? "")) { phase in
+                    if let image = phase.image {
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 80, height: 80)
+                            .clipShape(Circle())
+                    } else if phase.error != nil {
+                        Image(systemName: "photo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.gray)
+                            .frame(width: 80, height: 80)
+                    } else {
+                        ProgressView()
+                            .frame(width: 80, height: 80)
+                    }
+                }
+                .overlay(
+                    Circle()
+                        .stroke(Color.white, lineWidth: 4)
+                        .shadow(radius: 3)
+                )
+                Spacer()
+                // 관광지 이름
+                Text(item.title)
+                    .foregroundStyle(Color.black)
+                    .font(.system(size: 14, weight: .bold))
+                Spacer()
+                    .frame(height: 8)
+            }
+            .frame(maxWidth: 100, maxHeight: 120)
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.white)
+                    .stroke(Color.black40, lineWidth: 1)
+                )
+            )
+        }
+}
+
+#Preview {
+    VisitedPlaceListView()
 }
