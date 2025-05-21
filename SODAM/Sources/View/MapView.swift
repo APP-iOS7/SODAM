@@ -190,8 +190,8 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
     }
     
     let update = CameraUpdate.make(
-      target:    centerPoint,
-      mapView:   mapView
+      target: centerPoint,
+      mapView: mapView
     )
     mapView.moveCamera(update)
     

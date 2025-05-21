@@ -25,7 +25,7 @@ struct StartView: View {
       // safeTop : 62
       // safeBottom : 0
       let totalHeight = proxy.size.height
-//      let safeTop = proxy.safeAreaInsets.top
+      //      let safeTop = proxy.safeAreaInsets.top
       let safeBottom = proxy.safeAreaInsets.bottom
       
       let closedHeight = totalHeight * 0.03
@@ -55,8 +55,13 @@ struct StartView: View {
             DragGesture()
               .onChanged { value in
                 let delta = value.translation.height - lastDragValue
-                sheetOffset += delta
+                sheetOffset = sheetOffset + delta
                 lastDragValue = value.translation.height
+                
+                sheetOffset = min(
+                  max(sheetOffset, openFullOffset),
+                  closedOffset
+                )
               }
               .onEnded { _ in
                 let snapPoints = [closedOffset, openMidOffset, openFullOffset]
