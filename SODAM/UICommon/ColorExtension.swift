@@ -3,24 +3,28 @@ import SwiftUICore
 public extension Color {
     // MARK: PrimaryColor
     static var primaryColor: Color {
-        Color(hex: "58CC02")
+        Color("AccentColor")
     }
     
     // MARK: Secondary Color
     static var secondaryColorBlue: Color {
-        Color(hex: "1CB0F6")
+        Color("SecondaryColorBlue")
     }
     
     static var secondaryColorPurple: Color {
-        Color(hex: "9A5FFF")
+        Color("SecondaryColorPurple")
     }
     
     static var secondaryColorYellow: Color {
-        Color(hex: "FFC800")
+        Color("SecondaryColorYellow")
     }
     
     static var secondaryColorRed: Color {
-        Color(hex: "FF4B4B")
+        Color("SecondaryColorRed")
+    }
+    
+    static var secondaryColorBlack: Color {
+        Color("SecondaryColorBlack")
     }
     
     // MARK: Error 색상
