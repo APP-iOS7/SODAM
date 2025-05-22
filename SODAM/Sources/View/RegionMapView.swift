@@ -28,30 +28,36 @@ struct RegionMapView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                KakaoMapView(
-                    draw: $draw,
-                    markerCoordinate: regionLocation,
-                    defaultLevel: 10,
-                    tourList: tourList,
-                    onPoiTapped: { tour in
-                        selectTour = tour
-                        isDetailActive = true
+            NavigationStack {
+                ZStack {
+                    KakaoMapView(
+                        draw: $draw,
+                        markerCoordinate: regionLocation,
+                        defaultLevel: 10,
+                        tourList: tourList,
+                        onPoiTapped: { tour in
+                            selectTour = tour
+                            isDetailActive = true
+                        }
+                    )
+                    
+                    NavigationLink(
+                        destination: Group {
+                            if let tour = selectTour {
+                                DetailView(item: tour)
+                            } else {
+                                EmptyView()
+                            }
+                        },
+                        isActive: $isDetailActive
+                    ) {
+                        EmptyView()
                     }
-                )
-            }
-            .navigationDestination(isPresented: $isDetailActive) {
-                if let tour = selectTour {
-                    DetailView(item: tour)
-                } else {
-                    // fallback (안 뜨게 하고 싶으면 EmptyView())
-                    EmptyView()
+                    .hidden()
                 }
+                .onAppear { draw = true }
+                .onDisappear { draw = false }
+                .ignoresSafeArea()
             }
-            .onAppear { draw = true }
-            .onDisappear { draw = false }
-            .ignoresSafeArea()
         }
-    }
 }
