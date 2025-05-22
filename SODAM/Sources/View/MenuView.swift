@@ -42,7 +42,7 @@ struct MenuView: View {
                             .padding(.vertical, 8)
                         }
                     }
-                    .foregroundStyle(.black)
+                    .foregroundStyle(.foreground)
                     .padding()
                     .frame(width: geo.size.width, height: geo.size.height)
                 }

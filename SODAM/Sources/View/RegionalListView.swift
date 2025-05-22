@@ -9,6 +9,10 @@ import SwiftUI
 import UICommonExtension
 
 struct RegionalListView: View {
+    // viewModel 을 위한 싱글 톤
+    let cache = RegionDataCacheManager.shared
+    
+    // grid
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())
@@ -19,7 +23,7 @@ struct RegionalListView: View {
             LazyVGrid(columns: columns, spacing: 20) {
                 ForEach(regions) { region in
                     NavigationLink(
-                        destination: RegionDetailListView(region: region)
+                        destination: RegionDetailListView(viewModel: cache.get(region: region))
                     ) {
                         gridItem(region: region, geo: geo)
                     }
