@@ -37,7 +37,7 @@ struct MenuView: View {
                                 Spacer()
                             }
                             .frame(maxWidth: .infinity, maxHeight: geo.size.height * 0.1)
-                            .background(Color.black60.opacity(0.4))
+                            .background(Color.secondaryColorBlack)
                             .clipShape(.rect(cornerRadius: 18))
                             .padding(.vertical, 8)
                         }
@@ -64,7 +64,7 @@ struct MenuView: View {
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: maxHeight)
-            .background(color.opacity(0.4))
+            .background(color)
             .clipShape(.rect(cornerRadius: 18))
         }
     }
@@ -93,7 +93,7 @@ struct MenuView: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: geo.size.height * 0.2)
-            .background(menu.color.opacity(0.4))
+            .background(menu.color)
             .clipShape(.rect(cornerRadius: 18))
         }
     }
