@@ -1,39 +1,21 @@
-//
-//  PlayerView.swift
-//  SODAM
-//
-//  Created by 최하진 on 5/14/25.
-//
-
 import SwiftUI
 
 struct PlayerView: View {
-    @AppStorage("playerState") var playerState: Bool = UserDefaults.standard.bool(forKey: "playerState")
     
-    @StateObject var playerViewModel: PlayerViewModel
-    
-/*    MARK: 플레이어 재생 가이드(ver.0521)
- 1. 뷰에서 변수 세팅
- @AppStorage("playerTitle") var playerTitle: String = (UserDefaults.standard.string(forKey: "playerTitle") ?? "")
- @AppStorage("playerImageURL") var playerImageURL: String = (UserDefaults.standard.string(forKey: "playerImageURL") ?? "")
- @AppStorage("playerAudioURL") var playerAudioURL: String = (UserDefaults.standard.string(forKey: "playerAudioURL") ?? "")
- 
-2. 재생을 위한 변수 전달(버튼의 액션이나 함수로 만들어주세요)
- playerTitle = 오디오 제목
- playerImageURL = 이미지 URL
- playerAudioURL = 오디오 URL
- sendPlayState(state: true)
+/*    MARK: 플레이어 재생 가이드(ver.0522)
+    -버튼의 액션에 만들어주세요
+    sendPlayState(state: true, spot: DetailModel)
  */
     var body: some View {
         VStack {
-            if playerViewModel.isLongVer {
+            if PlayerViewModel.shared.isLongVer {
                 RoundedRectangle(cornerRadius: 15)
                     .fill(Color.primaryColor.opacity(0.8))
                     .frame(height: 60)
                     .padding(5)
                     .overlay(
                         HStack {
-                            AsyncImage(url: playerViewModel.getImageURL()) { image in
+                            AsyncImage(url: PlayerViewModel.shared.getImageURL()) { image in
                                 image.resizable()
                             } placeholder: {
                                 ProgressView()
@@ -41,18 +23,18 @@ struct PlayerView: View {
                             .cornerRadius(10)
                             .frame(width: 45,height: 45)
                             .onTapGesture {
-                                playerViewModel.isLongVer .toggle()
+                                PlayerViewModel.shared.isLongVer .toggle()
                             }
                             .padding(.leading, 13)
-                            Text(playerViewModel.getTitle())
+                            Text(PlayerViewModel.shared.getTitle())
                                 .font(.headline)
                                 .foregroundStyle(Color.white)
                                 .padding(5)
                             Spacer()
                             
-                            if playerViewModel.isPlaying {
+                            if PlayerViewModel.shared.isPlaying {
                                 Button {
-                                    playerViewModel.pause()
+                                    PlayerViewModel.shared.pause()
                                 } label: {
                                     Image(systemName: "pause.fill")
                                         .font(.title)
@@ -61,8 +43,7 @@ struct PlayerView: View {
                                         
                                 }
                                 Button {
-                                    //TODO: 플레이어 닫기 함수
-                                    playerViewModel.pause()
+                                    PlayerViewModel.shared.pause()
                                     sendPlayState(state: false)
                                 } label: {
                                     Image(systemName: "xmark")
@@ -72,7 +53,7 @@ struct PlayerView: View {
                                 }
                             } else {
                                 Button {
-                                    playerViewModel.play()
+                                    PlayerViewModel.shared.play()
                                 } label: {
                                     Image(systemName: "play.fill")
                                         .font(.title)
@@ -90,7 +71,7 @@ struct PlayerView: View {
                         .padding(5)
                         .overlay(
                             HStack {
-                                AsyncImage(url: playerViewModel.getImageURL()) { image in
+                                AsyncImage(url: PlayerViewModel.shared.getImageURL()) { image in
                                     image.resizable()
                                 } placeholder: {
                                     ProgressView()
@@ -98,7 +79,7 @@ struct PlayerView: View {
                                 .cornerRadius(10)
                                 .frame(width: 45,height: 45)
                                 .onTapGesture {
-                                    playerViewModel.isLongVer.toggle()
+                                    PlayerViewModel.shared.isLongVer.toggle()
                                 }
                             }
                         )
@@ -108,7 +89,3 @@ struct PlayerView: View {
         }
     }
 }
-
-//#Preview {
-//    PlayerView(playerViewModel: PlayerViewModel(title: playerTitle, imageUrl: playerImageURL, audioUrl: playeraudioURL))
-//}
