@@ -12,8 +12,8 @@ import KakaoMapsSDK
 struct RegionDetailListView: View {
     @StateObject var viewModel: RegionDetailListViewModel
     
-    init(region: Region) {
-        _viewModel = StateObject(wrappedValue: .init(region: region))
+    init(viewModel: RegionDetailListViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
     
     var body: some View {
@@ -29,7 +29,9 @@ struct RegionDetailListView: View {
                         }else {
                             ScrollView {
                                 ForEach(viewModel.filteredRegionList, id: \.self) { item in
-                                    tourItem(item: item)
+                                    NavigationLink(destination: DetailView(item: item)) {
+                                        tourItem(item: item)
+                                    }
                                     Divider()
                                 }
                             }
@@ -55,7 +57,9 @@ struct RegionDetailListView: View {
     // MARK: regionList에 데이터가 없을 경우
     private var isEmptyView: some View {
         VStack {
-            Text("데이터가 없습니다 ㅠ..ㅠ")
+            Image("NoneData")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -89,14 +93,14 @@ struct RegionDetailListView: View {
                 }
                 Spacer()
             }
-                .frame(maxWidth: .infinity, maxHeight: 80)
+            .frame(maxWidth: .infinity, maxHeight: 80)
+            .foregroundStyle(.foreground)
         )
     }
 }
 
 #Preview {
-    RegionDetailListView(region:
-        Region(name: "서울", latitude: 37.5665, longitude: 126.9780, imageName: "seoul")
+    RegionDetailListView(viewModel: RegionDataCacheManager.shared.get(region: Region(name: "서울", latitude: 37.5665, longitude: 126.9780, imageName: "seoul"))
 //        데이터가 없는 경우
 //        Region(name: "강원", latitude: 37.8228, longitude: 128.1555, imageName: "gangwon")
     )
