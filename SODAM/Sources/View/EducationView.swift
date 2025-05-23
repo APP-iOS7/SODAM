@@ -24,7 +24,7 @@ struct EducationView: View {
                         RoundedRectangle(cornerRadius: 10)
                             .frame(height: 150)
                             .padding([.leading, .trailing], 5)
-                            .foregroundStyle(education.color.opacity(0.4))
+                            .foregroundStyle(education.color)
                             .overlay(
                                 ZStack {
                                     HStack {
@@ -34,7 +34,6 @@ struct EducationView: View {
                                             Text("\(education.name)")
                                                 .font(.title)
                                                 .foregroundStyle(Color.textColor)
-                                            
                                         }
                                         .padding(10)
                                     }
