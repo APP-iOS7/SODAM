@@ -46,7 +46,7 @@ struct EducationListCellView: View {
                 Spacer()
             }
             HStack(alignment: .center) {
-                Text("\(String(format: "%02d", (Int(spot.playTime ?? 0) ?? 0) / 60)):\(String(format: "%02d", Int(spot.playTime ?? 0) ?? 0 % 60))")
+                Text("\(String(format: "%02d", (Int(spot.playTime ?? "0") ?? 0) / 60)):\(String(format: "%02d", Int(spot.playTime ?? "0") ?? 0 % 60))")
                 Image(systemName: "play.circle")
             }
             .foregroundStyle(scheme == .light ? Color.black : Color.white)
