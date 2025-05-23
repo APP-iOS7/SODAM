@@ -37,7 +37,7 @@ struct EducationListCellView: View {
                 .cornerRadius(10)
                 VStack(alignment: .leading) {
                     Text(spot.title)
-                        .foregroundStyle(scheme == .light ? Color.black : Color.white)
+                        .foregroundStyle(Color.textColor)
                     Text(spot.addr1 ?? "" )
                         .font(.caption)
                         .foregroundStyle(.gray)
@@ -49,7 +49,7 @@ struct EducationListCellView: View {
                 Text("\(String(format: "%02d", (Int(spot.playTime ?? "0") ?? 0) / 60)):\(String(format: "%02d", Int(spot.playTime ?? "0") ?? 0 % 60))")
                 Image(systemName: "play.circle")
             }
-            .foregroundStyle(scheme == .light ? Color.black : Color.white)
+            .foregroundStyle(Color.textColor)
             .padding(.trailing, 30)
         }
         .padding([.leading, .trailing], 5)

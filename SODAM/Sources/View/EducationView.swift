@@ -17,32 +17,32 @@ struct EducationView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                    ForEach(educations) { education in
-                        NavigationLink {
-                            EducationListView(category: education.category)
-                        } label: {
-                            RoundedRectangle(cornerRadius: 10)
-                                .frame(height: 150)
-                                .padding([.leading, .trailing], 5)
-                                .foregroundStyle(education.color.opacity(0.4))
-                                .overlay(
-                                    ZStack {
-                                        HStack {
+                ForEach(educations) { education in
+                    NavigationLink {
+                        EducationListView(category: education.category)
+                    } label: {
+                        RoundedRectangle(cornerRadius: 10)
+                            .frame(height: 150)
+                            .padding([.leading, .trailing], 5)
+                            .foregroundStyle(education.color.opacity(0.4))
+                            .overlay(
+                                ZStack {
+                                    HStack {
+                                        Spacer()
+                                        VStack {
                                             Spacer()
-                                            VStack {
-                                                Spacer()
-                                                Text("\(education.name)")
-                                                    .font(.title)
-                                                    .foregroundStyle(Color.black)
-                                                
-                                            }
-                                            .padding(10)
+                                            Text("\(education.name)")
+                                                .font(.title)
+                                                .foregroundStyle(Color.textColor)
+                                            
                                         }
                                         .padding(10)
                                     }
-                                )
-                        }
+                                    .padding(10)
+                                }
+                            )
                     }
+                }
             }
         }
     }
