@@ -58,6 +58,9 @@ public extension Color {
     }
     
     // white는 제거 했습니다. Color.white를 사용해주세요
+    
+    //MARK: NavigationLink label 적용 시 다크모드/라이트모드에 맞게 색상 지원합니다.
+    static let textColor: Color = Color("textColor")
 }
 
 
