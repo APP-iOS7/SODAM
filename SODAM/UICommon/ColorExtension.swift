@@ -57,13 +57,25 @@ public extension Color {
         Color(hex: "F8F8F8")
     }
     
-    // white는 제거 했습니다. Color.white를 사용해주세요
-    
     //MARK: NavigationLink label 적용 시 다크모드/라이트모드에 맞게 색상 지원합니다.
     static let textColor: Color = Color("textColor")
 }
 
-
+public extension Color {
+    // MARK: Segment List. 색상
+    // 배경
+    static func segmentBackground(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "313131") : Color(hex: "EEEEEE")
+    }
+    // FOCUS 버튼 색상
+    static func segmentFocusButton(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "555555") : Color(hex: "FFFFFF")
+    }
+    // 글자 색상
+    static var segmentTextStyle: Color {
+        Color(hex: "B7B7B7")
+    }
+}
 
 public extension Color {
     
