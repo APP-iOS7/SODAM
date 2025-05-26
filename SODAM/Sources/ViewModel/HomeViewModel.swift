@@ -1,11 +1,5 @@
-//
-//  HomeViewModel.swift
-//  SODAM
-//
-//  Created by 최하진 on 5/14/25.
-//
-
 import Foundation
+import Combine
 import SwiftData
 import SwiftUI
 import CoreLocation
@@ -27,6 +21,10 @@ class HomeViewModel: ObservableObject {
             $0.audioUrl?.isEmpty == false
         }
     }
+    
+    @Published var playerState: Bool = false
+    private var cancellables: Set<AnyCancellable> = []
+    
     init() {
 //        self.todaySpot = PlaceItem(title: "", mapX: "", mapY: "")
 //        self.nearSpots = [
@@ -39,6 +37,10 @@ class HomeViewModel: ObservableObject {
             PlaceItem(title: "공신당", mapX: "126.9940848", mapY: "37.5742758", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/341.jpg", addr1: "경상북도 경주시")
         ]
         fetchSpots()
+        
+        notificationSubject.sink {[weak self] (model, state) in
+            self?.playerState = state
+        }.store(in: &cancellables)
     }
     
     private func fetchSpots() {
