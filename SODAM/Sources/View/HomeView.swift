@@ -54,7 +54,7 @@ struct HomeView: View {
                             Spacer()
                             NavigationLink{
                                 //TODO: 전체보기 목록뷰으로 연결
-//                                VisitedPlaceListView()
+                                //                                VisitedPlaceListView()
                             } label: {
                                 Text("전체보기")
                                     .font(.caption)
@@ -81,10 +81,12 @@ struct HomeView: View {
                     .padding([.leading,.trailing], 15)
                     
                     //TODO: 조건문 필요-Player가 켜져있을 떄만 필요한 부분입니다.
-                    RoundedRectangle(cornerRadius: 15)
-                        .fill(Color.clear)
-                        .frame(height: 20)
-                        .padding(5)
+                    if homeViewModel.playerState {
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(Color.clear)
+                            .frame(height: 20)
+                            .padding(5)
+                    }
                 }
             }
         }

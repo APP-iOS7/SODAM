@@ -123,6 +123,7 @@ struct DetailButtonView: View {
                     Button {
                         print("play button clicked")
                         // TODO: 플레이어 재생
+                        sendPlayState(state: true, spot: model)
                     } label: {
                         Image(systemName: "play.circle")
                             .resizable()
