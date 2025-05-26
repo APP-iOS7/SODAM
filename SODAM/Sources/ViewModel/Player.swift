@@ -1,11 +1,10 @@
 import Foundation
 import AVFoundation
 
-class PlayerViewModel: ObservableObject {
-    static let shared = PlayerViewModel()
+class Player: ObservableObject {
+    static let shared = Player()
     
-    @Published var isPlaying: Bool = false
-    @Published var isLongVer: Bool = true
+    @Published var isPlaying: Bool = false 
     @Published var audioData: Data?
     @Published var playModel: DetailModel? {
         didSet {
@@ -13,11 +12,11 @@ class PlayerViewModel: ObservableObject {
                 setPlayer()
                 play()
             }
-                }
+        }
     }
     
     var audioPlayer: AVPlayer?
-
+    
     /**플레이어 세팅*/
     private func setPlayer() {
         do {
@@ -33,13 +32,13 @@ class PlayerViewModel: ObservableObject {
     }
     
     /**오디오 재생*/
-    func play() {
+    final func play() {
         audioPlayer?.play()
         self.isPlaying = true
-       }
+    }
     
     /**오디오 정지*/
-    func pause() {
+    final func pause() {
         audioPlayer?.pause()
         self.isPlaying = false
     }
@@ -47,17 +46,13 @@ class PlayerViewModel: ObservableObject {
     /**이미지URL호출
      * - Returns: 이미지 URL
      */
-    func getImageURL() -> URL? {
+    final func getImageURL() -> URL? {
         //모델 변경 시 if let이나 guard let 사용
         return URL(string: playModel?.imageUrl ?? "")
     }
     
-    func getTitle() -> String {
+    final func getTitle() -> String {
         return playModel?.title ?? ""
     }
-    
-    final func close() {
-        pause()
-        sendPlayState(state: false)
-    }
 }
+

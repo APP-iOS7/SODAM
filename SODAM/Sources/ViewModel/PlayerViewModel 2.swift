@@ -1,3 +1,11 @@
+//
+//  PlayerViewModel 2.swift
+//  SODAM
+//
+//  Created by 최하진 on 5/23/25.
+//
+
+
 import Foundation
 import AVFoundation
 
@@ -54,10 +62,5 @@ class PlayerViewModel: ObservableObject {
     
     func getTitle() -> String {
         return playModel?.title ?? ""
-    }
-    
-    final func close() {
-        pause()
-        sendPlayState(state: false)
     }
 }

@@ -6,16 +6,17 @@ struct PlayerView: View {
     -버튼의 액션에 만들어주세요
     sendPlayState(state: true, spot: DetailModel)
  */
+    @StateObject var playerViewModel = PlayerViewModel.shared
     var body: some View {
         VStack {
-            if PlayerViewModel.shared.isLongVer {
+            if playerViewModel.isLongVer {
                 RoundedRectangle(cornerRadius: 15)
                     .fill(Color.primaryColor.opacity(0.8))
                     .frame(height: 60)
                     .padding(5)
                     .overlay(
                         HStack {
-                            AsyncImage(url: PlayerViewModel.shared.getImageURL()) { image in
+                            AsyncImage(url: playerViewModel.getImageURL()) { image in
                                 image.resizable()
                             } placeholder: {
                                 ProgressView()
@@ -23,44 +24,45 @@ struct PlayerView: View {
                             .cornerRadius(10)
                             .frame(width: 45,height: 45)
                             .onTapGesture {
-                                PlayerViewModel.shared.isLongVer .toggle()
+                                playerViewModel.isLongVer = false
                             }
                             .padding(.leading, 13)
-                            Text(PlayerViewModel.shared.getTitle())
+                            Text(playerViewModel.getTitle())
+                                .lineLimit(1)
                                 .font(.headline)
                                 .foregroundStyle(Color.white)
                                 .padding(5)
                             Spacer()
                             
-                            if PlayerViewModel.shared.isPlaying {
+                            if playerViewModel.isPlaying {
                                 Button {
-                                    PlayerViewModel.shared.pause()
+                                    playerViewModel.pause()
                                 } label: {
                                     Image(systemName: "pause.fill")
                                         .font(.title)
                                         .foregroundStyle(Color.white)
                                         .padding(.trailing, 10)
-                                        
                                 }
-                                Button {
-                                    PlayerViewModel.shared.pause()
-                                    sendPlayState(state: false)
-                                } label: {
-                                    Image(systemName: "xmark")
-                                        .font(.title3)
-                                        .foregroundStyle(Color.white)
-                                        .padding(.trailing, 30)
-                                }
+
                             } else {
                                 Button {
-                                    PlayerViewModel.shared.play()
+                                    playerViewModel.play()
                                 } label: {
                                     Image(systemName: "play.fill")
                                         .font(.title)
                                         .foregroundStyle(Color.white)
-                                        .padding(.trailing, 30)
+                                        .padding(.trailing, 10)
                                 }
                             }
+                            Button {
+                                playerViewModel.close()
+                            } label: {
+                                Image(systemName: "xmark")
+                                    .font(.title3)
+                                    .foregroundStyle(Color.white)
+                                    .padding(.trailing, 30)
+                            }
+                            
                         }
                     )
             } else {
@@ -71,7 +73,7 @@ struct PlayerView: View {
                         .padding(5)
                         .overlay(
                             HStack {
-                                AsyncImage(url: PlayerViewModel.shared.getImageURL()) { image in
+                                AsyncImage(url: playerViewModel.getImageURL()) { image in
                                     image.resizable()
                                 } placeholder: {
                                     ProgressView()
@@ -79,7 +81,7 @@ struct PlayerView: View {
                                 .cornerRadius(10)
                                 .frame(width: 45,height: 45)
                                 .onTapGesture {
-                                    PlayerViewModel.shared.isLongVer.toggle()
+                                    playerViewModel.isLongVer = true
                                 }
                             }
                         )
