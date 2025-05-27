@@ -47,7 +47,7 @@ extension UserLocation: CLLocationManagerDelegate {
       case .authorizedWhenInUse, .authorizedAlways:
         manager.startUpdatingLocation()
       case .denied, .restricted:
-        print("위치 권한이 거부되었습니다.")
+        print("[D]위치 권한이 거부되었습니다.")
       case .notDetermined:
         manager.requestWhenInUseAuthorization()
       @unknown default:
@@ -63,7 +63,7 @@ extension UserLocation: CLLocationManagerDelegate {
   }
   
   func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-    print("위치 업데이트 오류:", error.localizedDescription)
+    print("[D]위치 업데이트 오류:", error.localizedDescription)
   }
 }
 

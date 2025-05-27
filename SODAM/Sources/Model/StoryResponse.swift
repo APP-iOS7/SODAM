@@ -20,6 +20,11 @@ struct StoryResponseBody: Codable {
 
 struct StoryBody: Codable {
     let items: StoryItems
+  
+    // 250526 KTG
+    let numOfRows: Int
+    let pageNo: Int
+    let totalCount: Int
 }
 
 struct StoryItems: Codable {
