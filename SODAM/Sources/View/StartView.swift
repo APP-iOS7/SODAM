@@ -14,6 +14,7 @@ extension Notification.Name {
 }
 
 struct StartView: View {
+  @StateObject private var viewModel = StartViewModel()
   @EnvironmentObject private var userLocation: UserLocation
   @State private var sheetOffset: CGFloat = 0
   @State private var lastDragValue: CGFloat = 0
@@ -25,7 +26,7 @@ struct StartView: View {
       // safeTop : 62
       // safeBottom : 0
       let totalHeight = proxy.size.height
-      //      let safeTop = proxy.safeAreaInsets.top
+//      let safeTop = proxy.safeAreaInsets.top
       let safeBottom = proxy.safeAreaInsets.bottom
       
       let closedHeight = totalHeight * 0.03
@@ -48,7 +49,7 @@ struct StartView: View {
             )
           }
         
-        NearTouristSpotView()
+        NearTouristSpotView(viewModel: viewModel)
           .frame(height: totalHeight)
           .offset(y: sheetOffset)
           .gesture(
@@ -80,7 +81,6 @@ struct StartView: View {
       }
     }
   }
-  
 }
 
 //#Preview {
