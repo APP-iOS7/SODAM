@@ -25,16 +25,16 @@ public struct ContentView: View {
                                     }
                                 }
                                 .onEnded { gesture in
-                                        if gesture.translation.height <= -(geo.size.height / 2) + (geo.size.height / 6) {
-                                            offset.height = -(geo.size.height / 2) + (geo.size.height / 6)
+                                    if gesture.translation.height <= -(geo.size.height / 2) + (geo.size.height / 11) {
+                                        offset.height = -(geo.size.height / 2) + (geo.size.height / 11)
                                         } else if gesture.translation.height >= geo.size.height / 2.6 {
                                             offset.height = geo.size.height / 2.6
                                         }
                                     if !PlayerViewModel.shared.isLongVer {
                                         if gesture.translation.width <= 0 {
                                             offset.width = 0
-                                        } else if gesture.translation.width >= (geo.size.width * 0.9) {
-                                            offset.width = (geo.size.width * 0.9) - 15
+                                        } else if gesture.translation.width >= (geo.size.width - 70) {
+                                            offset.width = (geo.size.width - 70)
                                         }
                                     }
                                 }
