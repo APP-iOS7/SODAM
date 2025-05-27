@@ -1,21 +1,4 @@
-//
-//  HomeView.swift
-//  SODAM
-//
-//  Created by 최하진 on 5/13/25.
-//
-
 import SwiftUI
-import SwiftData
-
-struct Spot: Identifiable, Hashable {
-    var title: String
-    var address: String
-    var position: Double
-    var imageUrl: String  = "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/9072.jpg"
-    var audioTitle: String? = nil
-    let id: UUID = UUID()
-}
 
 struct HomeView: View {
     @StateObject private var homeViewModel: HomeViewModel = HomeViewModel()
@@ -25,6 +8,7 @@ struct HomeView: View {
                 VStack {
                     NavigationLink{
                         //TODO: DetailView로 연결
+                        DetailView(item: homeViewModel.GetTodaySpot())
                     } label: {
                         TodaySpotView(spot: homeViewModel.GetTodaySpot())
                     }
@@ -48,6 +32,7 @@ struct HomeView: View {
                                 ForEach(homeViewModel.GetNearSpots(), id: \.self) { spot in
                                     NavigationLink{
                                         //TODO: DetailView로 연결
+                                        DetailView(item: spot)
                                     } label: {
                                         NearSpotListCellView(homeViewModel: homeViewModel, spot: spot)
                                     }
@@ -69,7 +54,7 @@ struct HomeView: View {
                             Spacer()
                             NavigationLink{
                                 //TODO: 전체보기 목록뷰으로 연결
-//                                VisitedPlaceListView()
+                                //                                VisitedPlaceListView()
                             } label: {
                                 Text("전체보기")
                                     .font(.caption)
@@ -96,10 +81,12 @@ struct HomeView: View {
                     .padding([.leading,.trailing], 15)
                     
                     //TODO: 조건문 필요-Player가 켜져있을 떄만 필요한 부분입니다.
-                    RoundedRectangle(cornerRadius: 15)
-                        .fill(Color.clear)
-                        .frame(height: 20)
-                        .padding(5)
+                    if homeViewModel.playerState {
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(Color.clear)
+                            .frame(height: 20)
+                            .padding(5)
+                    }
                 }
             }
         }
@@ -124,7 +111,7 @@ struct NearSpotListCellView: View {
             .cornerRadius(10)
             VStack(alignment: .leading) {
                 Text(spot.title)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(Color.textColor)
                     .padding(.top, 2)
                 Text("\(spot.addr1 ?? "") \(spot.addr2 ?? "")")
                     .font(.caption)
@@ -170,7 +157,7 @@ struct VisitedSpotListCellView: View {
                 Text(spot.title)
                     .lineLimit(1)
                     .font(.caption)
-                    .foregroundStyle(Color.black)
+                    .foregroundStyle(Color.textColor)
                 Text("\(spot.addr1 ?? "") \(spot.addr2 ?? "")")
                     .lineLimit(1)
                     .font(.caption2)

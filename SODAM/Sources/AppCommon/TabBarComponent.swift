@@ -10,7 +10,7 @@ import UICommonExtension
 
 struct TabBarComponent: View {
     @State private var selectedTab: Tab = .home
-    let bottomTabBar: CGFloat = 80.0 // 탭바 전체 크기
+
     enum Tab {
         case home
         case navigation
@@ -18,82 +18,32 @@ struct TabBarComponent: View {
     }
 
     var body: some View {
-        VStack {
-            Group {
-                switch selectedTab {
-                case .home:
-                    HomeView()
-                case .navigation:
-                    StartView()
-                case .menu:
-                    MenuView()
+        TabView(selection: $selectedTab) {
+            HomeView()
+                .tabItem {
+                    Image(systemName: "house")
+                    Text("홈")
                 }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .tag(Tab.home)
             
-            HStack {
-                Spacer()
-                
-                tabMenuItem(focusedTab: .home, iconName: "house", labelText: "홈") {
-                    selectedTab = .home
+            StartView()
+                .tabItem {
+                    Image(systemName: "location.circle")
+                    Text("시작")
                 }
-                
-                Spacer()
-                Spacer()
-                
-                tabMenuItem(focusedTab: .navigation, iconName: "location.circle", labelText: "시작") {
-                    selectedTab = .navigation
+                .tag(Tab.navigation)
+            
+            MenuView()
+                .tabItem {
+                    Image(systemName: "line.3.horizontal")
+                    Text("메뉴")
                 }
-                
-                Spacer()
-                Spacer()
-                
-                tabMenuItem(focusedTab: .menu, iconName: "line.3.horizontal", labelText: "메뉴") {
-                    selectedTab = .menu
-                }
-                
-                Spacer()
-            }
-            .frame(maxWidth: .infinity, maxHeight: bottomTabBar)
-            .background(.white)
-            .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 4)
-            .ignoresSafeArea()
+                .tag(Tab.menu)
         }
-    }
-    
-    // TODO: 각각 하나의 menuItem
-    private func tabMenuItem(focusedTab: Tab,iconName: String, labelText: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            VStack {
-                Image(systemName: iconName)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 30 ,height: 30)
-                    .foregroundColor(selectedTab == focusedTab ? Color.primaryColor : .black)
-                Text(labelText)
-                    .foregroundStyle(selectedTab == focusedTab ? Color.primaryColor : .black).bold()
-            }
-            .padding(.top, bottomTabBar / 2)
-        }
+        .accentColor(.primaryColor) // 선택된 탭의 색상
     }
 }
 
 #Preview {
     TabBarComponent()
-}
-
-
-
-// Test 용 코드
-struct HomeTestView: View {
-    var body: some View {
-        Text("hello world home Page")
-    }
-}
-
-
-struct NavigationView: View {
-    var body: some View {
-        Text("hello world home Page")
-    }
 }

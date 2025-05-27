@@ -37,12 +37,12 @@ struct MenuView: View {
                                 Spacer()
                             }
                             .frame(maxWidth: .infinity, maxHeight: geo.size.height * 0.1)
-                            .background(Color.black60.opacity(0.4))
+                            .background(Color.secondaryColorBlack)
                             .clipShape(.rect(cornerRadius: 18))
                             .padding(.vertical, 8)
                         }
                     }
-                    .foregroundStyle(.black)
+                    .foregroundStyle(.foreground)
                     .padding()
                     .frame(width: geo.size.width, height: geo.size.height)
                 }
@@ -64,7 +64,7 @@ struct MenuView: View {
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: maxHeight)
-            .background(color.opacity(0.4))
+            .background(color)
             .clipShape(.rect(cornerRadius: 18))
         }
     }
@@ -93,7 +93,7 @@ struct MenuView: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: geo.size.height * 0.2)
-            .background(menu.color.opacity(0.4))
+            .background(menu.color)
             .clipShape(.rect(cornerRadius: 18))
         }
     }
@@ -121,7 +121,7 @@ private extension MenuView {
     var menus: [MenuItem] {
         [
             MenuItem(title: "방문한\n관광지", color: Color.secondaryColorYellow,imageName: "mapLocationSet",destination: AnyView(VisitedPlaceListView())),
-            MenuItem(title: "초등교육\n관광지", color: Color.secondaryColorRed, imageName: "Learning",destination: nil)
+            MenuItem(title: "초등교육\n관광지", color: Color.secondaryColorRed, imageName: "Learning",destination: AnyView(EducationView()))
         ]
     }
 }

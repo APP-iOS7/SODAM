@@ -1,31 +1,12 @@
-//
-//  PlayerView.swift
-//  SODAM
-//
-//  Created by 최하진 on 5/14/25.
-//
-
 import SwiftUI
 
 struct PlayerView: View {
-    @AppStorage("playerState") var playerState: Bool = UserDefaults.standard.bool(forKey: "playerState")
     
-    @StateObject var playerViewModel: PlayerViewModel
-    
-/*    MARK: 플레이어 재생 가이드(ver.0519)
- 1. 뷰에서 변수 세팅
- @AppStorage("playerState") var playerState: Bool = UserDefaults.standard.bool(forKey: "playerState")
-
- @AppStorage("playerTitle") var playerTitle: String = (UserDefaults.standard.string(forKey: "playerTitle") ?? "")
- @AppStorage("playerImageURL") var playerImageURL: String = (UserDefaults.standard.string(forKey: "playerImageURL") ?? "")
- @AppStorage("playerAudioURL") var playerAudioURL: String = (UserDefaults.standard.string(forKey: "playerAudioURL") ?? "")
- 
-2. 재생을 위한 변수 전달(버튼의 액션이나 함수로 만들어주세요)
- playerTitle = 오디오 제목
- playerImageURL = 이미지 URL
- playerAudioURL = 오디오 URL
- playerState = ture
+/*    MARK: 플레이어 재생 가이드(ver.0522)
+    -버튼의 액션에 만들어주세요
+    sendPlayState(state: true, spot: DetailModel)
  */
+    @StateObject var playerViewModel = PlayerViewModel.shared
     var body: some View {
         VStack {
             if playerViewModel.isLongVer {
@@ -43,10 +24,11 @@ struct PlayerView: View {
                             .cornerRadius(10)
                             .frame(width: 45,height: 45)
                             .onTapGesture {
-                                playerViewModel.isLongVer .toggle()
+                                playerViewModel.isLongVer = false
                             }
                             .padding(.leading, 13)
                             Text(playerViewModel.getTitle())
+                                .lineLimit(1)
                                 .font(.headline)
                                 .foregroundStyle(Color.white)
                                 .padding(5)
@@ -60,18 +42,8 @@ struct PlayerView: View {
                                         .font(.title)
                                         .foregroundStyle(Color.white)
                                         .padding(.trailing, 10)
-                                        
                                 }
-                                Button {
-                                    //TODO: 플레이어 닫기 함수
-                                    playerViewModel.pause()
-                                    playerState.toggle()
-                                } label: {
-                                    Image(systemName: "xmark")
-                                        .font(.title3)
-                                        .foregroundStyle(Color.white)
-                                        .padding(.trailing, 30)
-                                }
+
                             } else {
                                 Button {
                                     playerViewModel.play()
@@ -79,9 +51,18 @@ struct PlayerView: View {
                                     Image(systemName: "play.fill")
                                         .font(.title)
                                         .foregroundStyle(Color.white)
-                                        .padding(.trailing, 30)
+                                        .padding(.trailing, 10)
                                 }
                             }
+                            Button {
+                                playerViewModel.close()
+                            } label: {
+                                Image(systemName: "xmark")
+                                    .font(.title3)
+                                    .foregroundStyle(Color.white)
+                                    .padding(.trailing, 30)
+                            }
+                            
                         }
                     )
             } else {
@@ -100,7 +81,7 @@ struct PlayerView: View {
                                 .cornerRadius(10)
                                 .frame(width: 45,height: 45)
                                 .onTapGesture {
-                                    playerViewModel.isLongVer.toggle()
+                                    playerViewModel.isLongVer = true
                                 }
                             }
                         )
@@ -110,7 +91,3 @@ struct PlayerView: View {
         }
     }
 }
-
-//#Preview {
-//    PlayerView(playerViewModel: PlayerViewModel(title: playerTitle, imageUrl: playerImageURL, audioUrl: playeraudioURL))
-//}
