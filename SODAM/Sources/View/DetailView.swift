@@ -67,27 +67,28 @@ struct DetailHeaderView: View {
     
     var body: some View {
         HStack(spacing: 0) {
-            segmentButton(type: .photo, isActive: selectedTab == .photo)
-            segmentButton(type: .map, isActive: selectedTab == .map)
+            segmentButton(type: .photo)
+            segmentButton(type: .map)
         }
         .frame(height: 44)
     }
     
-    private func segmentButton(type: Tab, isActive: Bool) -> some View {
-        VStack {
-            Button(action: {
-                selectedTab = type
-                print("clicked \(type.rawValue)")
-            }) {
+    private func segmentButton(type: Tab) -> some View {
+        Button(action: {
+            withAnimation { selectedTab = type }
+        }) {
+            VStack {
                 Text("\(type.rawValue)")
-                    .foregroundColor(isActive ? Color.textColor : .gray)
-                    .fontWeight(isActive ? .bold : .regular)
+                    .foregroundColor(selectedTab == type ? Color.textColor : .gray)
+                    .fontWeight(selectedTab == type ? .bold : .regular)
                     .frame(maxWidth: .infinity)
+                Rectangle()
+                    .fill(selectedTab == type ? Color.green : Color.clear)
+                    .frame(height: 4)
+                    .cornerRadius(2)
             }
-            Rectangle()
-                .fill(isActive ? Color.green : Color.clear)
-                .frame(height: 4)
         }
+        .buttonStyle(.plain)
     }
 }
 
@@ -100,28 +101,41 @@ struct DetailImageView: View {
     @Binding var draw: Bool
     
     var body: some View {
-        if selectedTab == .photo {
-            AsyncImage(url: URL(string: url)) { image in
-                image
-                    .resizable()
-                    .scaledToFill()
-            } placeholder: {
-                Color.gray
+        ZStack {
+            if selectedTab == .photo {
+                AsyncImage(url: URL(string: url)) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    case .failure:
+                        Color.gray
+                            .overlay(Text("이미지를 불러올 수 없습니다.").foregroundColor(.white))
+                    @unknown default:
+                        Color.gray
+                    }
+                }
+            } else {
+                KakaoMapView(
+                    draw: $draw,
+                    markerCoordinate: CLLocationCoordinate2D(
+                        latitude: regionLocation?.latitude ?? 0.0,
+                        longitude: regionLocation?.longitude ?? 0.0
+                    )
+                )
             }
-            .frame(maxWidth: .infinity, minHeight: 260, maxHeight: 260)
-            .clipped()
-        } else {
-            KakaoMapView(
-                draw: $draw,
-                markerCoordinate: CLLocationCoordinate2D(latitude: regionLocation?.latitude ?? 0.0, longitude: regionLocation?.longitude ?? 0.0)
-            )
-            .foregroundStyle(Color.secondaryColorRed)
-            .frame(maxWidth: .infinity, minHeight: 260, maxHeight: 260)
-            .clipped()
         }
-            
+        .frame(maxWidth: .infinity, minHeight: 260, maxHeight: 260)
+        .clipped()
+        .cornerRadius(12)
+        .shadow(radius: 4)
+        .padding(.bottom, 8)
     }
 }
+
 
 // MARK: 장소 이름, 주소, 거리, 버튼 영역
 struct DetailButtonView: View {
@@ -129,13 +143,13 @@ struct DetailButtonView: View {
     var body: some View {
         HStack {
             let distance = haversineDistance(
-                lat1: 37.4981, lon1: 126.9220, // 서울
+                lat1: 37.4981, lon1: 126.9220, // TODO: 현재 내 위치 가져오기
                 lat2: Double(model.mapY) ?? 37.5, lon2: Double(model.mapX) ?? 126.9
             )
             
             let km = String(format: "%.2f", distance)
             Text("나와의 거리 \(km)km")
-                .font(.system(size: 24, weight: .bold))
+                .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(.green)
             Spacer()
             HStack(spacing: 12) {
@@ -149,7 +163,7 @@ struct DetailButtonView: View {
                         Image(systemName: "play.circle")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 32, height: 32)
+                            .frame(width: 24, height: 24)
                     }
                     .foregroundStyle(.green)
                 }
@@ -161,7 +175,7 @@ struct DetailButtonView: View {
                     Image(systemName: "square.and.arrow.up")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 32, height: 32)
+                        .frame(width: 24, height: 24)
                 }
                 .foregroundStyle(.black)
             }
