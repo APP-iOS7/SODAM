@@ -67,27 +67,28 @@ struct DetailHeaderView: View {
     
     var body: some View {
         HStack(spacing: 0) {
-            segmentButton(type: .photo, isActive: selectedTab == .photo)
-            segmentButton(type: .map, isActive: selectedTab == .map)
+            segmentButton(type: .photo)
+            segmentButton(type: .map)
         }
         .frame(height: 44)
     }
     
-    private func segmentButton(type: Tab, isActive: Bool) -> some View {
-        VStack {
-            Button(action: {
-                selectedTab = type
-                print("clicked \(type.rawValue)")
-            }) {
+    private func segmentButton(type: Tab) -> some View {
+        Button(action: {
+            withAnimation { selectedTab = type }
+        }) {
+            VStack {
                 Text("\(type.rawValue)")
-                    .foregroundColor(isActive ? Color.textColor : .gray)
-                    .fontWeight(isActive ? .bold : .regular)
+                    .foregroundColor(selectedTab == type ? Color.textColor : .gray)
+                    .fontWeight(selectedTab == type ? .bold : .regular)
                     .frame(maxWidth: .infinity)
+                Rectangle()
+                    .fill(selectedTab == type ? Color.green : Color.clear)
+                    .frame(height: 4)
+                    .cornerRadius(2)
             }
-            Rectangle()
-                .fill(isActive ? Color.green : Color.clear)
-                .frame(height: 4)
         }
+        .buttonStyle(.plain)
     }
 }
 
