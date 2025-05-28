@@ -143,13 +143,13 @@ struct DetailButtonView: View {
     var body: some View {
         HStack {
             let distance = haversineDistance(
-                lat1: 37.4981, lon1: 126.9220, // 서울
+                lat1: 37.4981, lon1: 126.9220, // TODO: 현재 내 위치 가져오기
                 lat2: Double(model.mapY) ?? 37.5, lon2: Double(model.mapX) ?? 126.9
             )
             
             let km = String(format: "%.2f", distance)
             Text("나와의 거리 \(km)km")
-                .font(.system(size: 24, weight: .bold))
+                .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(.green)
             Spacer()
             HStack(spacing: 12) {
@@ -163,7 +163,7 @@ struct DetailButtonView: View {
                         Image(systemName: "play.circle")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 32, height: 32)
+                            .frame(width: 24, height: 24)
                     }
                     .foregroundStyle(.green)
                 }
@@ -175,7 +175,7 @@ struct DetailButtonView: View {
                     Image(systemName: "square.and.arrow.up")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 32, height: 32)
+                        .frame(width: 24, height: 24)
                 }
                 .foregroundStyle(.black)
             }
