@@ -101,28 +101,41 @@ struct DetailImageView: View {
     @Binding var draw: Bool
     
     var body: some View {
-        if selectedTab == .photo {
-            AsyncImage(url: URL(string: url)) { image in
-                image
-                    .resizable()
-                    .scaledToFill()
-            } placeholder: {
-                Color.gray
+        ZStack {
+            if selectedTab == .photo {
+                AsyncImage(url: URL(string: url)) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    case .failure:
+                        Color.gray
+                            .overlay(Text("이미지를 불러올 수 없습니다.").foregroundColor(.white))
+                    @unknown default:
+                        Color.gray
+                    }
+                }
+            } else {
+                KakaoMapView(
+                    draw: $draw,
+                    markerCoordinate: CLLocationCoordinate2D(
+                        latitude: regionLocation?.latitude ?? 0.0,
+                        longitude: regionLocation?.longitude ?? 0.0
+                    )
+                )
             }
-            .frame(maxWidth: .infinity, minHeight: 260, maxHeight: 260)
-            .clipped()
-        } else {
-            KakaoMapView(
-                draw: $draw,
-                markerCoordinate: CLLocationCoordinate2D(latitude: regionLocation?.latitude ?? 0.0, longitude: regionLocation?.longitude ?? 0.0)
-            )
-            .foregroundStyle(Color.secondaryColorRed)
-            .frame(maxWidth: .infinity, minHeight: 260, maxHeight: 260)
-            .clipped()
         }
-            
+        .frame(maxWidth: .infinity, minHeight: 260, maxHeight: 260)
+        .clipped()
+        .cornerRadius(12)
+        .shadow(radius: 4)
+        .padding(.bottom, 8)
     }
 }
+
 
 // MARK: 장소 이름, 주소, 거리, 버튼 영역
 struct DetailButtonView: View {
