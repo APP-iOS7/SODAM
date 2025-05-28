@@ -13,8 +13,8 @@ struct Education: Identifiable {
 class EducationViewModel: ObservableObject {
     @Published var lists: [[DetailModel]] = []
     @Published var educations: [Education] = [
-        Education(name: "교과서 속 문화 여행", color: Color.secondaryColorPurple, imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg", category: "C", lists: []),
-        Education(name: "교과서 속 역사 여행", color: Color.secondaryColorBlue, imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg", category: "H", lists: []),
+        Education(name: "교과서 속 문화 여행", color: Color.secondaryColorBlue, imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg", category: "C", lists: []),
+        Education(name: "교과서 속 역사 여행", color: Color.secondaryColorPurple, imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg", category: "H", lists: []),
         Education(name: "교과서 속 인물 여행", color: Color.secondaryColorRed, imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg", category: "P", lists: []),
         Education(name: "교과서 속 과학 여행", color: Color.secondaryColorYellow, imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg", category: "S", lists: []),
         
