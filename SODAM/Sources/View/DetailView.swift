@@ -64,7 +64,7 @@ struct DetailHeaderView: View {
                 print("clicked \(type.rawValue)")
             }) {
                 Text("\(type.rawValue)")
-                    .foregroundColor(isActive ? .black : .gray)
+                    .foregroundColor(isActive ? Color.textColor : .gray)
                     .fontWeight(isActive ? .bold : .regular)
                     .frame(maxWidth: .infinity)
             }
