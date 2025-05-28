@@ -38,6 +38,9 @@ struct HomeView: View {
                                     }
                                     Divider()
                                 }
+                            } else if homeViewModel.IsNearSpotEmpty() && homeViewModel.isLoading {
+                                ProgressView()
+                                    .padding(.top, 100)
                             } else {
                                 Text("주변에 관광지가 없습니다.")
                                     .padding(60)
