@@ -6,18 +6,20 @@ struct EducationListView: View {
     var add: String = ""
     var body: some View {
         NavigationStack {
-            VStack {
-                Divider()
-                ForEach(educationListViewModel.spots, id: \.self) { spot in
-                    NavigationLink {
-                        //TODO: DetailView 연결
-                        DetailView(item: spot)
-                    } label: {
-                        EducationListCellView(spot: spot)
-                    }
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack {
                     Divider()
+                    ForEach(educationListViewModel.spots, id: \.self) { spot in
+                        NavigationLink {
+                            //TODO: DetailView 연결
+                            DetailView(item: spot)
+                        } label: {
+                            EducationListCellView(spot: spot)
+                        }
+                        Divider()
+                    }
+                    Spacer()
                 }
-                Spacer()
             }
         }
     }
