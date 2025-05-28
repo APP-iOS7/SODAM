@@ -17,7 +17,7 @@ struct MenuView: View {
                     VStack {
                         listView(title: "내 주변 관광지", font: .largeTitle.bold(), imageName: "tourSet", maxHeight: geo.size.height * 0.3, color: Color.secondaryColorBlue, destination: AnyView(MyNearbyListView(viewModel: MyNearbyListViewModel(myLocation: myLocation))))
                         
-                        listView(title: "지역 별 관광지", font: .title.bold(), imageName: "locationSet", maxHeight: geo.size.height * 0.25, color: Color.secondaryColorPurple, destination: AnyView(RegionalListView()))
+                        listView(title: "지역별 관광지", font: .title.bold(), imageName: "locationSet", maxHeight: geo.size.height * 0.25, color: Color.secondaryColorPurple, destination: AnyView(RegionalListView()))
                         
                         LazyVGrid(columns: columns, spacing: 16) {
                             ForEach(menus) { menu in

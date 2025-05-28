@@ -40,6 +40,7 @@ struct RegionalListView: View {
                     Image(systemName: "chevron.left")
                     Text("뒤로가기")
                 }
+                .foregroundStyle(Color.primaryColor)
                 .onTapGesture {
                     dismiss()
                 }
