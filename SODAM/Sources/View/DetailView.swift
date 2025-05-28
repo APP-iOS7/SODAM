@@ -8,6 +8,8 @@
 
 import SwiftUI
 import SwiftData
+import KakaoMapsSDK
+import CoreLocation
 
 enum Tab: String {
     case photo = "사진"
@@ -15,13 +17,22 @@ enum Tab: String {
 }
 
 public struct DetailView: View {
-    
     @State private var selectedTab: Tab = .photo
+    private let regionLocation: CLLocationCoordinate2D?
     private var item: DetailModel?
     
     init(item: DetailModel? = nil) {
-        self.selectedTab = selectedTab
+        if let kakaoAppKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY") as? String {
+            SDKInitializer.InitSDK(appKey: kakaoAppKey)
+        } else {
+            print("Kakao App Key is missing in Info.plist")
+        }
         self.item = item
+        if let latitude = Double(item?.mapX ?? ""), let longitude = Double(item?.mapY ?? "") {
+            self.regionLocation = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        } else {
+            self.regionLocation = nil
+        }
     }
     
     public var body: some View {
