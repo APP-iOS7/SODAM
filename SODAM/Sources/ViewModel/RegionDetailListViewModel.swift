@@ -27,15 +27,14 @@ class RegionDetailListViewModel: ObservableObject {
     
     init(region: Region) {
         self.region = region
-        fetchRegionListData()
     }
     
     // MARK: 위치 기반 관광지 데이터 가져오기
-    private func fetchRegionListData() {
+    func fetchRegionListData() {
         Task {
             isLoading = true
             do {
-                regionList = try await APIService.shared.getStoryLocationBasedList(lng: region.longitude, lat: region.latitude, radius: 10000, numOfRows: 100, pageNo: 1)
+                regionList = try await APIService.shared.getStoryLocationBasedList(lng: region.longitude, lat: region.latitude, radius: 10000, numOfRows: 10, pageNo: 1)
                 try await fetchRegionGetAddress()
             } catch {
                 print("리스트 불러오기 실패: \(error)")
@@ -46,20 +45,32 @@ class RegionDetailListViewModel: ObservableObject {
     
     // MARK: 각각의 관광지 주소 가져오는 함수
     private func fetchRegionGetAddress() async throws {
-        for region in filteredRegionList {
-            // 이미 주소가 있으면 넘어감
-            if let addr1 = region.addr1, !addr1.isEmpty,
-            let addr2 = region.addr2, !addr2.isEmpty {
-                continue
+        await withTaskGroup(of: (String, String)?.self ) { group in
+            for region in filteredRegionList {
+                // 이미 주소가 있으면 넘어감
+                if let addr1 = region.addr1, !addr1.isEmpty,
+                let addr2 = region.addr2, !addr2.isEmpty {
+                    continue
+                }
+                let x = Double(region.mapX)!
+                let y = Double(region.mapY)!
+                
+                group.addTask {
+                    do {
+                        let address = try await APIService.shared.getAddress(x: x, y: y)
+                        
+                        return (region.stlid!, address?.response.result?.first?.text) as? (String, String)
+                    } catch {
+                        print("주소 값 가져오기 실패 : \(error)")
+                    }
+                    return nil
+                }
             }
-            let x = Double(region.mapX)!
-            let y = Double(region.mapY)!
             
-            do {
-                let address = try await APIService.shared.getAddress(x: x, y: y)
-                allAddress[region.stlid!] = address?.response.result?.first?.text
-            } catch {
-                print("주소 값 가져오기 실패 : \(error)")
+            for await result in group {
+                if let (stlid, address) = result {
+                    allAddress[stlid] = address
+                }
             }
         }
     }
