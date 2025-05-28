@@ -18,9 +18,12 @@ enum Tab: String {
 
 public struct DetailView: View {
     @State private var selectedTab: Tab = .photo
-    private let regionLocation: CLLocationCoordinate2D?
+    @State private var draw: Bool = false
+    
+    private var regionLocation: CLLocationCoordinate2D?
     private var item: DetailModel?
     
+    // detailView 초기화
     init(item: DetailModel? = nil) {
         if let kakaoAppKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY") as? String {
             SDKInitializer.InitSDK(appKey: kakaoAppKey)
@@ -28,7 +31,7 @@ public struct DetailView: View {
             print("Kakao App Key is missing in Info.plist")
         }
         self.item = item
-        if let latitude = Double(item?.mapX ?? ""), let longitude = Double(item?.mapY ?? "") {
+        if let latitude = Double(item?.mapY ?? ""), let longitude = Double(item?.mapX ?? "") {
             self.regionLocation = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         } else {
             self.regionLocation = nil
@@ -40,7 +43,7 @@ public struct DetailView: View {
             DetailHeaderView(selectedTab: $selectedTab)
             ScrollView(.vertical, showsIndicators: false) { // scroll Indicator 숨기기
                 if let detailItem = item {
-                    DetailImageView(url: detailItem.imageUrl ?? "", selectedTab: $selectedTab)
+                    DetailImageView(url: detailItem.imageUrl ?? "", regionLocation: regionLocation, selectedTab: $selectedTab, draw: $draw)
                     DetailInfoView(model: detailItem)
                 } else {
                     Text("데이터가 없습니다.")
@@ -49,6 +52,8 @@ public struct DetailView: View {
             .padding(8)
             .frame(maxHeight: .infinity, alignment: .top)
         }
+        .onAppear { draw = true }
+        .onDisappear { draw = false }
     }
 }
 
@@ -89,7 +94,10 @@ struct DetailHeaderView: View {
 // MARK: 장소 이미지
 struct DetailImageView: View {
     var url: String
+    var regionLocation: CLLocationCoordinate2D?
+    
     @Binding var selectedTab: Tab
+    @Binding var draw: Bool
     
     var body: some View {
         if selectedTab == .photo {
@@ -103,11 +111,13 @@ struct DetailImageView: View {
             .frame(maxWidth: .infinity, minHeight: 260, maxHeight: 260)
             .clipped()
         } else {
-            // TODO: 지도 영역 연동
-            Rectangle()
-                .foregroundStyle(Color.secondaryColorRed)
-                .frame(maxWidth: .infinity, minHeight: 260, maxHeight: 260)
-                .clipped()
+            KakaoMapView(
+                draw: $draw,
+                markerCoordinate: CLLocationCoordinate2D(latitude: regionLocation?.latitude ?? 0.0, longitude: regionLocation?.longitude ?? 0.0)
+            )
+            .foregroundStyle(Color.secondaryColorRed)
+            .frame(maxWidth: .infinity, minHeight: 260, maxHeight: 260)
+            .clipped()
         }
             
     }
