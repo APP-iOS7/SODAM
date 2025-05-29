@@ -1,13 +1,13 @@
 import SwiftUI
 
 struct HomeView: View {
+    @EnvironmentObject var myLocation: UserLocation
     @StateObject private var homeViewModel: HomeViewModel = HomeViewModel()
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack {
                     NavigationLink{
-                        //TODO: DetailView로 연결
                         DetailView(item: homeViewModel.GetTodaySpot())
                     } label: {
                         TodaySpotView(spot: homeViewModel.GetTodaySpot())
@@ -20,7 +20,7 @@ struct HomeView: View {
                                 .fontWeight(.bold)
                             Spacer()
                             NavigationLink{
-                                //TODO: 전체보기 목록뷰으로 연결
+                                MyNearbyListView(viewModel: MyNearbyListViewModel(myLocation: myLocation))
                             } label: {
                                 Text("전체보기")
                                     .font(.caption)
@@ -58,8 +58,7 @@ struct HomeView: View {
                                 .fontWeight(.bold)
                             Spacer()
                             NavigationLink{
-                                //TODO: 전체보기 목록뷰으로 연결
-                                //                                VisitedPlaceListView()
+                                VisitedPlaceListView()
                             } label: {
                                 Text("전체보기")
                                     .font(.caption)
@@ -85,7 +84,7 @@ struct HomeView: View {
                     .frame(height: 130, alignment: .top)
                     .padding([.leading,.trailing], 15)
                     
-                    //TODO: 조건문 필요-Player가 켜져있을 떄만 필요한 부분입니다.
+                    //MARK: Player가 켜져있을 떄만 
                     if homeViewModel.playerState {
                         RoundedRectangle(cornerRadius: 15)
                             .fill(Color.clear)
