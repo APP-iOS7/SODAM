@@ -16,6 +16,7 @@ struct HomeView: View {
                     VStack {
                         HStack {
                             Text("내 주변 관광지")
+                                .font(.system(size: 20))
                                 .fontWeight(.bold)
                             Spacer()
                             NavigationLink{
@@ -53,6 +54,7 @@ struct HomeView: View {
                     VStack {
                         HStack {
                             Text("방문한 관광지")
+                                .font(.system(size: 20))
                                 .fontWeight(.bold)
                             Spacer()
                             NavigationLink{
@@ -115,6 +117,7 @@ struct NearSpotListCellView: View {
             VStack(alignment: .leading) {
                 Text(spot.title)
                     .foregroundStyle(Color.textColor)
+                    .fontWeight(.semibold)
                     .padding(.top, 2)
                 Text("\(spot.addr1 ?? "") \(spot.addr2 ?? "")")
                     .font(.caption)
@@ -124,7 +127,7 @@ struct NearSpotListCellView: View {
                         .font(.footnote)
                         .foregroundStyle(.gray)
                     if let distance = GetDistance(spot: spot) {
-                        Text("\(String(format: "%.2f", distance)) Km")
+                        Text("\(String(format: "%.2f", distance)) km")
                             .font(.footnote)
                             .foregroundStyle(.gray)
                     } else {
@@ -153,18 +156,19 @@ struct VisitedSpotListCellView: View {
             } placeholder: {
                 ProgressView()
             }
-            .frame(width: 60, height: 60)
+            .frame(width: 70, height: 70)
             .cornerRadius(100)
             
             VStack(alignment: .center) {
                 Text(spot.title)
-                    .lineLimit(1)
-                    .font(.caption)
+                    .lineLimit(2)
+                    .font(.system(size: 14))
+                    .fontWeight(.semibold)
                     .foregroundStyle(Color.textColor)
-                Text("\(spot.addr1 ?? "") \(spot.addr2 ?? "")")
-                    .lineLimit(1)
-                    .font(.caption2)
-                    .foregroundStyle(Color.gray)
+//                Text("\(spot.addr1 ?? "") \(spot.addr2 ?? "")")
+//                    .lineLimit(1)
+//                    .font(.caption2)
+//                    .foregroundStyle(Color.gray)
             }
             .padding(.leading, 5)
             Spacer()
@@ -186,11 +190,11 @@ struct TodaySpotView: View {
         .overlay(
             HStack {
                 VStack(alignment: .leading) {
+                    Spacer()
                     Text("오늘의 이야기")
                         .font(.headline)
                         .foregroundStyle(Color.white)
                         .padding(.top, 10)
-                    Spacer()
                     Text(spot.title)
                         .font(.title)
                         .fontWeight(.bold)
