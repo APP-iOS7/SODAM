@@ -135,7 +135,6 @@ struct NearSpotListCellView: View {
                             .font(.footnote)
                             .foregroundStyle(.gray)
                     }
-                    
                 }
                 .padding(.top, 3)
                 
@@ -165,10 +164,6 @@ struct VisitedSpotListCellView: View {
                     .font(.system(size: 14))
                     .fontWeight(.semibold)
                     .foregroundStyle(Color.textColor)
-//                Text("\(spot.addr1 ?? "") \(spot.addr2 ?? "")")
-//                    .lineLimit(1)
-//                    .font(.caption2)
-//                    .foregroundStyle(Color.gray)
             }
             .padding(.leading, 5)
             Spacer()
@@ -188,25 +183,26 @@ struct TodaySpotView: View {
         }
         .frame(height: 250)
         .overlay(
-            HStack {
-                VStack(alignment: .leading) {
+            ZStack {
+                LinearGradient(gradient: Gradient(colors: [Color.clear, Color.clear, Color.black.opacity(0.7)]), startPoint: .top, endPoint: .bottom)
+                HStack {
+                    VStack(alignment: .leading) {
+                        Spacer()
+                        Text("오늘의 이야기")
+                            .font(.headline)
+                            .foregroundStyle(Color.white)
+                        Text(spot.title)
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundStyle(Color.white)
+                        Text("\(spot.addr1 ?? "") | \(spot.audioTitle ?? "")")
+                            .font(.caption)
+                            .foregroundStyle(Color.white)
+                            .padding(.bottom, 10)
+                    }
+                    .padding(.leading, 20)
                     Spacer()
-                    Text("오늘의 이야기")
-                        .font(.headline)
-                        .foregroundStyle(Color.white)
-                        .padding(.top, 10)
-                    Text(spot.title)
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundStyle(Color.white)
-                        .padding(.bottom, 5)
-                    Text("\(spot.addr1 ?? "") | \(spot.audioTitle ?? "")")
-                        .font(.caption)
-                        .foregroundStyle(Color.white)
-                        .padding(.bottom, 10)
                 }
-                .padding(.leading, 20)
-                Spacer()
             }
         )
     }
