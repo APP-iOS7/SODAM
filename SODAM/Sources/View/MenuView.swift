@@ -19,7 +19,7 @@ struct MenuView: View {
                         
                         listView(title: "지역별 관광지", font: .title.bold(), imageName: "locationSet", maxHeight: geo.size.height * 0.25, color: Color.secondaryColorPurple, destination: AnyView(RegionalListView()))
                         
-                        LazyVGrid(columns: columns, spacing: 16) {
+                        LazyVGrid(columns: columns) {
                             ForEach(menus) { menu in
                                 gridItem(menu: menu,geo: geo)
                             }
@@ -33,13 +33,12 @@ struct MenuView: View {
                                 Image("Settings")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(maxWidth: 50, maxHeight: 50)
+                                    .frame(maxWidth: 30, maxHeight: 30)
                                 Spacer()
                             }
                             .frame(maxWidth: .infinity, maxHeight: geo.size.height * 0.1)
                             .background(Color.secondaryColorBlack)
                             .clipShape(.rect(cornerRadius: 18))
-                            .padding(.vertical, 8)
                         }
                     }
                     .foregroundStyle(.foreground)
@@ -72,20 +71,20 @@ struct MenuView: View {
     // MARK: Grid Item 함수
     private func gridItem(menu: MenuItem,geo: GeometryProxy) -> some View {
         NavigationLink(destination: menu.destination) {
-
             VStack {
                 HStack {
                     Spacer()
                     Image(menu.imageName)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(maxWidth: geo.size.height * 0.12, maxHeight: geo.size.height * 0.12)
+                        .frame(maxWidth: geo.size.height * 0.1, maxHeight: geo.size.height * 0.1)
                 }
                 .padding(.trailing)
                 HStack {
                     Text(menu.title)
                         .multilineTextAlignment(.leading)
-                        .font(.title3).bold()
+                        .font(geo.size.height > 780 ? .title3 : .subheadline) // ios 12 미니 기준
+                        .fontWeight(.black)
                     Spacer()
                 }
                 .padding(.leading)
@@ -113,8 +112,8 @@ private extension MenuView {
     // grid 컬럼
     var columns: [GridItem] {
         [
-            GridItem(.flexible(), spacing: 16),
-            GridItem(.flexible(), spacing: 16)
+            GridItem(.flexible(), spacing: 8),
+            GridItem(.flexible(), spacing: 8)
         ]
     }
     // MenuItem 모델s
@@ -128,4 +127,5 @@ private extension MenuView {
 
 #Preview {
     MenuView()
+        .environmentObject(UserLocation.shared)
 }
