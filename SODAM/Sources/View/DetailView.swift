@@ -150,7 +150,7 @@ struct DetailButtonView: View {
             
             let km = String(format: "%.2f", distance)
             Text("나와의 거리 \(km)km")
-                .font(.system(size: 16, weight: .semibold))
+                .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(.green)
             Spacer()
             HStack(spacing: 12) {
@@ -158,7 +158,6 @@ struct DetailButtonView: View {
                 if let audioUrl = model.audioUrl {
                     Button {
                         print("play button clicked")
-                        // TODO: 플레이어 재생
                         sendPlayState(state: true, spot: model)
                     } label: {
                         Image(systemName: "play.circle")
@@ -197,10 +196,11 @@ struct DetailInfoView: View {
                 .padding([.top], 8)
             if let addr1 =  model.addr1 {
                 Text("\(addr1) \(model.addr2 ?? "")")
-                    .font(.system(size: 12))
+                    .font(.system(size: 16))
             }
             DetailButtonView(model: model)
             Text((model.script ?? "").byCharWrapping)
+                .font(.system(size: 18))
                 .padding(.vertical, 16)
                 .lineSpacing(8) // 줄 간격 늘림
         }
