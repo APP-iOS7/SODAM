@@ -8,14 +8,36 @@
 import Foundation
 import CoreLocation
 import Combine
+import SwiftUICore
 
 class MyNearbyListViewModel: ObservableObject {
     @Published var myLocation: UserLocation
     @Published var isLoading: Bool = false
+    @Published var isDataLoading: Bool = false
+    @Published var isCreatedViewModel: Bool = false
     @Published var nearTourList: [DetailModel] = []
+    var sortedViewModel: [DetailModel] { // 거리 필터링
+        guard let location = myLocation.currentLocation else { return nearTourList }
+        guard nearTourList.count == allAddress.count else { return nearTourList }
+        
+        return nearTourList.sorted {
+            let distA = haversineDistance(
+                lat1: location.coordinate.latitude,
+                lon1: location.coordinate.longitude,
+                lat2: Double($0.mapY)!,
+                lon2: Double($0.mapX)!
+            )
+            let distB = haversineDistance(
+                lat1: location.coordinate.latitude,
+                lon1: location.coordinate.longitude,
+                lat2: Double($1.mapY)!,
+                lon2: Double($1.mapX)!
+            )
+            return distA < distB
+        }
+    }
     @Published var allAddress: [String : String] = .init()
     @Published var radius: Int = 10000 // default 반경
-    @Published var filteredNearByTourList: [DetailModel] = []
     @Published var hasError:Bool = false
     @Published var errorMessage: String?
     
@@ -46,16 +68,11 @@ class MyNearbyListViewModel: ObservableObject {
                 }
                 
             }, receiveValue: { [weak self] tourListValue in
-                self?.filteredNearByTourList = tourListValue
+                self?.nearTourList = tourListValue
+                self?.getAddress(from: tourListValue)
                 self?.isLoading = false
+                self?.isDataLoading = true
             })
-            .store(in: &cancellables)
-        
-        // 관광지의 주소 가져오기
-        $filteredNearByTourList
-            .sink { [weak self] list in
-                self?.getAddress(from: list)
-            }
             .store(in: &cancellables)
     }
     
@@ -66,6 +83,7 @@ class MyNearbyListViewModel: ObservableObject {
             .debounce(for: .seconds(1), scheduler: RunLoop.main)
             .handleEvents(receiveOutput: { [weak self] _ in
                 self?.isLoading = true
+                self?.isDataLoading = false
             })
             .flatMap { [weak self] radius -> AnyPublisher<[DetailModel], Error> in
                 guard let self = self else { return Fail(error: URLError(.badURL)).eraseToAnyPublisher() }

@@ -17,8 +17,11 @@ struct MyNearbyListView: View {
     init(myLocation: UserLocation) {
         _viewModel = StateObject(wrappedValue: MyNearbyListViewModel(myLocation: myLocation))
     }
+    
     var body: some View {
-        VStack {
+        let lat = viewModel.myLocation.currentLocation?.coordinate.latitude ?? 0
+        let lng = viewModel.myLocation.currentLocation?.coordinate.longitude ?? 0
+        return VStack {
             SegmentControlsComponent(selectSegment: $selectSegment)
             switch selectSegment {
             case .list:
@@ -37,14 +40,14 @@ struct MyNearbyListView: View {
                     ), in: 1000...20000, step: 1000)
                 }
                 .padding(8)
-                if viewModel.isLoading {
+                if !viewModel.isDataLoading {
                     loadingView
                 }else {
-                    if viewModel.filteredNearByTourList.isEmpty {
+                    if viewModel.nearTourList.isEmpty {
                         isEmptyView
                     }else {
                         ScrollView {
-                            ForEach(viewModel.filteredNearByTourList, id: \.self) { item in
+                            ForEach(viewModel.sortedViewModel, id: \.self) { item in
                                 NavigationLink(destination: DetailView(item: item)) {
                                     tourItem(item: item)
                                 }
@@ -53,8 +56,9 @@ struct MyNearbyListView: View {
                         }
                     }
                 }
+                    
             case .map:
-                NearbyMapView(myLocation: CLLocationCoordinate2D(latitude: viewModel.myLocation.currentLocation?.coordinate.latitude ?? 0, longitude: viewModel.myLocation.currentLocation?.coordinate.longitude ?? 0), tourList: viewModel.filteredNearByTourList)
+                NearbyMapView(myLocation: CLLocationCoordinate2D(latitude: lat, longitude: lng), tourList: viewModel.nearTourList)
             }
         }
         .navigationTitle("내 주변 관광지")
