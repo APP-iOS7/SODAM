@@ -125,7 +125,8 @@ struct DetailImageView: View {
                     markerCoordinate: CLLocationCoordinate2D(
                         latitude: regionLocation?.latitude ?? 0.0,
                         longitude: regionLocation?.longitude ?? 0.0
-                    )
+                    ),
+                    userDotImage: UIImage(named: "mapPin")
                 )
             }
         }
