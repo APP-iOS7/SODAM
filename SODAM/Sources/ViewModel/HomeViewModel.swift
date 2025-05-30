@@ -25,7 +25,6 @@ class HomeViewModel: ObservableObject {
         }
     }
     
-    
     private var cancellables: Set<AnyCancellable> = []
     
     init() {
@@ -47,12 +46,13 @@ class HomeViewModel: ObservableObject {
     }
     
     private func fetchSpots() {
-        let userLat = UserLocation.shared.userLat
-        let userLon = UserLocation.shared.userLon
         Task {
             do {
+                let userLat = UserLocation.shared.userLat
+                let userLon = UserLocation.shared.userLon
+                print("\(userLat) \(userLon)")
                 self.isLoading = true
-                let nears = try await Array(APIService.shared.getThemeLocationBasedList(lng: userLon, lat: userLat, radius: 10000, numOfRows: 100, pageNo: 1).filter {
+                let nears = try await Array(APIService.shared.getThemeLocationBasedList(lng: UserLocation.shared.userLat, lat: UserLocation.shared.userLon, radius: 10000, numOfRows: 100, pageNo: 1).filter {
                     $0.imageUrl != nil &&
                     $0.imageUrl?.isEmpty == false
                 }.sorted(by: { GetDistance(spot: $0) ?? 0 < GetDistance(spot: $1) ?? 0}).prefix(3))

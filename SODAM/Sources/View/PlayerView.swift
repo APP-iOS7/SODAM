@@ -11,7 +11,7 @@ struct PlayerView: View {
         VStack {
             if playerViewModel.isLongVer {
                 RoundedRectangle(cornerRadius: 15)
-                    .fill(Color.primaryColor.opacity(0.8))
+                    .fill(Color.primaryColor)
                     .frame(height: 60)
                     .padding(5)
                     .overlay(
@@ -27,13 +27,22 @@ struct PlayerView: View {
                                 playerViewModel.isLongVer = false
                             }
                             .padding(.leading, 13)
-                            Text(playerViewModel.getTitle())
-                                .lineLimit(1)
-                                .font(.headline)
-                                .foregroundStyle(Color.white)
-                                .padding(5)
+                            VStack(alignment: .leading) {
+                                Text(playerViewModel.getTitle())
+                                    .lineLimit(1)
+                                    .font(.headline)
+                                    .foregroundStyle(Color.white)
+                                    .padding(.trailing, 5)
+                                HStack {
+                                    ProgressView(value: playerViewModel.currentTime, total: playerViewModel.duration)
+                                        .progressViewStyle(.linear)
+                                        .tint(Color.white)
+                                    Text(formatTime(playerViewModel.duration))
+                                        .font(.caption)
+                                        .foregroundStyle(Color.white)
+                                }
+                            }
                             Spacer()
-                            
                             if playerViewModel.isPlaying {
                                 Button {
                                     playerViewModel.pause()
@@ -58,17 +67,17 @@ struct PlayerView: View {
                                 playerViewModel.close()
                             } label: {
                                 Image(systemName: "xmark")
-                                    .font(.title3)
+                                    .fontWeight(.bold)
+                                    .font(.title2)
                                     .foregroundStyle(Color.white)
                                     .padding(.trailing, 30)
                             }
-                            
                         }
                     )
             } else {
                 HStack {
                     RoundedRectangle(cornerRadius: 15)
-                        .fill(Color.primaryColor.opacity(0.8))
+                        .fill(Color.primaryColor)
                         .frame(width: 60, height: 60)
                         .padding(5)
                         .overlay(
@@ -89,5 +98,20 @@ struct PlayerView: View {
                 }
             }
         }
+        .onChange(of: playerViewModel.currentTime, {
+            if playerViewModel.currentTime == playerViewModel.duration {
+                playerViewModel.pause()
+            }
+        })
     }
+    
+    private func formatTime(_ time: TimeInterval) -> String {
+        let min = Int(time) / 60
+        let sec = Int(time) % 60
+        return String(format: "%d:%02d", min, sec)
+    }
+}
+
+#Preview {
+    PlayerView(playerViewModel: PlayerViewModel())
 }
