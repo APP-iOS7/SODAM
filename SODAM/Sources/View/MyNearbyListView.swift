@@ -10,15 +10,13 @@ import CoreLocation
 import UICommonExtension
 
 struct MyNearbyListView: View {
-    @EnvironmentObject private var myLocation: UserLocation
     @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: MyNearbyListViewModel
-    
-    init(viewModel: MyNearbyListViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
-    }
-    
     @State private var selectSegment: SegmentState = .list
+    
+    init(myLocation: UserLocation) {
+        _viewModel = StateObject(wrappedValue: MyNearbyListViewModel(myLocation: myLocation))
+    }
     var body: some View {
         VStack {
             SegmentControlsComponent(selectSegment: $selectSegment)
@@ -67,7 +65,6 @@ struct MyNearbyListView: View {
             ToolbarItem(placement: .topBarLeading) {
                 HStack {
                     Image(systemName: "chevron.left")
-                    Text("뒤로가기")
                 }
                 .foregroundStyle(Color.primaryColor)
                 .onTapGesture {
@@ -104,7 +101,7 @@ struct MyNearbyListView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
-    // MARK: 지역 관광지 각 Row
+    // MARK: 내 주변 관광지 각 Row
     private func tourItem(item: DetailModel) -> some View {
         guard let stlid = item.stlid else {return AnyView(ProgressView())}
         return AnyView(
@@ -118,29 +115,32 @@ struct MyNearbyListView: View {
                 }
                 .aspectRatio(1,contentMode: .fit)
                 .frame(minWidth: 70, maxHeight: 70)
-                .clipShape(.rect(cornerRadius: 12))
+                .clipShape(.rect(cornerRadius: 10))
                 
                 VStack(alignment: .leading) {
                     Text(item.title)
-                        .font(.subheadline)
+                        .font(.system(size: 18))
                         .fontWeight(.semibold)
                         .padding(.bottom, 1)
                     Text(viewModel.allAddress[stlid] ?? "위치 확인이 어려운 장소입니다")
                         .font(.caption2)
                         .fontWeight(.semibold)
-                        .foregroundStyle(Color.black60)
+                        .foregroundStyle(.gray)
                     Spacer()
-                    Text(String(format: "%.1fkm", arguments: [
-                        haversineDistance(
-                            lat1: viewModel.myLocation.currentLocation?.coordinate.latitude ?? 0,
-                            lon1: viewModel.myLocation.currentLocation?.coordinate.longitude ?? 0,
-                            lat2: Double(item.mapY)!,
-                            lon2: Double(item.mapX)!)
-                        ]
-                        ))
-                    .font(.caption2)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(Color.black60)
+                    HStack {
+                        Image(systemName: "mappin.and.ellipse")
+                        Text(String(format: "%.1fkm", arguments: [
+                            haversineDistance(
+                                lat1: viewModel.myLocation.currentLocation?.coordinate.latitude ?? 0,
+                                lon1: viewModel.myLocation.currentLocation?.coordinate.longitude ?? 0,
+                                lat2: Double(item.mapY)!,
+                                lon2: Double(item.mapX)!)
+                            ]
+                            ))
+                        .font(.caption2)
+                        .fontWeight(.semibold)
+                    }
+                    .foregroundStyle(.gray)
                 }
                 Spacer()
             }
@@ -152,7 +152,6 @@ struct MyNearbyListView: View {
 
 #Preview {
     NavigationStack {
-        MyNearbyListView(viewModel: MyNearbyListViewModel(myLocation: UserLocation.shared))
-            .environmentObject(UserLocation.shared)
+        MyNearbyListView(myLocation: UserLocation.shared)
     }
 }

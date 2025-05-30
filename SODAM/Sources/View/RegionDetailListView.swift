@@ -11,7 +11,7 @@ import KakaoMapsSDK
 
 struct RegionDetailListView: View {
     @StateObject var viewModel: RegionDetailListViewModel
-    
+    @Environment(\.dismiss) private var dismiss
     init(viewModel: RegionDetailListViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
@@ -44,6 +44,17 @@ struct RegionDetailListView: View {
         .navigationTitle(viewModel.region.name)
         .navigationBarTitleDisplayMode(.inline)
         .padding()
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                HStack {
+                    Image(systemName: "chevron.left")
+                }
+                .foregroundStyle(Color.primaryColor)
+                .onTapGesture {
+                    dismiss()
+                }
+            }
+        }
     }
     
     // MARK: isLoading이 true일 동안의 View
@@ -72,23 +83,23 @@ struct RegionDetailListView: View {
                 AsyncImage(url: URL(string: item.imageUrl!)) {
                     $0.resizable()
                 } placeholder: {
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: 10)
                         .fill(Color.gray.opacity(0.2))
                         .frame(minWidth: 70, maxHeight: 70)
                 }
                 .aspectRatio(1,contentMode: .fit)
                 .frame(minWidth: 70, maxHeight: 70)
-                .clipShape(.rect(cornerRadius: 12))
+                .clipShape(.rect(cornerRadius: 10))
                 
                 VStack(alignment: .leading) {
                     Text(item.title)
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .padding(.bottom, 1)
-                    Text(viewModel.allAddress[stlid] ?? "주소가 없습니다")
+                    Text(viewModel.allAddress[stlid] ?? "위치 확인이 어려운 장소입니다")
                         .font(.caption2)
                         .fontWeight(.semibold)
-                        .foregroundStyle(Color.black60)
+                        .foregroundStyle(.gray)
                     Spacer()
                 }
                 Spacer()
