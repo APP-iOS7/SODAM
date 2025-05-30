@@ -20,7 +20,7 @@ struct HomeView: View {
                                 .fontWeight(.bold)
                             Spacer()
                             NavigationLink{
-                                MyNearbyListView(viewModel: MyNearbyListViewModel(myLocation: myLocation))
+                                MyNearbyListView(myLocation: myLocation)
                             } label: {
                                 Text("전체보기")
                                     .font(.caption)
