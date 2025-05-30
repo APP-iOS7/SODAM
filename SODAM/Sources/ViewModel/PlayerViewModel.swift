@@ -4,6 +4,8 @@ import AVFoundation
 class PlayerViewModel: ObservableObject {
     static let shared = PlayerViewModel()
     
+    @Published private(set) var duration: TimeInterval = 0.0
+    @Published private(set) var currentTime: TimeInterval = 0.0
     @Published var isPlaying: Bool = false
     @Published var isLongVer: Bool = true
     @Published var audioData: Data?
@@ -12,11 +14,13 @@ class PlayerViewModel: ObservableObject {
             if playModel != nil {
                 setPlayer()
                 play()
+                addPeriodicTimeObserver()
             }
                 }
     }
     
-    var audioPlayer: AVPlayer?
+    private var audioPlayer: AVPlayer?
+    private var timeObserver: Any?
 
     /**플레이어 세팅*/
     private func setPlayer() {
@@ -31,7 +35,26 @@ class PlayerViewModel: ObservableObject {
             print("Error loading audio: \(error)")
         }
     }
-    
+    /// Adds an observer of the player timing.
+    private func addPeriodicTimeObserver() {
+        // Create a 0.5 second interval time.
+        let interval = CMTime(value: 1, timescale: 2)
+        timeObserver = audioPlayer?.addPeriodicTimeObserver(forInterval: interval,
+                                                      queue: .main) { [weak self] time in
+            guard let self else { return }
+            // Update the published currentTime and duration values.
+            currentTime = time.seconds
+            duration = audioPlayer?.currentItem?.duration.seconds ?? 0.0
+        }
+    }
+
+
+    /// Removes the time observer from the player.
+    private func removePeriodicTimeObserver() {
+        guard let timeObserver else { return }
+        audioPlayer?.removeTimeObserver(timeObserver)
+        self.timeObserver = nil
+    }
     /**오디오 재생*/
     func play() {
         audioPlayer?.play()
@@ -42,6 +65,7 @@ class PlayerViewModel: ObservableObject {
     func pause() {
         audioPlayer?.pause()
         self.isPlaying = false
+        removePeriodicTimeObserver()
     }
     
     /**이미지URL호출
