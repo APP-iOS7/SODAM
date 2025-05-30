@@ -12,11 +12,14 @@ import SwiftData
 
 struct VisitedPlaceListView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    
     @StateObject private var viewModel = VisitedPlacesViewModel()
     
     var body: some View {
         VStack {
             SegmentControlsComponent(selectSegment: $viewModel.selectSegment)
+                .padding(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
             switch viewModel.selectSegment {
             case .list:
                 if viewModel.isLoading {
@@ -41,7 +44,20 @@ struct VisitedPlaceListView: View {
                 }
             }
         }
+        .navigationTitle("방문한 관광지")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden()
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                HStack {
+                    Image(systemName: "chevron.left")
+                }
+                .foregroundStyle(Color.primaryColor)
+                .onTapGesture {
+                    dismiss()
+                }
+            }
+        }
         .onAppear {
             viewModel.setContext(modelContext)
             //fetchDummyData()
@@ -108,7 +124,7 @@ struct VisitedPlaceListView: View {
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .frame(width: 80, height: 80)
+                            .frame(width: 70, height: 70)
                             .clipShape(Circle())
                     } else if phase.error != nil {
                         Image(systemName: "photo")
@@ -132,10 +148,14 @@ struct VisitedPlaceListView: View {
                 Text(item.title)
                     .foregroundStyle(Color.black)
                     .font(.system(size: 14, weight: .bold))
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity) // or a specific width like 80 if needed
                 Spacer()
                     .frame(height: 8)
             }
-            .frame(maxWidth: 100, maxHeight: 120)
+            .frame(maxWidth: 100, maxHeight: 140)
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 8)
