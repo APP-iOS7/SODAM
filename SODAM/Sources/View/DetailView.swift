@@ -191,7 +191,7 @@ struct DetailInfoView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(model.title)
+            Text(model.title.replacingOccurrences(of: "(초등 교과연계)", with: ""))
                 .font(.system(size: 24, weight: .bold))
                 .padding([.top], 8)
             if let addr1 =  model.addr1 {
@@ -199,7 +199,15 @@ struct DetailInfoView: View {
                     .font(.system(size: 16))
             }
             DetailButtonView(model: model)
-            Text((model.script ?? "").byCharWrapping)
+            
+            let decoded = (model.script ?? "")
+                .replacingOccurrences(of: #"\\t"#, with: "\t")
+                .replacingOccurrences(of: #"\\n"#, with: "\n")
+                .replacingOccurrences(of: #"\\u003c"#, with: "<")
+                .replacingOccurrences(of: #"\\u003e"#, with: ">")
+                .replacingOccurrences(of: #" {2,}"#, with: "\n\n", options: .regularExpression)
+
+            Text(decoded.byCharWrapping)
                 .font(.system(size: 18))
                 .padding(.vertical, 16)
                 .lineSpacing(8) // 줄 간격 늘림
