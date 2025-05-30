@@ -43,6 +43,7 @@ struct RegionDetailListView: View {
         }
         .navigationTitle(viewModel.region.name)
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden()
         .padding()
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
