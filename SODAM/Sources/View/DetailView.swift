@@ -168,9 +168,10 @@ struct DetailButtonView: View {
                     .foregroundStyle(.green)
                 }
                 
+                /*
                 Button {
                     print("share button clicked")
-                    // TODO: 공유하기 기능 활성화
+                 // TODO: 공유하기 기능 활성화
                 } label: {
                     Image(systemName: "square.and.arrow.up")
                         .resizable()
@@ -178,6 +179,7 @@ struct DetailButtonView: View {
                         .frame(width: 24, height: 24)
                 }
                 .foregroundStyle(.black)
+                 */
             }
         }
     }
