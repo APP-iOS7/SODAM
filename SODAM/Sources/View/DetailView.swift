@@ -163,7 +163,7 @@ struct DetailButtonView: View {
                         Image(systemName: "play.circle")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 24, height: 24)
+                            .frame(width: 40, height: 40)
                     }
                     .foregroundStyle(.green)
                 }
