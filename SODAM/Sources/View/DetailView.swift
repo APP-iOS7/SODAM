@@ -71,6 +71,7 @@ struct DetailHeaderView: View {
             segmentButton(type: .map)
         }
         .frame(height: 44)
+        .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8)) // 좌우 패딩
     }
     
     private func segmentButton(type: Tab) -> some View {
@@ -201,6 +202,7 @@ struct DetailInfoView: View {
             DetailButtonView(model: model)
             Text((model.script ?? "").byCharWrapping)
                 .padding(.vertical, 16)
+                .lineSpacing(8) // 줄 간격 늘림
         }
     }
 }
