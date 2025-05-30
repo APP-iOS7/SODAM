@@ -17,6 +17,7 @@ enum Tab: String {
 }
 
 public struct DetailView: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var selectedTab: Tab = .photo
     @State private var draw: Bool = false
     
@@ -54,6 +55,18 @@ public struct DetailView: View {
         }
         .onAppear { draw = true }
         .onDisappear { draw = false }
+        .navigationBarBackButtonHidden()
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                HStack {
+                    Image(systemName: "chevron.left")
+                }
+                .foregroundStyle(Color.primaryColor)
+                .onTapGesture {
+                    dismiss()
+                }
+            }
+        }
     }
 }
 
