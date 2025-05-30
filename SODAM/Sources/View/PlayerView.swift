@@ -28,11 +28,12 @@ struct PlayerView: View {
                             }
                             .padding(.leading, 13)
                             VStack(alignment: .leading) {
-                                Text(playerViewModel.getTitle())
+                                Text("aa")
                                     .lineLimit(1)
-                                    .font(.headline)
+                                    .font(.system(size: 20))
+                                    .fontWeight(.bold)
                                     .foregroundStyle(Color.white)
-                                    .padding(.trailing, 5)
+                                    .padding([.trailing, .top], 5)
                                 HStack {
                                     ProgressView(value: playerViewModel.currentTime, total: playerViewModel.duration)
                                         .progressViewStyle(.linear)
@@ -41,6 +42,7 @@ struct PlayerView: View {
                                         .font(.caption)
                                         .foregroundStyle(Color.white)
                                 }
+                                .padding(.top, -7)
                             }
                             Spacer()
                             if playerViewModel.isPlaying {
@@ -108,7 +110,7 @@ struct PlayerView: View {
     private func formatTime(_ time: TimeInterval) -> String {
         let min = Int(time) / 60
         let sec = Int(time) % 60
-        return String(format: "%d:%02d", min, sec)
+        return String(format: "%02d:%02d", min, sec)
     }
 }
 
