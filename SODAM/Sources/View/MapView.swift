@@ -54,6 +54,7 @@ struct KakaoMapView: UIViewRepresentable {
   var defaultLevel: Int = 17
   var onPoiTapped: ((DetailModel) -> Void)?
   let tourList: [DetailModel]?
+    var userDotImage: UIImage? = UIImage(named: "UserDot") // ← 추가!
   
   // 여러 상황에 맞는 생성자
   init(
@@ -61,20 +62,23 @@ struct KakaoMapView: UIViewRepresentable {
        markerCoordinate: CLLocationCoordinate2D?,
        defaultLevel: Int = 17,
        tourList: [DetailModel]? = nil,
-       onPoiTapped: ((DetailModel) -> Void)? = nil
+       onPoiTapped: ((DetailModel) -> Void)? = nil,
+       userDotImage: UIImage? = UIImage(named: "UserDot") // ← 기본값 설정
   ) {
        _draw = draw
        self.markerCoordinate = markerCoordinate
        self.defaultLevel = defaultLevel
        self.tourList = tourList
        self.onPoiTapped = onPoiTapped
+      self.userDotImage = userDotImage
   }
     
   func makeCoordinator() -> KakaoMapCoordinator {
       let coordinator = KakaoMapCoordinator(
            initialLocation: markerCoordinate,
            defaultLevel: defaultLevel,
-           tourList: tourList
+           tourList: tourList,
+           userDotImage: userDotImage // ← 전달
          )
       coordinator.onPoiTapped = onPoiTapped
       return coordinator
@@ -124,11 +128,13 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
     private let defaultLevel: Int
     private var initialLocation: CLLocationCoordinate2D?
     private var userPoi: Poi?
+    private let userDotImage: UIImage? // ← 추가
     
-    init(initialLocation: CLLocationCoordinate2D?, defaultLevel: Int, tourList: [DetailModel]?) {
+    init(initialLocation: CLLocationCoordinate2D?, defaultLevel: Int, tourList: [DetailModel]?, userDotImage: UIImage?) {
     self.initialLocation = initialLocation
     self.defaultLevel = defaultLevel
     self.tourList = tourList
+    self.userDotImage = userDotImage // ← 할당
     super.init()
     
     NotificationCenter.default.addObserver(
@@ -297,7 +303,7 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
     
     if userPoi == nil {
       let labelManager = mapView.getLabelManager()
-      let dotImage = UIImage(named: "UserDot")!
+      let dotImage = userDotImage ?? UIImage(named: "UserDot")!
       let iconStyle = PoiIconStyle(
         symbol: dotImage,
         anchorPoint: CGPoint(x: 0.5, y: 1.0)
