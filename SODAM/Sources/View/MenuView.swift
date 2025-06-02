@@ -9,13 +9,13 @@ import SwiftUI
 
 
 struct MenuView: View {
-    @EnvironmentObject var myLocation: UserLocation
+    @EnvironmentObject var myNearByListViewModel: MyNearbyListViewModel
     var body: some View {
         NavigationStack {
             GeometryReader { geo in
                 ZStack {
                     VStack {
-                        listView(title: "내 주변 관광지", font: .largeTitle.bold(), imageName: "tourSet", maxHeight: geo.size.height * 0.3, color: Color.secondaryColorBlue, destination: AnyView(MyNearbyListView(myLocation: myLocation)))
+                        listView(title: "내 주변 관광지", font: .largeTitle.bold(), imageName: "tourSet", maxHeight: geo.size.height * 0.3, color: Color.secondaryColorBlue, destination: AnyView(MyNearbyListView(viewModel: myNearByListViewModel)))
                         
                         listView(title: "지역별 관광지", font: .title.bold(), imageName: "locationSet", maxHeight: geo.size.height * 0.25, color: Color.secondaryColorPurple, destination: AnyView(RegionalListView()))
                         

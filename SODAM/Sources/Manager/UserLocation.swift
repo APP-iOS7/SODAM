@@ -39,6 +39,10 @@ final class UserLocation: NSObject, ObservableObject {
   func stopUpdatingLocation() {
     locationManager.stopUpdatingLocation()
   }
+    
+    func getStatus() -> CLAuthorizationStatus {
+        locationManager.authorizationStatus
+    }
 }
 
 extension UserLocation: CLLocationManagerDelegate {
