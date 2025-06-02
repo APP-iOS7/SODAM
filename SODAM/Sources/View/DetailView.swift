@@ -53,7 +53,10 @@ public struct DetailView: View {
             .padding(8)
             .frame(maxHeight: .infinity, alignment: .top)
         }
-        .onAppear { draw = true }
+        .onAppear {
+            draw = true
+            //print(item?.script ?? "")
+        }
         .onDisappear { draw = false }
         .navigationBarBackButtonHidden()
         .toolbar {
@@ -215,11 +218,10 @@ struct DetailInfoView: View {
             DetailButtonView(model: model)
             
             let decoded = (model.script ?? "")
-                .replacingOccurrences(of: #"\\t"#, with: "\t")
-                .replacingOccurrences(of: #"\\n"#, with: "\n")
-                .replacingOccurrences(of: #"\\u003c"#, with: "<")
-                .replacingOccurrences(of: #"\\u003e"#, with: ">")
+                .replacingOccurrences(of: #"\t"#, with: "\n")
                 .replacingOccurrences(of: #" {2,}"#, with: "\n\n", options: .regularExpression)
+                .replacingOccurrences(of: #"\u003c"#, with: "<")
+                .replacingOccurrences(of: #"\u003e"#, with: ">")
 
             Text(decoded.byCharWrapping)
                 .font(.system(size: 18))
