@@ -14,10 +14,6 @@ struct MyNearbyListView: View {
     @StateObject var viewModel: MyNearbyListViewModel
     @State private var selectSegment: SegmentState = .list
     
-    init(myLocation: UserLocation) {
-        _viewModel = StateObject(wrappedValue: MyNearbyListViewModel(myLocation: myLocation))
-    }
-    
     var body: some View {
         let lat = viewModel.myLocation.currentLocation?.coordinate.latitude ?? 0
         let lng = viewModel.myLocation.currentLocation?.coordinate.longitude ?? 0
@@ -154,8 +150,8 @@ struct MyNearbyListView: View {
     }
 }
 
-#Preview {
-    NavigationStack {
-        MyNearbyListView(myLocation: UserLocation.shared)
-    }
-}
+//#Preview {
+//    NavigationStack {
+//        MyNearbyListView(viewModel: <#MyNearbyListViewModel#>)
+//    }
+//}
