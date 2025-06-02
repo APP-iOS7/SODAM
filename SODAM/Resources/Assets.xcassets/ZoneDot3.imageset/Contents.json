@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "ZoneDot3.png",
+      "filename" : "ZoneDotY.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "ZoneDotY_2.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "ZoneDotY_3.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
