@@ -17,6 +17,7 @@ enum Tab: String {
 }
 
 public struct DetailView: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var selectedTab: Tab = .photo
     @State private var draw: Bool = false
     
@@ -54,6 +55,18 @@ public struct DetailView: View {
         }
         .onAppear { draw = true }
         .onDisappear { draw = false }
+        .navigationBarBackButtonHidden()
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                HStack {
+                    Image(systemName: "chevron.left")
+                }
+                .foregroundStyle(Color.primaryColor)
+                .onTapGesture {
+                    dismiss()
+                }
+            }
+        }
     }
 }
 
@@ -71,6 +84,7 @@ struct DetailHeaderView: View {
             segmentButton(type: .map)
         }
         .frame(height: 44)
+        .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8)) // 좌우 패딩
     }
     
     private func segmentButton(type: Tab) -> some View {
@@ -124,7 +138,8 @@ struct DetailImageView: View {
                     markerCoordinate: CLLocationCoordinate2D(
                         latitude: regionLocation?.latitude ?? 0.0,
                         longitude: regionLocation?.longitude ?? 0.0
-                    )
+                    ),
+                    userDotImage: UIImage(named: "mapPin")
                 )
             }
         }
@@ -149,7 +164,7 @@ struct DetailButtonView: View {
             
             let km = String(format: "%.2f", distance)
             Text("나와의 거리 \(km)km")
-                .font(.system(size: 16, weight: .semibold))
+                .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(.green)
             Spacer()
             HStack(spacing: 12) {
@@ -157,20 +172,20 @@ struct DetailButtonView: View {
                 if let audioUrl = model.audioUrl {
                     Button {
                         print("play button clicked")
-                        // TODO: 플레이어 재생
                         sendPlayState(state: true, spot: model)
                     } label: {
                         Image(systemName: "play.circle")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 24, height: 24)
+                            .frame(width: 40, height: 40)
                     }
                     .foregroundStyle(.green)
                 }
                 
+                /*
                 Button {
                     print("share button clicked")
-                    // TODO: 공유하기 기능 활성화
+                 // TODO: 공유하기 기능 활성화
                 } label: {
                     Image(systemName: "square.and.arrow.up")
                         .resizable()
@@ -178,6 +193,7 @@ struct DetailButtonView: View {
                         .frame(width: 24, height: 24)
                 }
                 .foregroundStyle(.black)
+                 */
             }
         }
     }
@@ -189,16 +205,26 @@ struct DetailInfoView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(model.title)
+            Text(model.title.replacingOccurrences(of: "(초등 교과연계)", with: ""))
                 .font(.system(size: 24, weight: .bold))
                 .padding([.top], 8)
             if let addr1 =  model.addr1 {
                 Text("\(addr1) \(model.addr2 ?? "")")
-                    .font(.system(size: 12))
+                    .font(.system(size: 16))
             }
             DetailButtonView(model: model)
-            Text((model.script ?? "").byCharWrapping)
+            
+            let decoded = (model.script ?? "")
+                .replacingOccurrences(of: #"\\t"#, with: "\t")
+                .replacingOccurrences(of: #"\\n"#, with: "\n")
+                .replacingOccurrences(of: #"\\u003c"#, with: "<")
+                .replacingOccurrences(of: #"\\u003e"#, with: ">")
+                .replacingOccurrences(of: #" {2,}"#, with: "\n\n", options: .regularExpression)
+
+            Text(decoded.byCharWrapping)
+                .font(.system(size: 18))
                 .padding(.vertical, 16)
+                .lineSpacing(8) // 줄 간격 늘림
         }
     }
 }

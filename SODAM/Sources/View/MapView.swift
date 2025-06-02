@@ -15,19 +15,11 @@ struct MapView: View {
   let initialLocation: CLLocationCoordinate2D?
   let bottomInset: CGFloat
   
-//  init() {
-//    if let kakaoAppKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY") as? String {
-//      SDKInitializer.InitSDK(appKey: kakaoAppKey)
-//    } else {
-//      print("Kakao App Key is missing in Info.plist")
-//    }
-//  }
   init(
     draw: Binding<Bool>,
     initialLocation: CLLocationCoordinate2D?,
     bottomInset: CGFloat
   ) {
-//    print("[D]지도가 사용 할 공간 높이 : \(bottomInset)")
     self._draw = draw
     self.initialLocation = initialLocation
     self.bottomInset = bottomInset
@@ -41,14 +33,12 @@ struct MapView: View {
   var body: some View {
     KakaoMapView(
       draw: $draw,
-//      markerCoordinate: userLocation.currentLocation?.coordinate,
       markerCoordinate: initialLocation,
       bottomInset: bottomInset
     )
     .onAppear{
       userLocation.startUpdatingLocation()
       draw = true
-      //      print("[D]userLocation : \(String(describing: userLocation.currentLocation))")
     }
     .onDisappear{
       draw = false
@@ -57,7 +47,6 @@ struct MapView: View {
       maxWidth: .infinity,
       maxHeight: .infinity
     )
-//    .ignoresSafeArea()
     .ignoresSafeArea(edges: .top)
   }
 }
@@ -76,6 +65,7 @@ struct KakaoMapView: UIViewRepresentable {
   var onPoiTapped: ((DetailModel) -> Void)?
   let tourList: [DetailModel]?
   let bottomInset: CGFloat
+  var userDotImage: UIImage? = UIImage(named: "UserDot")
   
   init(
     draw: Binding<Bool>,
@@ -83,7 +73,8 @@ struct KakaoMapView: UIViewRepresentable {
     defaultLevel: Int = 17,
     tourList: [DetailModel]? = nil,
     onPoiTapped: ((DetailModel) -> Void)? = nil,
-    bottomInset: CGFloat = 0
+    bottomInset: CGFloat = 0,
+    userDotImage: UIImage? = UIImage(named: "UserDot") // ← 기본값 설정
   ) {
     _draw = draw
     self.markerCoordinate = markerCoordinate
@@ -91,13 +82,15 @@ struct KakaoMapView: UIViewRepresentable {
     self.tourList = tourList
     self.onPoiTapped = onPoiTapped
     self.bottomInset = bottomInset
+    self.userDotImage = userDotImage
   }
   
   func makeCoordinator() -> KakaoMapCoordinator {
     let coordinator = KakaoMapCoordinator(
       initialLocation: markerCoordinate,
       defaultLevel: defaultLevel,
-      tourList: tourList
+      tourList: tourList,
+      userDotImage: userDotImage // ← 전달
     )
     coordinator.onPoiTapped = onPoiTapped
     return coordinator
@@ -135,7 +128,7 @@ struct KakaoMapView: UIViewRepresentable {
     }
     
     guard let mapView = context.coordinator.controller?
-        .getView("mapview") as? KakaoMap
+      .getView("mapview") as? KakaoMap
     else {
       return
     }
@@ -150,25 +143,25 @@ struct KakaoMapView: UIViewRepresentable {
       mapView.moveCamera(update)
     }
     
-//    let centerPoint: MapPoint
-//    if let poi = userPoi {
-//      centerPoint = poi.position
-//    } else if let loc = initialLocation {
-//      centerPoint = MapPoint(
-//        longitude: loc.longitude,
-//        latitude:  loc.latitude
-//      )
-//    } else {
-//      return
-//    }
-//    
-//    if let target = mapView.cameraPosition?.target {
-//      let update = CameraUpdate.make(
-//        target:   centerPoint,
-//        mapView:  mapView
-//      )
-//      mapView.moveCamera(update)
-//    }
+    //    let centerPoint: MapPoint
+    //    if let poi = userPoi {
+    //      centerPoint = poi.position
+    //    } else if let loc = initialLocation {
+    //      centerPoint = MapPoint(
+    //        longitude: loc.longitude,
+    //        latitude:  loc.latitude
+    //      )
+    //    } else {
+    //      return
+    //    }
+    //
+    //    if let target = mapView.cameraPosition?.target {
+    //      let update = CameraUpdate.make(
+    //        target:   centerPoint,
+    //        mapView:  mapView
+    //      )
+    //      mapView.moveCamera(update)
+    //    }
     
   }
   
@@ -187,11 +180,13 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
   private let defaultLevel: Int
   private var initialLocation: CLLocationCoordinate2D?
   var userPoi: Poi?
+  private let userDotImage: UIImage? // ← 추가
   
-  init(initialLocation: CLLocationCoordinate2D?, defaultLevel: Int, tourList: [DetailModel]?) {
+  init(initialLocation: CLLocationCoordinate2D?, defaultLevel: Int, tourList: [DetailModel]?, userDotImage: UIImage?) {
     self.initialLocation = initialLocation
     self.defaultLevel = defaultLevel
     self.tourList = tourList
+    self.userDotImage = userDotImage // ← 할당
     super.init()
     
     NotificationCenter.default.addObserver(
@@ -239,13 +234,6 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
     if let mapView = view as? KakaoMap {
       mapView.eventDelegate = self
     }
-    // 250519 0000 KTG
-    // 추가 테스트 후 삭제 예정.
-    //    let centeredUpdate = CameraUpdate.make(
-    //      target: MapPoint(longitude: coord.longitude, latitude: coord.latitude),
-    //      mapView: view
-    //    )
-    //    view.moveCamera(centeredUpdate)
     
     if let coord = initialLocation {
       updateUserPoi(to: coord)
@@ -258,15 +246,15 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
   
   @objc private func sheetHeightChanged(_ note: Notification) {
     guard
-            let bottomInset = note.object as? CGFloat,
+      let bottomInset = note.object as? CGFloat,
       let mapView = controller?.getView("mapview") as? KakaoMap
     else {
       return
     }
     
-        mapView.setMargins(
-          UIEdgeInsets(top:0, left: 0, bottom: bottomInset, right: 0)
-        )
+    mapView.setMargins(
+      UIEdgeInsets(top:0, left: 0, bottom: bottomInset, right: 0)
+    )
     
     let centerPoint: MapPoint
     if let poi = userPoi {
@@ -361,7 +349,7 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
     
     if userPoi == nil {
       let labelManager = mapView.getLabelManager()
-      let dotImage = UIImage(named: "UserDot")!
+      let dotImage = userDotImage ?? UIImage(named: "UserDot")!
       let iconStyle = PoiIconStyle(
         symbol: dotImage,
         anchorPoint: CGPoint(x: 0.5, y: 1.0)
