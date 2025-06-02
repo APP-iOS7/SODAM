@@ -11,7 +11,7 @@ import Combine
 import SwiftUICore
 
 class MyNearbyListViewModel: ObservableObject {
-    @Published var myLocation: UserLocation
+    @Published var myLocation: UserLocation = UserLocation.shared
     @Published var isLoading: Bool = false
     @Published var isDataLoading: Bool = false
     @Published var isCreatedViewModel: Bool = false
@@ -37,14 +37,13 @@ class MyNearbyListViewModel: ObservableObject {
         }
     }
     @Published var allAddress: [String : String] = .init()
-    @Published var radius: Int = 10000 // default 반경
+    @Published var radius: Int = 1000 // default 반경
     @Published var hasError:Bool = false
     @Published var errorMessage: String?
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(myLocation: UserLocation) {
-        self.myLocation = myLocation
+    init() {
         // 관광지 가져오기
         nearByTourListPublisher()
             .sink(receiveCompletion: { completion in

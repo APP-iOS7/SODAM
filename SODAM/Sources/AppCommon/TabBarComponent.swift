@@ -9,8 +9,9 @@ import SwiftUI
 import UICommonExtension
 
 struct TabBarComponent: View {
+    @StateObject private var viewModel = MyNearbyListViewModel()
     @State private var selectedTab: Tab = .home
-
+    
     enum Tab {
         case home
         case navigation
@@ -20,6 +21,7 @@ struct TabBarComponent: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             HomeView()
+                .environmentObject(viewModel)
                 .tabItem {
                     Image(systemName: "house")
                     Text("홈")
@@ -40,6 +42,7 @@ struct TabBarComponent: View {
                 .tag(Tab.navigation)
             
             MenuView()
+                .environmentObject(viewModel)
                 .tabItem {
                     Image(systemName: "line.3.horizontal")
                     Text("메뉴")
