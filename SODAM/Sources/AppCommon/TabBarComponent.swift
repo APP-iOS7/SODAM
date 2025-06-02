@@ -26,7 +26,13 @@ struct TabBarComponent: View {
                 }
                 .tag(Tab.home)
             
-            StartView()
+//            StartView()
+          StartView(isActive: Binding(
+            get: { selectedTab == .navigation },
+            set: { isOn in
+              if isOn { selectedTab = .navigation }
+            }
+          ))
                 .tabItem {
                     Image(systemName: "location.circle")
                     Text("시작")

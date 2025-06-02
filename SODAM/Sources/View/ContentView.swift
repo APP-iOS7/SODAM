@@ -4,7 +4,8 @@ import Combine
 public struct ContentView: View {
   @StateObject var contentViewModel: ContentViewModel = ContentViewModel()
   @StateObject var playerViewModel = PlayerViewModel.shared
-  @State private var offset = CGSizeMake(0, 300)
+  @State private var offset = CGSize.zero
+  @State private var accumulatedOffset = CGSize.zero
   public init() {
   }
   
@@ -18,24 +19,34 @@ public struct ContentView: View {
             .gesture(
               DragGesture()
                 .onChanged { gesture in
-                  if PlayerViewModel.shared.isLongVer {
-                    offset.height = gesture.translation.height
+                  if playerViewModel.isLongVer {
+                    offset.height = accumulatedOffset.height + gesture.translation.height
                   } else {
-                    offset = gesture.translation
+                    offset = accumulatedOffset + gesture.translation
                   }
                 }
                 .onEnded { gesture in
-                  if gesture.translation.height <= -(geo.size.height / 2) + (geo.size.height / 6) {
-                    offset.height = -(geo.size.height / 2) + (geo.size.height / 6)
-                  } else if gesture.translation.height >= geo.size.height / 2.6 {
+                  if offset.height <= -(geo.size.height / 2) + (geo.size.height / 11) {
+                    offset.height = -(geo.size.height / 2) + (geo.size.height / 11)
+                    accumulatedOffset.height = -(geo.size.height / 2) + (geo.size.height / 11)
+                  } else if offset.height >= geo.size.height / 2.6 {
                     offset.height = geo.size.height / 2.6
+                    accumulatedOffset.height = geo.size.height / 2.6
+                  } else {
+                    accumulatedOffset.height = accumulatedOffset.height + gesture.translation.height
                   }
-                  if !PlayerViewModel.shared.isLongVer {
-                    if gesture.translation.width <= 0 {
+                  if !playerViewModel.isLongVer {
+                    if offset.width <= 0 {
                       offset.width = 0
-                    } else if gesture.translation.width >= (geo.size.width * 0.9) {
-                      offset.width = (geo.size.width * 0.9) - 15
+                      accumulatedOffset.width = 0
+                    } else if offset.width >= (geo.size.width - 70) {
+                      offset.width = (geo.size.width - 70)
+                      accumulatedOffset.width = (geo.size.width - 70)
+                    } else {
+                      accumulatedOffset.width = accumulatedOffset.width + gesture.translation.width
                     }
+                  } else {
+                    accumulatedOffset.width = 0
                   }
                 }
             )
@@ -43,10 +54,13 @@ public struct ContentView: View {
       }
       .onAppear(perform: {
         offset = CGSizeMake(0, (geo.size.height / 2.6))
-      }
-      )
+        accumulatedOffset = CGSizeMake(0, (geo.size.height / 2.6))
+      })
       .onChange(of: playerViewModel.isLongVer, {
-        offset = CGSizeMake(0, offset.height)
+        if playerViewModel.isLongVer {
+          offset.width = 0
+          accumulatedOffset.width = 0
+        }
       })
     }
   }
@@ -56,3 +70,8 @@ public struct ContentView: View {
   ContentView()
 }
 
+extension CGSize {
+  static func + (lhs: Self, rhs: Self) -> Self {
+    CGSize(width: lhs.width + rhs.width, height: lhs.height + rhs.height)
+  }
+}

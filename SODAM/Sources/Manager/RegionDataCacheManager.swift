@@ -19,6 +19,11 @@ class RegionDataCacheManager {
         }else {
             let newViewModel = RegionDetailListViewModel(region: region)
             cacheViewModel[region.name] = newViewModel
+            
+            // 여기서 병렬 처리
+            Task {
+                newViewModel.fetchRegionListData()
+            }
             return newViewModel
         }
     }

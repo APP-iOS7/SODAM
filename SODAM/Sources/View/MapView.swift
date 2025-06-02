@@ -10,26 +10,45 @@ import KakaoMapsSDK
 import CoreLocation
 
 struct MapView: View {
+  @Binding var draw: Bool
   @EnvironmentObject private var userLocation: UserLocation
-  @State private var draw: Bool = false
+  let initialLocation: CLLocationCoordinate2D?
+  let bottomInset: CGFloat
   
-  init() {
-    if let kakaoAppKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY") as? String {
-      SDKInitializer.InitSDK(appKey: kakaoAppKey)
+//  init() {
+//    if let kakaoAppKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY") as? String {
+//      SDKInitializer.InitSDK(appKey: kakaoAppKey)
+//    } else {
+//      print("Kakao App Key is missing in Info.plist")
+//    }
+//  }
+  init(
+    draw: Binding<Bool>,
+    initialLocation: CLLocationCoordinate2D?,
+    bottomInset: CGFloat
+  ) {
+//    print("[D]지도가 사용 할 공간 높이 : \(bottomInset)")
+    self._draw = draw
+    self.initialLocation = initialLocation
+    self.bottomInset = bottomInset
+    if let key = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY") as? String {
+      SDKInitializer.InitSDK(appKey: key)
     } else {
-      print("Kakao App Key is missing in Info.plist")
+      print("[D]Key CHECK")
     }
   }
   
   var body: some View {
     KakaoMapView(
       draw: $draw,
-      markerCoordinate: userLocation.currentLocation?.coordinate
+//      markerCoordinate: userLocation.currentLocation?.coordinate,
+      markerCoordinate: initialLocation,
+      bottomInset: bottomInset
     )
     .onAppear{
       userLocation.startUpdatingLocation()
       draw = true
-//      print("[D]userLocation : \(String(describing: userLocation.currentLocation))")
+      //      print("[D]userLocation : \(String(describing: userLocation.currentLocation))")
     }
     .onDisappear{
       draw = false
@@ -38,7 +57,8 @@ struct MapView: View {
       maxWidth: .infinity,
       maxHeight: .infinity
     )
-    .ignoresSafeArea()
+//    .ignoresSafeArea()
+    .ignoresSafeArea(edges: .top)
   }
 }
 
@@ -55,36 +75,32 @@ struct KakaoMapView: UIViewRepresentable {
   var defaultLevel: Int = 17
   var onPoiTapped: ((DetailModel) -> Void)?
   let tourList: [DetailModel]?
-  //250527 1131 KTG
   let bottomInset: CGFloat
   
-  // 여러 상황에 맞는 생성자
   init(
-       draw: Binding<Bool>,
-       markerCoordinate: CLLocationCoordinate2D?,
-       defaultLevel: Int = 17,
-       tourList: [DetailModel]? = nil,
-       onPoiTapped: ((DetailModel) -> Void)? = nil,
-       // 250527 1142 KTG
-       bottomInset: CGFloat = 0
+    draw: Binding<Bool>,
+    markerCoordinate: CLLocationCoordinate2D?,
+    defaultLevel: Int = 17,
+    tourList: [DetailModel]? = nil,
+    onPoiTapped: ((DetailModel) -> Void)? = nil,
+    bottomInset: CGFloat = 0
   ) {
-       _draw = draw
-       self.markerCoordinate = markerCoordinate
-       self.defaultLevel = defaultLevel
-       self.tourList = tourList
-       self.onPoiTapped = onPoiTapped
-       // 250527 1143 KTG
-       self.bottomInset = bottomInset
+    _draw = draw
+    self.markerCoordinate = markerCoordinate
+    self.defaultLevel = defaultLevel
+    self.tourList = tourList
+    self.onPoiTapped = onPoiTapped
+    self.bottomInset = bottomInset
   }
-    
+  
   func makeCoordinator() -> KakaoMapCoordinator {
-      let coordinator = KakaoMapCoordinator(
-           initialLocation: markerCoordinate,
-           defaultLevel: defaultLevel,
-           tourList: tourList
-         )
-      coordinator.onPoiTapped = onPoiTapped
-      return coordinator
+    let coordinator = KakaoMapCoordinator(
+      initialLocation: markerCoordinate,
+      defaultLevel: defaultLevel,
+      tourList: tourList
+    )
+    coordinator.onPoiTapped = onPoiTapped
+    return coordinator
   }
   
   func makeUIView(context: Self.Context) -> KMViewContainer {
@@ -105,6 +121,8 @@ struct KakaoMapView: UIViewRepresentable {
         }
       }
       
+      context.coordinator.userPoi = nil
+      
       if let coord = markerCoordinate {
         context.coordinator.updateUserPoi(to: coord)
       }
@@ -116,16 +134,40 @@ struct KakaoMapView: UIViewRepresentable {
       }
     }
     
-    // 250527 1146 KTG
-//    if let coord = markerCoordinate {
-//      context.coordinator.updateUserPoi(to: coord)
-//    }
+    guard let mapView = context.coordinator.controller?
+        .getView("mapview") as? KakaoMap
+    else {
+      return
+    }
     
-    // 250527 1146 KTG
-//    if let mapView = context.coordinator.controller?.getView("mapview") as? KakaoMap {
-//      mapView.setMargins(
-//        UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
+    mapView.setMargins(
+      UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
+    )
+    
+    if let coord = markerCoordinate {
+      let centerPoint = MapPoint(longitude: coord.longitude, latitude: coord.latitude)
+      let update = CameraUpdate.make(target: centerPoint, mapView: mapView)
+      mapView.moveCamera(update)
+    }
+    
+//    let centerPoint: MapPoint
+//    if let poi = userPoi {
+//      centerPoint = poi.position
+//    } else if let loc = initialLocation {
+//      centerPoint = MapPoint(
+//        longitude: loc.longitude,
+//        latitude:  loc.latitude
 //      )
+//    } else {
+//      return
+//    }
+//    
+//    if let target = mapView.cameraPosition?.target {
+//      let update = CameraUpdate.make(
+//        target:   centerPoint,
+//        mapView:  mapView
+//      )
+//      mapView.moveCamera(update)
 //    }
     
   }
@@ -134,18 +176,19 @@ struct KakaoMapView: UIViewRepresentable {
     coordinator.controller?.pauseEngine()
   }
   
+  
 }
 
 class KakaoMapCoordinator: NSObject, MapControllerDelegate {
-    var controller: KMController?
-    var container: KMViewContainer?
-    var onPoiTapped: ((DetailModel) -> Void)?
-    private var tourList: [DetailModel]?
-    private let defaultLevel: Int
-    private var initialLocation: CLLocationCoordinate2D?
-    private var userPoi: Poi?
-    
-    init(initialLocation: CLLocationCoordinate2D?, defaultLevel: Int, tourList: [DetailModel]?) {
+  var controller: KMController?
+  var container: KMViewContainer?
+  var onPoiTapped: ((DetailModel) -> Void)?
+  private var tourList: [DetailModel]?
+  private let defaultLevel: Int
+  private var initialLocation: CLLocationCoordinate2D?
+  var userPoi: Poi?
+  
+  init(initialLocation: CLLocationCoordinate2D?, defaultLevel: Int, tourList: [DetailModel]?) {
     self.initialLocation = initialLocation
     self.defaultLevel = defaultLevel
     self.tourList = tourList
@@ -194,7 +237,7 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
     view.viewRect = container!.bounds
     // delegate Map
     if let mapView = view as? KakaoMap {
-        mapView.eventDelegate = self
+      mapView.eventDelegate = self
     }
     // 250519 0000 KTG
     // 추가 테스트 후 삭제 예정.
@@ -209,37 +252,41 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
     }
     // tourList가 nil 이 아니라면 marker를 넣어주는 함수 실행
     if tourList != nil  {
-        regionMarkers(tourList: tourList!)
+      regionMarkers(tourList: tourList!)
     }
   }
   
   @objc private func sheetHeightChanged(_ note: Notification) {
     guard
-      let bottomInset = note.object as? CGFloat,
+            let bottomInset = note.object as? CGFloat,
       let mapView = controller?.getView("mapview") as? KakaoMap
     else {
       return
     }
     
-    mapView.setMargins(
-      UIEdgeInsets(top:0, left: 0, bottom: bottomInset, right: 0)
-    )
+        mapView.setMargins(
+          UIEdgeInsets(top:0, left: 0, bottom: bottomInset, right: 0)
+        )
     
     let centerPoint: MapPoint
     if let poi = userPoi {
       centerPoint = poi.position
-    } else {
+    } else if let loc = initialLocation {
       centerPoint = MapPoint(
-        longitude: initialLocation?.longitude ?? 0,
-        latitude: initialLocation?.latitude ?? 0
+        longitude: loc.longitude,
+        latitude:  loc.latitude
       )
+    } else {
+      return
     }
     
-    let update = CameraUpdate.make(
-      target: centerPoint,
-      mapView: mapView
-    )
-    mapView.moveCamera(update)
+    DispatchQueue.main.async {
+      let update = CameraUpdate.make(
+        target: centerPoint,
+        mapView: mapView
+      )
+      mapView.moveCamera(update)
+    }
     
   }
   
@@ -248,62 +295,62 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
     mapView?.viewRect = CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: size)
   }
   
-    // tourList 를`func`해 지도에 Marker를 넣는 함수
+  // tourList 를`func`해 지도에 Marker를 넣는 함수
   func regionMarkers(tourList: [DetailModel]) {
     guard let mapView = controller?.getView("mapview") as? KakaoMap else { return }
-        let labelManager = mapView.getLabelManager()
-        let layerId: String = "regionMarkerLayer"
-        var layer = labelManager.getLabelLayer(layerID: layerId)
-        if layer == nil {
-            let layerOptions = LabelLayerOptions(
-                layerID: layerId,
-                competitionType: .none,
-                competitionUnit: .poi,
-                orderType: .rank,
-                zOrder: 9999
-            )
-            layer = labelManager.addLabelLayer(option: layerOptions)
-        }
-        
-      for tour in tourList {
-          guard let mapX = Double(tour.mapX),
-                let mapY = Double(tour.mapY),
-                let url = URL(string: tour.imageUrl!) else { continue }
-          
-          let point = MapPoint(longitude: mapX, latitude: mapY)
-          
-          // 비동기 이미지 다운로드
-          URLSession.shared.dataTask(with: url) { [weak layer] data, _, error in
-              guard let data = data, error == nil,
-                    let image = UIImage(data: data),
-                    let layer = layer else { return }
-
-              let resizedImage = image.resize(newWidth: 30)
-              // 이미지를 원형으로 만드는 처리
-              let circularImage = resizedImage.makeCircular()
-              let iconStyle = PoiIconStyle(
-                  symbol: circularImage,
-                  anchorPoint: CGPoint(x: 0.5, y: 0.5)
-              )
-              
-              let styleID = tour.stlid!
-              let levelStyle = PerLevelPoiStyle(iconStyle: iconStyle, level: 0)
-              let poiStyle = PoiStyle(styleID: styleID, styles: [levelStyle])
-              
-              labelManager.addPoiStyle(poiStyle)
-
-              DispatchQueue.main.async {
-                  let poiOptions = PoiOptions(styleID: styleID, poiID: tour.stlid!)
-                  poiOptions.clickable = true
-                  if let poi = layer.addPoi(option: poiOptions, at: point) {
-                      poi.show()
-                  }
-              }
-          }.resume()
-      }
-  }
-
+    let labelManager = mapView.getLabelManager()
+    let layerId: String = "regionMarkerLayer"
+    var layer = labelManager.getLabelLayer(layerID: layerId)
+    if layer == nil {
+      let layerOptions = LabelLayerOptions(
+        layerID: layerId,
+        competitionType: .none,
+        competitionUnit: .poi,
+        orderType: .rank,
+        zOrder: 9999
+      )
+      layer = labelManager.addLabelLayer(option: layerOptions)
+    }
     
+    for tour in tourList {
+      guard let mapX = Double(tour.mapX),
+            let mapY = Double(tour.mapY),
+            let url = URL(string: tour.imageUrl!) else { continue }
+      
+      let point = MapPoint(longitude: mapX, latitude: mapY)
+      
+      // 비동기 이미지 다운로드
+      URLSession.shared.dataTask(with: url) { [weak layer] data, _, error in
+        guard let data = data, error == nil,
+              let image = UIImage(data: data),
+              let layer = layer else { return }
+        
+        let resizedImage = image.resize(newWidth: 30)
+        // 이미지를 원형으로 만드는 처리
+        let circularImage = resizedImage.makeCircular()
+        let iconStyle = PoiIconStyle(
+          symbol: circularImage,
+          anchorPoint: CGPoint(x: 0.5, y: 0.5)
+        )
+        
+        let styleID = tour.stlid!
+        let levelStyle = PerLevelPoiStyle(iconStyle: iconStyle, level: 0)
+        let poiStyle = PoiStyle(styleID: styleID, styles: [levelStyle])
+        
+        labelManager.addPoiStyle(poiStyle)
+        
+        DispatchQueue.main.async {
+          let poiOptions = PoiOptions(styleID: styleID, poiID: tour.stlid!)
+          poiOptions.clickable = true
+          if let poi = layer.addPoi(option: poiOptions, at: point) {
+            poi.show()
+          }
+        }
+      }.resume()
+    }
+  }
+  
+  
   func updateUserPoi(to coord: CLLocationCoordinate2D) {
     let point = MapPoint(longitude: coord.longitude, latitude: coord.latitude)
     
@@ -356,14 +403,14 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
 
 // KaKaoMapCoordinator Map 이벤트 Delegate 확장
 extension KakaoMapCoordinator: KakaoMapEventDelegate {
-    func poiDidTapped(kakaoMap: KakaoMap, layerID: String, poiID: String, position: MapPoint) {
-        guard let tourList = tourList else {
-            return
-        }
-
-        guard let selectTour = tourList.first(where: { $0.stlid == poiID }) else {
-            return
-        }
-        onPoiTapped?(selectTour)
+  func poiDidTapped(kakaoMap: KakaoMap, layerID: String, poiID: String, position: MapPoint) {
+    guard let tourList = tourList else {
+      return
     }
+    
+    guard let selectTour = tourList.first(where: { $0.stlid == poiID }) else {
+      return
+    }
+    onPoiTapped?(selectTour)
+  }
 }
