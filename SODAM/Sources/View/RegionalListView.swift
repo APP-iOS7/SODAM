@@ -14,13 +14,13 @@ struct RegionalListView: View {
     
     // grid
     let columns = [
-        GridItem(.flexible()),
-        GridItem(.flexible())
+        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
     ]
     @Environment(\.dismiss) private var dismiss
     var body: some View {
         GeometryReader { geo in
-            LazyVGrid(columns: columns, spacing: 20) {
+            LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(regions) { region in
                     NavigationLink(
                         destination: RegionDetailListView(viewModel: cache.get(region: region))
@@ -30,6 +30,7 @@ struct RegionalListView: View {
                 }
             }
             .padding()
+            
         }
         .navigationTitle("지역 선택")
         .navigationBarTitleDisplayMode(.inline)
@@ -38,8 +39,8 @@ struct RegionalListView: View {
             ToolbarItem(placement: .topBarLeading) {
                 HStack {
                     Image(systemName: "chevron.left")
-                    Text("뒤로가기")
                 }
+                .foregroundStyle(Color.primaryColor)
                 .onTapGesture {
                     dismiss()
                 }
@@ -52,7 +53,7 @@ struct RegionalListView: View {
         Image(region.imageName)
             .resizable()
             .frame(maxWidth: .infinity)
-            .frame(height: geo.size.height * 0.17)
+            .frame(height: (geo.size.height - geo.safeAreaInsets.bottom) * 0.17)
             .clipShape(.rect(cornerRadius: 15))
             .overlay {
                 ZStack {
@@ -60,7 +61,7 @@ struct RegionalListView: View {
                         .fill(.black.opacity(0.4))
                     
                     Text(region.name)
-                        .font(.title2)
+                        .font(geo.size.height > 780 ? .title2 : .title3)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
                 }
