@@ -39,8 +39,10 @@ extension NetworkManager {
 
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
-            print(data, response)
-            print(String(data: data, encoding: .utf8))
+            // 250521 9999 KTG
+            // 임시 주석
+//            print(data, response)
+//            print(String(data: data, encoding: .utf8))
             
             guard let httpResponse = response as? HTTPURLResponse,
                   200..<300 ~= httpResponse.statusCode else {

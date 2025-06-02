@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import KakaoMapsSDK
 import CoreLocation
 
 extension Notification.Name {
@@ -14,71 +13,96 @@ extension Notification.Name {
 }
 
 struct StartView: View {
+  @Binding var isActive: Bool
   @EnvironmentObject private var userLocation: UserLocation
+  @StateObject private var viewModel = StartViewModel()
+  @State private var draw: Bool = false
+  
+  // 시트 오프셋 상태
   @State private var sheetOffset: CGFloat = 0
-  @State private var lastDragValue: CGFloat = 0
+
+  // 드레그 상태
+  @State private var lastDrag:    CGFloat = 0
+
+  // 높이 비율
+  private let fractions: [CGFloat] = [0.1, 0.5, 0.95]
+  
+  @State private var screenHeight: CGFloat = 0
+  @State private var safeHeight: CGFloat = 0
   
   var body: some View {
     GeometryReader { proxy in
-      // 아이폰 16 프로
-      // totalHeight : 690
-      // safeTop : 62
-      // safeBottom : 0
-      let totalHeight = proxy.size.height
-//      let safeTop = proxy.safeAreaInsets.top
-      let safeBottom = proxy.safeAreaInsets.bottom
+      let snapOffsets = calculateSnapOffsets(screenHeight: screenHeight, safeBottom: safeHeight)
       
-      let closedHeight = totalHeight * 0.03
-      let openMidHeight = totalHeight * 0.50
-      let openFullHeight = totalHeight * 0.97
-      
-      let closedOffset = totalHeight - safeBottom - closedHeight
-      let openMidOffset = totalHeight - safeBottom - openMidHeight
-      let openFullOffset = totalHeight - safeBottom - openFullHeight
+      let minY = snapOffsets[2]
+      let maxY = snapOffsets[0]
       
       ZStack(alignment: .bottom) {
-        MapView()
-          .environmentObject(userLocation)
-          .ignoresSafeArea()
-          .onChange(of: sheetOffset) { _, newOffset in
-            let visibleHeight = totalHeight - newOffset
-            NotificationCenter.default.post(
-              name: .sheetVisibleHeightChanged,
-              object: visibleHeight
-            )
-          }
+        MapView(
+          draw: $draw,
+          initialLocation: userLocation.currentLocation?.coordinate,
+//          bottomInset: totalH - sheetOffset - safeBottom - tabBarHeight
+          bottomInset: screenHeight - sheetOffset
+        )
+        .environmentObject(userLocation)
+//        .ignoresSafeArea(edges: .top)
+//        .onChange(of: sheetOffset) { _, newOffset in
+//          let visibleHeight = totalH - newOffset
+//          NotificationCenter.default.post(
+//            name: .sheetVisibleHeightChanged,
+//            object: visibleHeight
+//          )
+//        }
         
-        NearTouristSpotView()
-          .frame(height: totalHeight)
+        NearTouristSpotView(viewModel: viewModel)
+          .frame(height: screenHeight)
           .offset(y: sheetOffset)
           .gesture(
             DragGesture()
-              .onChanged { value in
-                let delta = value.translation.height - lastDragValue
+              .onChanged { g in
+                let delta = g.translation.height - lastDrag
                 sheetOffset += delta
-                lastDragValue = value.translation.height
+                lastDrag = g.translation.height
+                sheetOffset = sheetOffset.clamped(to: maxY...minY)
               }
               .onEnded { _ in
-                let snapPoints = [closedOffset, openMidOffset, openFullOffset]
-                let closest = snapPoints.min {
+                let target = snapOffsets.min {
                   abs($0 - sheetOffset) < abs($1 - sheetOffset)
                 }!
                 withAnimation(.interactiveSpring()) {
-                  sheetOffset = closest
+                  sheetOffset = target
                 }
-                lastDragValue = 0
+                lastDrag = 0
               }
           )
-          .onAppear {
-            sheetOffset = closedOffset
-          }
       }
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
+      .onAppear {
+        DispatchQueue.main.async {
+          screenHeight = proxy.size.height
+          safeHeight = proxy.safeAreaInsets.bottom
+          sheetOffset = screenHeight * 0.5
+        }
+      }
+      
     }
   }
   
+  private func calculateSnapOffsets(screenHeight: CGFloat, safeBottom: CGFloat) -> [CGFloat] {
+    return fractions.map { frac in
+      screenHeight * frac
+    }
+  }
+}
+
+fileprivate extension Comparable {
+  func clamped(to range: ClosedRange<Self>) -> Self {
+    min(max(self, range.lowerBound), range.upperBound)
+  }
 }
 
 //#Preview {
-//  SrartView()
+//  StartView()
 //}
+
 
