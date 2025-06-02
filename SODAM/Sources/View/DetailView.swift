@@ -161,7 +161,7 @@ struct DetailButtonView: View {
     var body: some View {
         HStack {
             let distance = haversineDistance(
-                lat1: 37.4981, lon1: 126.9220, // TODO: 현재 내 위치 가져오기
+                lat1: UserLocation.shared.userLat, lon1: UserLocation.shared.userLon,
                 lat2: Double(model.mapY) ?? 37.5, lon2: Double(model.mapX) ?? 126.9
             )
             
