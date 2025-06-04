@@ -17,7 +17,7 @@ struct TabBarComponent: View {
         case navigation
         case menu
     }
-
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             HomeView()
@@ -28,18 +28,18 @@ struct TabBarComponent: View {
                 }
                 .tag(Tab.home)
             
-//            StartView()
-          StartView(isActive: Binding(
-            get: { selectedTab == .navigation },
-            set: { isOn in
-              if isOn { selectedTab = .navigation }
+            StartView()
+//            StartView(isActive: Binding(
+//                get: { selectedTab == .navigation },
+//                set: { isOn in
+//                    if isOn { selectedTab = .navigation }
+//                }
+//            ))
+            .tabItem {
+                Image(systemName: "location.circle")
+                Text("시작")
             }
-          ))
-                .tabItem {
-                    Image(systemName: "location.circle")
-                    Text("시작")
-                }
-                .tag(Tab.navigation)
+            .tag(Tab.navigation)
             
             MenuView()
                 .environmentObject(viewModel)
