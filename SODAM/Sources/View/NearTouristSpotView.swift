@@ -59,12 +59,10 @@ struct NearTouristSpotView: View {
     }
 }
 
-// 250521 1605 KTG
 struct TouristSpotTestView: View {
     @EnvironmentObject private var userLocation: UserLocation
     @ObservedObject var viewModel: StartViewModel
     let theme: DetailModel
-    //  let imageUrl: String = "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/9072.jpg"
     let playTime = 61
     
     var body: some View {
@@ -108,9 +106,17 @@ struct TouristSpotTestView: View {
             HStack(alignment: .center) {
                 Text("\(String(format: "%02d", (Int(theme.playTime ?? "0") ?? 0) / 60)):\(String(format: "%02d", (Int(theme.playTime ?? "0") ?? 0 ) % 60))")
                     .font(.system(size: 16))
-                Image(systemName: "play.circle")
-                    .fontWeight(.bold)
-                    .font(.system(size: 16))
+                
+                Button {
+                    sendPlayState(state: true, spot: theme)
+                } label: {
+                    Image(systemName: "play.circle")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                }
+                .foregroundStyle(.green)
+                
             }
             .foregroundStyle(Color.black)
             .padding(.trailing, 5)
