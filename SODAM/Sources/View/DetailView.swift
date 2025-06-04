@@ -53,7 +53,10 @@ public struct DetailView: View {
             .padding(8)
             .frame(maxHeight: .infinity, alignment: .top)
         }
-        .onAppear { draw = true }
+        .onAppear {
+            draw = true
+            //print(item?.script ?? "")
+        }
         .onDisappear { draw = false }
         .navigationBarBackButtonHidden()
         .toolbar {
@@ -158,7 +161,7 @@ struct DetailButtonView: View {
     var body: some View {
         HStack {
             let distance = haversineDistance(
-                lat1: 37.4981, lon1: 126.9220, // TODO: 현재 내 위치 가져오기
+                lat1: UserLocation.shared.userLat, lon1: UserLocation.shared.userLon,
                 lat2: Double(model.mapY) ?? 37.5, lon2: Double(model.mapX) ?? 126.9
             )
             
@@ -215,11 +218,10 @@ struct DetailInfoView: View {
             DetailButtonView(model: model)
             
             let decoded = (model.script ?? "")
-                .replacingOccurrences(of: #"\\t"#, with: "\t")
-                .replacingOccurrences(of: #"\\n"#, with: "\n")
-                .replacingOccurrences(of: #"\\u003c"#, with: "<")
-                .replacingOccurrences(of: #"\\u003e"#, with: ">")
+                .replacingOccurrences(of: #"\t"#, with: "\n")
                 .replacingOccurrences(of: #" {2,}"#, with: "\n\n", options: .regularExpression)
+                .replacingOccurrences(of: #"\u003c"#, with: "<")
+                .replacingOccurrences(of: #"\u003e"#, with: ">")
 
             Text(decoded.byCharWrapping)
                 .font(.system(size: 18))
