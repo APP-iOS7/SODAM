@@ -14,6 +14,7 @@ import CoreLocation
 
 struct VisitedPlaceListView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.colorScheme) var colorScheme
     @Environment(\.dismiss) private var dismiss
     
     @StateObject private var viewModel = VisitedPlacesViewModel()
@@ -174,13 +175,13 @@ struct VisitedPlaceListView: View {
                 }
                 .overlay(
                     Circle()
-                        .stroke(Color.white, lineWidth: 4)
+                        .stroke(colorScheme == .dark ? Color.secondaryColorBlack : Color.white, lineWidth: 4)
                         .shadow(radius: 3)
                 )
                 Spacer()
                 // 관광지 이름
                 Text(item.title)
-                    .foregroundStyle(Color.black)
+                    .foregroundStyle(Color.textColor)
                     .font(.system(size: 14, weight: .bold))
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
@@ -193,9 +194,10 @@ struct VisitedPlaceListView: View {
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.white)
-                    .stroke(Color.black40, lineWidth: 1)
+                    .fill(colorScheme == .dark ? Color.secondaryColorBlack : Color.white)
+                    .stroke(colorScheme == .dark ? Color.clear : Color.black40, lineWidth: 1)
                 )
             )
         }
 }
+
