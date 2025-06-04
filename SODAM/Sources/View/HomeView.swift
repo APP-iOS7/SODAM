@@ -27,6 +27,7 @@ struct HomeView: View {
                                     .foregroundStyle(Color.gray)
                             }
                         }
+                        
                         VStack {
                             Divider()
                             if myNearByListViewModel.isLoading {
@@ -43,8 +44,7 @@ struct HomeView: View {
                                     Divider()
                                 }
                             } else {
-                                Text("주변에 관광지가 없습니다.")
-                                    .padding(60)
+                                isEmptyView
                             }
                         }
                     }
@@ -77,14 +77,14 @@ struct HomeView: View {
                                 }
                             }
                         } else {
-                            Text("방문한 관광지가 없습니다.")
+                            Text("방문한 관광지가 없습니다")
                                 .padding(30)
                         }
                     }
                     .frame(height: 130, alignment: .top)
                     .padding([.leading,.trailing], 15)
                     
-                    //MARK: Player가 켜져있을 떄만 
+                    //MARK: Player가 켜져있을 떄만
                     if homeViewModel.playerState {
                         RoundedRectangle(cornerRadius: 15)
                             .fill(Color.clear)
@@ -94,11 +94,25 @@ struct HomeView: View {
                 }
             }
         }
-        .onChange(of: UserLocation.shared.getStatus(), {
-            if UserLocation.shared.getStatus() == .authorizedAlways || UserLocation.shared.getStatus() == .authorizedWhenInUse {
-                myNearByListViewModel.radius = 10000
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+            let status = UserLocation.shared.getStatus()
+            if status == .authorizedAlways || status == .authorizedWhenInUse {
+                if myNearByListViewModel.radius != 10000 {
+                    myNearByListViewModel.radius = 10000
+                }
             }
-        })
+        }
+    }
+    // MARK: nearTourList가 비어있을 경우 -> View
+    private var isEmptyView: some View {
+        VStack {
+            Image("NotFind")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+            Text("주변에 관광지가 없어요")
+                .offset(y: -10)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
@@ -111,13 +125,17 @@ struct NearSpotListCellView: View {
     let spot: DetailModel
     var body: some View {
         HStack(alignment: .top) {
-            AsyncImage(url: URL(string: spot.imageUrl ?? "")) { image in
-                image.resizable()
+            AsyncImage(url: URL(string: spot.imageUrl ?? "")) {
+                $0.resizable()
             } placeholder: {
-                ProgressView()
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(minWidth: 70, maxHeight: 70)
             }
-            .frame(width: 70, height: 70)
-            .cornerRadius(10)
+            .aspectRatio(1,contentMode: .fit)
+            .frame(minWidth: 70, maxHeight: 70)
+            .clipShape(.rect(cornerRadius: 10))
+            
             VStack(alignment: .leading) {
                 Text(spot.title)
                     .foregroundStyle(Color.textColor)

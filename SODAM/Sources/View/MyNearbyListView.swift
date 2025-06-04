@@ -39,7 +39,7 @@ struct MyNearbyListView: View {
                 if !viewModel.isDataLoading {
                     loadingView
                 }else {
-                    if viewModel.nearTourList.isEmpty {
+                    if viewModel.sortedViewModel.isEmpty {
                         isEmptyView
                     }else {
                         ScrollView {
@@ -109,7 +109,7 @@ struct MyNearbyListView: View {
                 AsyncImage(url: URL(string: item.imageUrl!)) {
                     $0.resizable()
                 } placeholder: {
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: 10)
                         .fill(Color.gray.opacity(0.2))
                         .frame(minWidth: 70, maxHeight: 70)
                 }
