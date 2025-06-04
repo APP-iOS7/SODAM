@@ -12,19 +12,13 @@ import CoreLocation
 struct MapView: View {
     @Binding var draw: Bool
     @EnvironmentObject private var userLocation: UserLocation
-    //  let initialLocation: CLLocationCoordinate2D?
-    let bottomInset: CGFloat
     let tourList: [DetailModel]
     
     init(
         draw: Binding<Bool>,
-        initialLocation: CLLocationCoordinate2D?,
-        bottomInset: CGFloat,
-        tourList: [DetailModel] = []
+        tourList: [DetailModel]
     ) {
         self._draw = draw
-        //    self.initialLocation = initialLocation
-        self.bottomInset = bottomInset
         self.tourList = tourList
         
         if let key = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY") as? String {
@@ -37,13 +31,10 @@ struct MapView: View {
     var body: some View {
         KakaoMapView(
             draw: $draw,
-            //            markerCoordinate: initialLocation,
             markerCoordinate: userLocation.currentLocation?.coordinate,
             tourList: tourList,
-            bottomInset: bottomInset
-            
         )
-        //        .environmentObject(userLocation)
+        .environmentObject(userLocation)
         .onAppear{
             userLocation.startUpdatingLocation()
             draw = true
@@ -59,10 +50,6 @@ struct MapView: View {
     }
 }
 
-//#Preview {
-//  MapView()
-//}
-
 /** KakaoMapView 파라미터 설명 */
 /** - draw : 생성과 소멸을 나타내는 값*/
 /** - defaultLevel :  현재 Zoom Level을 나타내는 파라미터  */
@@ -72,7 +59,6 @@ struct KakaoMapView: UIViewRepresentable {
     var defaultLevel: Int = 17
     var onPoiTapped: ((DetailModel) -> Void)?
     let tourList: [DetailModel]?
-    let bottomInset: CGFloat
     var userDotImage: UIImage? = UIImage(named: "UserDot")
     
     init(
@@ -81,15 +67,13 @@ struct KakaoMapView: UIViewRepresentable {
         defaultLevel: Int = 17,
         tourList: [DetailModel]? = nil,
         onPoiTapped: ((DetailModel) -> Void)? = nil,
-        bottomInset: CGFloat = 0,
-        userDotImage: UIImage? = UIImage(named: "UserDot") // ← 기본값 설정
+        userDotImage: UIImage? = UIImage(named: "UserDot")
     ) {
         _draw = draw
         self.markerCoordinate = markerCoordinate
         self.defaultLevel = defaultLevel
         self.tourList = tourList
         self.onPoiTapped = onPoiTapped
-        self.bottomInset = bottomInset
         self.userDotImage = userDotImage
     }
     
@@ -98,7 +82,7 @@ struct KakaoMapView: UIViewRepresentable {
             initialLocation: markerCoordinate,
             defaultLevel: defaultLevel,
             tourList: tourList,
-            userDotImage: userDotImage // ← 전달
+            userDotImage: userDotImage
         )
         coordinator.onPoiTapped = onPoiTapped
         return coordinator
@@ -111,6 +95,13 @@ struct KakaoMapView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: KMViewContainer, context: Self.Context) {
+//        guard
+//            let controller = context.coordinator.controller,
+//            let mapView = controller.getView("mapview") as? KakaoMap
+//        else {
+//            return
+//        }
+        
         if draw {
             DispatchQueue.main.async {
                 if context.coordinator.controller?.isEnginePrepared == false {
@@ -125,7 +116,7 @@ struct KakaoMapView: UIViewRepresentable {
             context.coordinator.userPoi = nil
             
             if let coord = markerCoordinate {
-                //        print("[D]updateUIView Check : \(coord.latitude), \(coord.longitude)")
+
                 context.coordinator.updateUserPoi(to: coord)
             }
             
@@ -136,47 +127,11 @@ struct KakaoMapView: UIViewRepresentable {
             }
         }
         
-        guard let mapView = context.coordinator.controller?
-            .getView("mapview") as? KakaoMap
-        else {
-            return
-        }
-        mapView.setMargins(
-            UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
-        )
-        
-        if let coord = markerCoordinate {
-            let centerPoint = MapPoint(longitude: coord.longitude, latitude: coord.latitude)
-            let update = CameraUpdate.make(target: centerPoint, mapView: mapView)
-            mapView.moveCamera(update)
-        }
-        
-        //            let centerPoint: MapPoint
-        //            if let poi = userPoi {
-        //              centerPoint = poi.position
-        //            } else if let loc = initialLocation {
-        //              centerPoint = MapPoint(
-        //                longitude: loc.longitude,
-        //                latitude:  loc.latitude
-        //              )
-        //            } else {
-        //              return
-        //            }
-        //
-        //            if let target = mapView.cameraPosition?.target {
-        //              let update = CameraUpdate.make(
-        //                target:   centerPoint,
-        //                mapView:  mapView
-        //              )
-        //              mapView.moveCamera(update)
-        //            }
-        
     }
     
     static func dismantleUIView(_ uiView: KMViewContainer, coordinator: KakaoMapCoordinator) {
         coordinator.controller?.pauseEngine()
     }
-    
     
 }
 
@@ -188,16 +143,18 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
     private let defaultLevel: Int
     private var initialLocation: CLLocationCoordinate2D?
     var userPoi: Poi?
-    private let userDotImage: UIImage? // ← 추가
+    private let userDotImage: UIImage?
     
-    init(initialLocation: CLLocationCoordinate2D?,
-         defaultLevel: Int,
-         tourList: [DetailModel]?,
-         userDotImage: UIImage?) {
+    init(
+        initialLocation: CLLocationCoordinate2D?,
+        defaultLevel: Int,
+        tourList: [DetailModel]?,
+        userDotImage: UIImage?
+    ) {
         self.initialLocation = initialLocation
         self.defaultLevel = defaultLevel
         self.tourList = tourList
-        self.userDotImage = userDotImage // ← 할당
+        self.userDotImage = userDotImage
         super.init()
         
         NotificationCenter.default.addObserver(
@@ -206,7 +163,6 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
             name: .sheetVisibleHeightChanged,
             object: nil
         )
-        //        print("[D]Coordinator Observer 등록 완료 (KakaoMapCoordinator.init)")
     }
     
     deinit {
@@ -219,33 +175,14 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
         controller?.delegate = self
     }
     
-    func addViews() {
-        let coord = initialLocation ?? CLLocationCoordinate2D(latitude:0, longitude:0)
-        let defaultPosition: MapPoint = MapPoint(
-            longitude: coord.longitude,
-            latitude: coord.latitude
-        )
-        let mapviewInfo: MapviewInfo = MapviewInfo(
-            viewName: "mapview",
-            viewInfoName: "map",
-            defaultPosition: defaultPosition,
-            defaultLevel: defaultLevel
-        )
-        
-        controller?.addView(mapviewInfo)
-    }
-    
     func addViewSucceeded(_ viewName: String, viewInfoName: String) {
         guard
-            let view = controller?.getView("mapview") as? KakaoMap
+            let mapView = controller?.getView("mapview") as? KakaoMap
         else {
             return
         }
-        view.viewRect = container!.bounds
-        // delegate Map
-        if let mapView = view as? KakaoMap {
-            mapView.eventDelegate = self
-        }
+        mapView.viewRect = container!.bounds
+        mapView.eventDelegate = self
         
         if let coord = initialLocation {
             updateUserPoi(to: coord)
@@ -260,13 +197,9 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
         guard
             let bottomInset = note.object as? CGFloat,
             let mapView = controller?.getView("mapview") as? KakaoMap
-                //                print("[D]sheetHeightChanged object에 bottomInset이 없음")
         else {
-            //            print("[D]sheetHeightChanged bottomInset 수신: \(bottomInset)")
             return
         }
-        
-        //        print("[D]sheetHeightChanged bottomInset = \(bottomInset)")
         
         mapView.setMargins(
             UIEdgeInsets(top:0, left: 0, bottom: bottomInset, right: 0)
@@ -285,18 +218,18 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
         }
         
         DispatchQueue.main.async {
-            let update = CameraUpdate.make(
-                target: centerPoint,
-                mapView: mapView
-            )
+            let update = CameraUpdate.make(target: centerPoint, mapView: mapView)
             mapView.moveCamera(update)
         }
-        
     }
     
     func containerDidResized(_ size: CGSize) {
-        let mapView: KakaoMap? = controller?.getView("mapview") as? KakaoMap
-        mapView?.viewRect = CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: size)
+        guard
+            let mapView = controller?.getView("mapview") as? KakaoMap
+        else {
+            return
+        }
+        mapView.viewRect = CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: size)
     }
     
     // tourList 를`func`해 지도에 Marker를 넣는 함수
@@ -305,6 +238,7 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
         guard let mapView = controller?.getView("mapview") as? KakaoMap else { return }
         let labelManager = mapView.getLabelManager()
         let layerId: String = "regionMarkerLayer"
+        
         var layer = labelManager.getLabelLayer(layerID: layerId)
         if layer == nil {
             let layerOptions = LabelLayerOptions(
@@ -355,16 +289,14 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
         }
     }
     
-    
     func updateUserPoi(to coord: CLLocationCoordinate2D) {
         let point = MapPoint(longitude: coord.longitude, latitude: coord.latitude)
         
-        guard let mapView = controller?.getView("mapview") as? KakaoMap
+        guard
+            let mapView = controller?.getView("mapview") as? KakaoMap
         else {
             return
         }
-        
-        //    print("[D]updateUserPoi Check : \(coord.latitude), \(coord.longitude)")
         
         if userPoi == nil {
             let labelManager = mapView.getLabelManager()
@@ -396,10 +328,24 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
             poi?.show()
             userPoi = poi
         } else {
-//            print("[D]이전 위치: \(String(describing: userPoi?.position)), 새 위치: \(point)")
             userPoi?.position = point
         }
+    }
+    
+    func addViews() {
+        let coord = initialLocation ?? CLLocationCoordinate2D(latitude:0, longitude:0)
+        let defaultPosition: MapPoint = MapPoint(
+            longitude: coord.longitude,
+            latitude: coord.latitude
+        )
+        let mapviewInfo: MapviewInfo = MapviewInfo(
+            viewName: "mapview",
+            viewInfoName: "map",
+            defaultPosition: defaultPosition,
+            defaultLevel: defaultLevel
+        )
         
+        controller?.addView(mapviewInfo)
     }
     
     func pauseEngine() {
