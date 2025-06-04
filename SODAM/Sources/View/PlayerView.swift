@@ -28,7 +28,7 @@ struct PlayerView: View {
                             }
                             .padding(.leading, 13)
                             VStack(alignment: .leading) {
-                                Text("aa")
+                                Text(playerViewModel.getTitle())
                                     .lineLimit(1)
                                     .font(.system(size: 20))
                                     .fontWeight(.bold)
@@ -108,6 +108,7 @@ struct PlayerView: View {
     }
     
     private func formatTime(_ time: TimeInterval) -> String {
+        guard time.isFinite, time >= 0 else { return "0:00" }
         let min = Int(time) / 60
         let sec = Int(time) % 60
         return String(format: "%02d:%02d", min, sec)
