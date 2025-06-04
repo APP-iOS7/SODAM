@@ -9,6 +9,22 @@ import SwiftUI
 import UICommonExtension
 
 struct TabBarComponent: View {
+    
+    init() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor.black : UIColor.white
+        }
+        
+        UITabBar.appearance().standardAppearance = appearance
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance().scrollEdgeAppearance = appearance
+        }
+    }
+    
+    
+    
     @StateObject private var viewModel = MyNearbyListViewModel()
     @State private var selectedTab: Tab = .home
     
