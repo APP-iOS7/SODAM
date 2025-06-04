@@ -39,12 +39,13 @@ struct NearTouristSpotView: View {
             
             ScrollView {
                 LazyVStack(){
+                    Divider()
                     ForEach(viewModel.theme, id: \.self){ theme in
                         TouristSpotTestView(viewModel: viewModel, theme: theme)
+                        Divider()
                     }
-                    
                 }
-                .padding(EdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20))
+                .padding(EdgeInsets(top: 10, leading: 20, bottom: 100, trailing: 20))
                 
             }
         }
