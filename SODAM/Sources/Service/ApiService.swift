@@ -105,18 +105,18 @@ final class APIService {
     return items
   }
   
-  // 250523 1745 KTG
-  func getThemeLocationBasedBodyFull(lng: Double, lat: Double, radius: Int, numOfRows: Int, pageNo: Int) async throws -> StoryResponse {
-    guard let urlString = buildThemeURL(path: APIConfig.apiUrl.themeLocationBasedList, numOfRows: numOfRows, pageNo: pageNo, lng: lng, lat: lat, radius: radius)
-    else {
-      throw NetworkManager.NetworkError.invalidURL
-    }
-    
-    return try await NetworkManager.shared.fetchItemsAsync(
-      from: urlString,
-      headers: ["Content-Type":"application/json"]
-    )
-  }
+//  // 250523 1745 KTG
+//  func getThemeLocationBasedBodyFull(lng: Double, lat: Double, radius: Int, numOfRows: Int, pageNo: Int) async throws -> StoryResponse {
+//    guard let urlString = buildThemeURL(path: APIConfig.apiUrl.themeLocationBasedList, numOfRows: numOfRows, pageNo: pageNo, lng: lng, lat: lat, radius: radius)
+//    else {
+//      throw NetworkManager.NetworkError.invalidURL
+//    }
+//    
+//    return try await NetworkManager.shared.fetchItemsAsync(
+//      from: urlString,
+//      headers: ["Content-Type":"application/json"]
+//    )
+//  }
   
   /** 이야기 기본 정보 목록 조회
    * - Parameters:
