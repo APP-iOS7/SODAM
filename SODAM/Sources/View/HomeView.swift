@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct HomeView: View {
-    @EnvironmentObject var myLocation: UserLocation
     @StateObject private var homeViewModel: HomeViewModel = HomeViewModel()
+    @EnvironmentObject var myNearByListViewModel: MyNearbyListViewModel
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -20,7 +20,7 @@ struct HomeView: View {
                                 .fontWeight(.bold)
                             Spacer()
                             NavigationLink{
-                                MyNearbyListView(myLocation: myLocation)
+                                MyNearbyListView(viewModel: myNearByListViewModel)
                             } label: {
                                 Text("전체보기")
                                     .font(.caption)
@@ -29,8 +29,11 @@ struct HomeView: View {
                         }
                         VStack {
                             Divider()
-                            if !homeViewModel.IsNearSpotEmpty() {
-                                ForEach(homeViewModel.GetNearSpots(), id: \.self) { spot in
+                            if myNearByListViewModel.isLoading {
+                                ProgressView()
+                                    .padding(.top, 100)
+                            } else if !myNearByListViewModel.sortedViewModel.isEmpty && !myNearByListViewModel.isLoading {
+                                ForEach(myNearByListViewModel.sortedViewModel.prefix(3), id: \.self) { spot in
                                     NavigationLink{
                                         //TODO: DetailView로 연결
                                         DetailView(item: spot)
@@ -39,9 +42,6 @@ struct HomeView: View {
                                     }
                                     Divider()
                                 }
-                            } else if homeViewModel.IsNearSpotEmpty() && homeViewModel.isLoading {
-                                ProgressView()
-                                    .padding(.top, 100)
                             } else {
                                 Text("주변에 관광지가 없습니다.")
                                     .padding(60)
@@ -94,6 +94,11 @@ struct HomeView: View {
                 }
             }
         }
+        .onChange(of: UserLocation.shared.getStatus(), {
+            if UserLocation.shared.getStatus() == .authorizedAlways || UserLocation.shared.getStatus() == .authorizedWhenInUse {
+                myNearByListViewModel.radius = 10000
+            }
+        })
     }
 }
 

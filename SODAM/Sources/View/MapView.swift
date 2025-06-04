@@ -301,7 +301,7 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
     
     // tourList 를`func`해 지도에 Marker를 넣는 함수
     func regionMarkers(tourList: [DetailModel]) {
-        print("[D]regionMarkers CHECK ")
+//        print("[D]regionMarkers CHECK ")
         guard let mapView = controller?.getView("mapview") as? KakaoMap else { return }
         let labelManager = mapView.getLabelManager()
         let layerId: String = "regionMarkerLayer"
