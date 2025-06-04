@@ -16,31 +16,21 @@ struct StartView: View {
     @EnvironmentObject private var userLocation: UserLocation
     @StateObject private var viewModel = StartViewModel()
     @State private var draw: Bool = false
-    
-    // 시트 오프셋 상태
-    @State private var sheetOffset: CGFloat = 0
-    
-    // 드레그 상태
-    @State private var lastDrag:    CGFloat = 0
-    
-    // 높이 비율
-    private let fractions: [CGFloat] = [0.1, 0.5, 0.95]
-    
+    @State private var sheetOffset: CGFloat = 0 // 시트 오프셋 상태
+    @State private var lastDrag: CGFloat = 0 // 드레그 상태
+    private let fractions: [CGFloat] = [0.1, 0.5, 0.95] // 높이 비율
     @State private var screenHeight: CGFloat = 0
     @State private var safeHeight: CGFloat = 0
     
     var body: some View {
         GeometryReader { proxy in
             let snapOffsets = calculateSnapOffsets(screenHeight: screenHeight, safeBottom: safeHeight)
-            
             let minY = snapOffsets[2]
             let maxY = snapOffsets[0]
             
             ZStack(alignment: .bottom) {
                 MapView(
                     draw: $draw,
-                    initialLocation: userLocation.currentLocation?.coordinate,
-                    bottomInset: screenHeight - sheetOffset,
                     tourList: viewModel.theme
                 )
                 .environmentObject(userLocation)
@@ -75,42 +65,25 @@ struct StartView: View {
                     sheetOffset = screenHeight * 0.5
                     
                     let initialBottomInset = screenHeight - sheetOffset
-                    
-//                    print("[D]onAppear screenHeight : \(screenHeight)")
-//                    print("[D]onAppear sheetOffset : \(sheetOffset)")
-//                    print("[D]onAppear initialBottomInset : \(initialBottomInset)")
-                    
                     NotificationCenter.default.post(
                         name: .sheetVisibleHeightChanged,
                         object: initialBottomInset
                     )
-//                    print("[D]onAppear Notification 발송됨")
-                    
                 }
             }
-            
             .onChange(of: sheetOffset) { newOffset in
                 let updateBottomInset = screenHeight - newOffset
-                
-//                print("[D]onChange new sheetOffset : \(newOffset)")
-//                print("[D]onChange updatedBottomInset : \(updateBottomInset)")
-                
                 NotificationCenter.default.post(
                     name: .sheetVisibleHeightChanged,
                     object: updateBottomInset
                 )
-//                print("[D]onChange Notification 발송됨")
-
             }
-            
         }
-        
 //        .onReceive(userLocation.$currentLocation) { loc in
 //            if let loc = loc {
 //                print("[D]StartView Check : \(loc.coordinate.latitude), \(loc.coordinate.longitude)")
 //            }
 //        }
-        
     }
     
     private func calculateSnapOffsets(screenHeight: CGFloat, safeBottom: CGFloat) -> [CGFloat] {
