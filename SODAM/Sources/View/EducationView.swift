@@ -33,6 +33,20 @@ struct EducationView: View {
                         }
                     }
                 }
+                .navigationTitle("초등교육 관광지")
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationBarBackButtonHidden()
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        HStack {
+                            Image(systemName: "chevron.left")
+                        }
+                        .foregroundStyle(Color.primaryColor)
+                        .onTapGesture {
+                            dismiss()
+                        }
+                    }
+                }
             }
         }
     }
