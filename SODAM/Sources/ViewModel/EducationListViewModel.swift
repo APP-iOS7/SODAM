@@ -3,9 +3,11 @@ import Foundation
 class EducationListViewModel: ObservableObject {
     //    @Published var category: String
     @Published var spots: [DetailModel]
+    var navigationTitle: String
     
-    init(spots: [DetailModel]) {
+    init(spots: [DetailModel], title: String) {
         self.spots = spots
+        self.navigationTitle = title
         getAddress()
     }
     

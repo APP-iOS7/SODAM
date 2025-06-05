@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct AppSettingsView: View {
+    @Environment(\.dismiss) private var dismiss
     // [langCode: language] Dictionary
     private let languages = ["ko":"한국어", "jn": "일본어", "cn":"중국어", "en":"영어"]
     
@@ -65,6 +66,18 @@ struct AppSettingsView: View {
                         settingTitleView(text: "앱 버전", iconName: "info.circle")
                         Text(appVersion)
                             .foregroundColor(.gray)
+                    }
+                }
+            }
+            .navigationBarBackButtonHidden()
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    HStack {
+                        Image(systemName: "chevron.left")
+                    }
+                    .foregroundStyle(Color.primaryColor)
+                    .onTapGesture {
+                        dismiss()
                     }
                 }
             }
