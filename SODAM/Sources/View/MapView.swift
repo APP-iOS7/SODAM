@@ -32,7 +32,7 @@ struct MapView: View {
         KakaoMapView(
             draw: $draw,
             markerCoordinate: userLocation.currentLocation?.coordinate,
-            tourList: tourList,
+            tourList: tourList
         )
         .environmentObject(userLocation)
         .onAppear{
