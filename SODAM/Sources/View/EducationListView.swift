@@ -1,8 +1,9 @@
 import SwiftUI
 
 struct EducationListView: View {
-    
+    @Environment(\.dismiss) private var dismiss
     @StateObject var educationListViewModel: EducationListViewModel
+    
     var add: String = ""
     var body: some View {
         NavigationStack {
@@ -19,6 +20,20 @@ struct EducationListView: View {
                         Divider()
                     }
                     Spacer()
+                }
+                .navigationTitle(educationListViewModel.navigationTitle)
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationBarBackButtonHidden()
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        HStack {
+                            Image(systemName: "chevron.left")
+                        }
+                        .foregroundStyle(Color.primaryColor)
+                        .onTapGesture {
+                            dismiss()
+                        }
+                    }
                 }
             }
         }
