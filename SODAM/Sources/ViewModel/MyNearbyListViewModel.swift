@@ -16,9 +16,8 @@ class MyNearbyListViewModel: ObservableObject {
     @Published var isDataLoading: Bool = false
     @Published var isCreatedViewModel: Bool = false
     @Published var nearTourList: [DetailModel] = []
-    var sortedViewModel: [DetailModel] { // 거리 필터링
+    var sortedViewModel: [DetailModel] {
         guard let location = myLocation.currentLocation else { return nearTourList }
-        guard nearTourList.count == allAddress.count else { return nearTourList }
         
         return nearTourList.sorted {
             let distA = haversineDistance(
@@ -37,7 +36,7 @@ class MyNearbyListViewModel: ObservableObject {
         }
     }
     @Published var allAddress: [String : String] = .init()
-    @Published var radius: Int = 1000 // default 반경
+    @Published var radius: Int = 0 // default 반경
     @Published var hasError:Bool = false
     @Published var errorMessage: String?
     
@@ -68,6 +67,7 @@ class MyNearbyListViewModel: ObservableObject {
                 
             }, receiveValue: { [weak self] tourListValue in
                 self?.nearTourList = tourListValue
+                self?.allAddress = [:]
                 self?.getAddress(from: tourListValue)
                 self?.isLoading = false
                 self?.isDataLoading = true
