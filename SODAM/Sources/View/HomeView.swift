@@ -8,9 +8,9 @@ struct HomeView: View {
             ScrollView {
                 VStack {
                     NavigationLink{
-                        DetailView(item: homeViewModel.GetTodaySpot())
+                        DetailView(item: homeViewModel.todaySpot)
                     } label: {
-                        TodaySpotView(spot: homeViewModel.GetTodaySpot())
+                        TodaySpotView(spot: homeViewModel.todaySpot, isLoading: homeViewModel.isLoading)
                     }
                     
                     VStack {
@@ -148,7 +148,7 @@ struct NearSpotListCellView: View {
                     Image(systemName: "mappin.and.ellipse")
                         .font(.footnote)
                         .foregroundStyle(.gray)
-                    if let distance = GetDistance(spot: spot) {
+                    if let distance = homeViewModel.GetDistance(spot: spot) {
                         Text("\(String(format: "%.2f", distance)) km")
                             .font(.footnote)
                             .foregroundStyle(.gray)
@@ -196,36 +196,45 @@ struct VisitedSpotListCellView: View {
 
 
 struct TodaySpotView: View {
-    let spot: DetailModel
+    let spot: DetailModel?
+    let isLoading: Bool
     var body: some View {
-        AsyncImage(url: URL(string: spot.imageUrl ?? "")) { image in
-            image.resizable()
-        } placeholder: {
-            ProgressView()
-        }
-        .frame(height: 250)
-        .overlay(
-            ZStack {
-                LinearGradient(gradient: Gradient(colors: [Color.clear, Color.clear, Color.black.opacity(0.7)]), startPoint: .top, endPoint: .bottom)
-                HStack {
-                    VStack(alignment: .leading) {
-                        Spacer()
-                        Text("오늘의 이야기")
-                            .font(.headline)
-                            .foregroundStyle(Color.white)
-                        Text(spot.title)
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .foregroundStyle(Color.white)
-                        Text("\(spot.addr1 ?? "") | \(spot.audioTitle ?? "")")
-                            .font(.caption)
-                            .foregroundStyle(Color.white)
-                            .padding(.bottom, 10)
-                    }
-                    .padding(.leading, 20)
-                    Spacer()
+        if spot != nil {
+            if !isLoading {
+                AsyncImage(url: URL(string: spot!.imageUrl!)) { image in
+                    image.resizable()
+                } placeholder: {
+                    ProgressView()
                 }
+                .frame(height: 250)
+                .overlay(
+                    ZStack {
+                        LinearGradient(gradient: Gradient(colors: [Color.clear, Color.clear, Color.black.opacity(0.7)]), startPoint: .top, endPoint: .bottom)
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Spacer()
+                                Text("오늘의 이야기")
+                                    .font(.headline)
+                                    .foregroundStyle(Color.white)
+                                Text(spot!.title)
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                                    .foregroundStyle(Color.white)
+                                Text("\(spot!.addr1 ?? "") | \(spot!.audioTitle ?? "")")
+                                    .font(.caption)
+                                    .foregroundStyle(Color.white)
+                                    .padding(.bottom, 10)
+                            }
+                            .padding(.leading, 20)
+                            Spacer()
+                        }
+                    }
+                )
+            }else {
+                ProgressView()
             }
-        )
+        }else {
+            Text("현재 오늘의 이야기가 없습니다")
+        }
     }
 }
