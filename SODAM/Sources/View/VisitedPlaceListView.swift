@@ -59,7 +59,7 @@ struct VisitedPlaceListView: View {
                     ),
                     defaultLevel: 5,
                     tourList: placeItemToDetailModel(from: viewModel.items)
-                )
+                ).padding(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
             }
             
         }
