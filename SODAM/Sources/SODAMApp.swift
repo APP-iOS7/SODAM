@@ -8,6 +8,7 @@ struct SODAMApp: App {
     // 앱 시작 시 UserDefaults값 초기화 로직 호출
     init() {
         UserDefaultsManager.shared.setupDefaultsIfNeeded()
+        DataManager.shared.configure(modelContext: container.mainContext)
     }
     
     var body: some Scene {
