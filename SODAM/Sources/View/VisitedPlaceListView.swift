@@ -13,7 +13,6 @@ import KakaoMapsSDK
 import CoreLocation
 
 struct VisitedPlaceListView: View {
-    @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.dismiss) private var dismiss
     
@@ -78,7 +77,6 @@ struct VisitedPlaceListView: View {
             }
         }
         .onAppear {
-            viewModel.setContext(modelContext)
             //fetchDummyData()
             viewModel.fetchGroupedItemsByLocation()
             draw = true
@@ -134,7 +132,7 @@ struct VisitedPlaceListView: View {
                     .font(Font.system(size: 20, weight: .bold))
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
-                        ForEach(listItems) { item in
+                        ForEach(listItems, id: \.self) { item in
                             // MARK: 상세화면으로 모델링 해서 이동
                             let detailItem = DetailModel(tid: nil, tlid: nil, stid: nil, stlid: nil, themeCategory: nil, category: nil, addr1: item.addr1, addr2: item.addr2, title: item.title, mapX: item.mapX, mapY: item.mapY, audioTitle: item.audioTitle, script: item.script, playTime: item.playTime, audioUrl: item.audioURL, langCheck: nil, langCode: item.lanCode, imageUrl: item.imageUrl, createdTime: nil, modifiedtime: nil)
                             NavigationLink(destination: DetailView(item: detailItem )) {
