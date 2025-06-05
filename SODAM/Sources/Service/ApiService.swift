@@ -231,6 +231,31 @@ final class APIService {
         }
     }
     
+    /** 이야기정보 동기화 목록 조회
+     * - Parameters:
+     *      - syncStatus: 컨텐츠상태(A=신규,U=수정,D=삭제)
+     *      - numOfRows: 한 페이지 결과 수
+     *      - pageNo: 페이지 번호
+     * - Returns: 관광지 목록
+     */
+    func getStoryBasedSyncList(syncStatus: String, numOfRows: Int, pageNo: Int) async throws -> [DetailModel] {
+        // URL 빌드
+        guard let urlString = buildThemeURL(path: APIConfig.apiUrl.storyBasedSyncList, numOfRows: numOfRows, pageNo: pageNo) else {
+            throw NetworkManager.NetworkError.invalidURL
+        }
+        
+        do {
+            let storyResponse: StoryResponse = try await NetworkManager.shared.fetchItemsAsync(from: urlString, headers: ["Content-Type":"application/json"])
+            let items = storyResponse.response.body.items.item
+            return items
+        } catch NetworkManager.NetworkError.decodingFailed {
+            // 디코딩 오류 시 빈 배열 반환
+            return []
+        } catch {
+            throw error
+        }
+    }
+    
     
     /** 관광사진갤러리 목록 조회
      * - Parameters:
@@ -330,7 +355,7 @@ final class APIService {
     
     
     /// url query 구성 함수
-    func buildThemeURL(path: APIConfig.apiUrl, keyword: String? = nil, numOfRows: Int = 10, pageNo: Int = 1, lng: Double? = nil, lat: Double? = nil, radius: Int? = nil, tid: Int? = nil, tlid: Int? = nil, langCode: String = "ko") -> String? {
+    func buildThemeURL(path: APIConfig.apiUrl, keyword: String? = nil, syncStatus: String? = nil, numOfRows: Int = 10, pageNo: Int = 1, lng: Double? = nil, lat: Double? = nil, radius: Int? = nil, tid: Int? = nil, tlid: Int? = nil, langCode: String = "ko") -> String? {
         guard let tourApiKey = Bundle.main.object(forInfoDictionaryKey: "TOUR_API_KEY") as? String else {
             print("Tour Api Key is missing in Info.plist")
             return nil
@@ -367,6 +392,11 @@ final class APIService {
         if let tid = tid, let tlid = tlid {
             items.append(URLQueryItem(name:"tid", value: "\(tid)"))
             items.append(URLQueryItem(name:"tlid", value: "\(tlid)"))
+        }
+        
+        // 이야기정보 동기화 목록 조회에서 사용
+        if let syncStatus = syncStatus {
+            items.append(URLQueryItem(name:"syncStatus", value: "\(syncStatus)"))
         }
         
         components.queryItems = items
