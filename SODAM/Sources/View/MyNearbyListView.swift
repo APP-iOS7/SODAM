@@ -106,14 +106,14 @@ struct MyNearbyListView: View {
         guard let stlid = item.stlid else {return AnyView(ProgressView())}
         return AnyView(
             HStack {
-                AsyncImage(url: URL(string: item.imageUrl!)) {
-                    $0.resizable()
+                CustomAsyncImage(url: item.imageUrl) { image in
+                    image.resizable()
                 } placeholder: {
                     RoundedRectangle(cornerRadius: 10)
                         .fill(Color.gray.opacity(0.2))
                         .frame(minWidth: 70, maxHeight: 70)
                 }
-                .aspectRatio(1,contentMode: .fit)
+                .aspectRatio(1, contentMode: .fit)
                 .frame(minWidth: 70, maxHeight: 70)
                 .clipShape(.rect(cornerRadius: 10))
                 
@@ -149,9 +149,3 @@ struct MyNearbyListView: View {
         )
     }
 }
-
-//#Preview {
-//    NavigationStack {
-//        MyNearbyListView(viewModel: <#MyNearbyListViewModel#>)
-//    }
-//}
