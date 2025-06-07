@@ -7,10 +7,21 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 VStack {
-                    NavigationLink{
-                        DetailView(item: homeViewModel.todaySpot)
-                    } label: {
-                        TodaySpotView(spot: homeViewModel.todaySpot, isLoading: homeViewModel.isLoading)
+                    if homeViewModel.todaySpot != nil {
+                        NavigationLink{
+                            DetailView(item: homeViewModel.todaySpot)
+                        } label: {
+                            TodaySpotView(spot: homeViewModel.todaySpot, isLoading: homeViewModel.isLoading)
+                        }
+                    }else {
+                        HStack {
+                            Text("오늘의 이야기를 가져오지 못했습니다")
+                            Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
+                        }
+                        .onTapGesture {
+                            // 실패 시 reload
+                            homeViewModel.fetchTodayStory()
+                        }
                     }
                     
                     VStack {
@@ -34,12 +45,11 @@ struct HomeView: View {
                                 ProgressView()
                                     .padding(.top, 100)
                             } else if !myNearByListViewModel.sortedViewModel.isEmpty && !myNearByListViewModel.isLoading {
-                                ForEach(myNearByListViewModel.sortedViewModel.prefix(3), id: \.self) { spot in
-                                    NavigationLink{
-                                        //TODO: DetailView로 연결
-                                        DetailView(item: spot)
+                                ForEach(Array($myNearByListViewModel.sortedViewModel.prefix(3).enumerated()), id: \.offset) { index, bindingSpot in
+                                    NavigationLink {
+                                        DetailView(item: bindingSpot.wrappedValue)
                                     } label: {
-                                        NearSpotListCellView(homeViewModel: homeViewModel, spot: spot)
+                                        NearSpotListCellView(homeViewModel: homeViewModel, spot: bindingSpot)
                                     }
                                     Divider()
                                 }
@@ -122,17 +132,17 @@ struct HomeView: View {
 
 struct NearSpotListCellView: View {
     var homeViewModel: HomeViewModel
-    let spot: DetailModel
+    @Binding var spot: DetailModel
     var body: some View {
         HStack(alignment: .top) {
-            AsyncImage(url: URL(string: spot.imageUrl ?? "")) {
-                $0.resizable()
+            CustomAsyncImage(url: spot.imageUrl) { image in
+                image.resizable()
             } placeholder: {
                 RoundedRectangle(cornerRadius: 10)
                     .fill(Color.gray.opacity(0.2))
                     .frame(minWidth: 70, maxHeight: 70)
             }
-            .aspectRatio(1,contentMode: .fit)
+            .aspectRatio(1, contentMode: .fit)
             .frame(minWidth: 70, maxHeight: 70)
             .clipShape(.rect(cornerRadius: 10))
             
@@ -199,42 +209,38 @@ struct TodaySpotView: View {
     let spot: DetailModel?
     let isLoading: Bool
     var body: some View {
-        if spot != nil {
-            if !isLoading {
-                AsyncImage(url: URL(string: spot!.imageUrl!)) { image in
-                    image.resizable()
-                } placeholder: {
-                    ProgressView()
-                }
-                .frame(height: 250)
-                .overlay(
-                    ZStack {
-                        LinearGradient(gradient: Gradient(colors: [Color.clear, Color.clear, Color.black.opacity(0.7)]), startPoint: .top, endPoint: .bottom)
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Spacer()
-                                Text("오늘의 이야기")
-                                    .font(.headline)
-                                    .foregroundStyle(Color.white)
-                                Text(spot!.title)
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .foregroundStyle(Color.white)
-                                Text("\(spot!.addr1 ?? "") | \(spot!.audioTitle ?? "")")
-                                    .font(.caption)
-                                    .foregroundStyle(Color.white)
-                                    .padding(.bottom, 10)
-                            }
-                            .padding(.leading, 20)
-                            Spacer()
-                        }
-                    }
-                )
-            }else {
+        if !isLoading {
+            AsyncImage(url: URL(string: spot!.imageUrl!)) { image in
+                image.resizable()
+            } placeholder: {
                 ProgressView()
             }
+            .frame(height: 250)
+            .overlay(
+                ZStack {
+                    LinearGradient(gradient: Gradient(colors: [Color.clear, Color.clear, Color.black.opacity(0.7)]), startPoint: .top, endPoint: .bottom)
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Spacer()
+                            Text("오늘의 이야기")
+                                .font(.headline)
+                                .foregroundStyle(Color.white)
+                            Text(spot!.title)
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundStyle(Color.white)
+                            Text("\(spot!.addr1 ?? "") | \(spot!.audioTitle ?? "")")
+                                .font(.caption)
+                                .foregroundStyle(Color.white)
+                                .padding(.bottom, 10)
+                        }
+                        .padding(.leading, 20)
+                        Spacer()
+                    }
+                }
+            )
         }else {
-            Text("현재 오늘의 이야기가 없습니다")
+            ProgressView()
         }
     }
 }
