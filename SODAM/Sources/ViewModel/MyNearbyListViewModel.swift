@@ -16,25 +16,7 @@ class MyNearbyListViewModel: ObservableObject {
     @Published var isDataLoading: Bool = false
     @Published var isCreatedViewModel: Bool = false
     @Published var nearTourList: [DetailModel] = []
-    var sortedViewModel: [DetailModel] {
-        guard let location = myLocation.currentLocation else { return nearTourList }
-        
-        return nearTourList.sorted {
-            let distA = haversineDistance(
-                lat1: location.coordinate.latitude,
-                lon1: location.coordinate.longitude,
-                lat2: Double($0.mapY)!,
-                lon2: Double($0.mapX)!
-            )
-            let distB = haversineDistance(
-                lat1: location.coordinate.latitude,
-                lon1: location.coordinate.longitude,
-                lat2: Double($1.mapY)!,
-                lon2: Double($1.mapX)!
-            )
-            return distA < distB
-        }
-    }
+    @Published var sortedViewModel: [DetailModel] = []
     @Published var allAddress: [String : String] = .init()
     @Published var radius: Int = 0 // default 반경
     @Published var hasError:Bool = false
@@ -67,6 +49,7 @@ class MyNearbyListViewModel: ObservableObject {
                 
             }, receiveValue: { [weak self] tourListValue in
                 self?.nearTourList = tourListValue
+                self?.updateSortedNearList()
                 self?.allAddress = [:]
                 self?.getAddress(from: tourListValue)
                 self?.isLoading = false
@@ -205,6 +188,30 @@ class MyNearbyListViewModel: ObservableObject {
                     }
                 }
             }
+        }
+    }
+    
+    // sortedViewModel을 수동으로 추적하기 위한 함수
+    private func updateSortedNearList() {
+        guard let location = myLocation.currentLocation else {
+            self.sortedViewModel = nearTourList
+            return
+        }
+        
+        self.sortedViewModel = nearTourList.sorted {
+            let distA = haversineDistance(
+                lat1: location.coordinate.latitude,
+                lon1: location.coordinate.longitude,
+                lat2: Double($0.mapY)!,
+                lon2: Double($0.mapX)!
+            )
+            let distB = haversineDistance(
+                lat1: location.coordinate.latitude,
+                lon1: location.coordinate.longitude,
+                lat2: Double($1.mapY)!,
+                lon2: Double($1.mapX)!
+            )
+            return distA < distB
         }
     }
 }
