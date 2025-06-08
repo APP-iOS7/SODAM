@@ -71,7 +71,7 @@ struct StartView: View {
                     )
                 }
             }
-            .onChange(of: sheetOffset) { newOffset in
+            .onChange(of: sheetOffset) { oldOffset, newOffset in
                 let updateBottomInset = screenHeight - newOffset
                 NotificationCenter.default.post(
                     name: .sheetVisibleHeightChanged,

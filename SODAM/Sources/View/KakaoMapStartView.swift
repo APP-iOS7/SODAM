@@ -14,6 +14,10 @@ import CoreLocation
 // 37.544577, 127.055991
 // 뚝섬역
 // 37.547206, 127.047405
+// 한양대역
+// 37.555632, 127.043638
+// 양재역
+// 37.483573, 127.034894
 
 /** KakaoMapView 파라미터 설명 */
 /** - draw : 생성과 소멸을 나타내는 값*/
@@ -72,6 +76,7 @@ struct KakaoMapStartView: UIViewRepresentable {
                 }
                 if controller.isEngineActive == false {
                     controller.activateEngine()
+                    return
                 }
                 
                 context.coordinator.userPoi = nil
@@ -80,13 +85,14 @@ struct KakaoMapStartView: UIViewRepresentable {
                 }
                 
                 if let list = tourList, !list.isEmpty {
-                    context.coordinator.regionMarkers(tourList: list)
+                    context.coordinator.updateRegionMarkersIfNeeded(tourList: list)
                 }
             }
         } else {
             DispatchQueue.main.async {
                 controller.pauseEngine()
                 controller.resetEngine()
+                context.coordinator.resetTourMarkersCache()
             }
         }
         
@@ -108,6 +114,7 @@ class KakaoMapStartCoordinator: NSObject, MapControllerDelegate {
     var userPoi: Poi?
     private let userDotImage: UIImage?
     private var lastUserCoordinate: CLLocationCoordinate2D?
+    var lastTourSpotIDs: [String] = []
     
     init(
         initialLocation: CLLocationCoordinate2D?,
@@ -159,9 +166,9 @@ class KakaoMapStartCoordinator: NSObject, MapControllerDelegate {
             object: initialHeight
         ))
         
-        if let list = tourList, !list.isEmpty {
-            regionMarkers(tourList: list)
-        }
+//        if let list = tourList, !list.isEmpty {
+//            regionMarkers(tourList: list)
+//        }
     }
     
     @objc private func sheetHeightChanged(_ note: Notification) {
@@ -214,17 +221,22 @@ class KakaoMapStartCoordinator: NSObject, MapControllerDelegate {
         guard let mapView = controller?.getView("mapview") as? KakaoMap else { return }
         let labelManager = mapView.getLabelManager()
         
-        let layerId: String = "regionMarkerLayer"
-        var layer = labelManager.getLabelLayer(layerID: layerId)
-        if layer == nil {
-            let layerOptions = LabelLayerOptions(
-                layerID: layerId,
-                competitionType: .none,
-                competitionUnit: .poi,
-                orderType: .rank,
-                zOrder: 9999
-            )
-            layer = labelManager.addLabelLayer(option: layerOptions)
+        let layerId: String = "startViewMarkerLayer"
+        
+        if labelManager.getLabelLayer(layerID: layerId) != nil {
+            labelManager.removeLabelLayer(layerID: layerId)
+        }
+        
+        let opts = LabelLayerOptions(
+            layerID: layerId,
+            competitionType: .none,
+            competitionUnit: .poi,
+            orderType: .rank,
+            zOrder: 9999
+        )
+        guard let layer = labelManager.addLabelLayer(option: opts)
+        else {
+            return
         }
         
         for tour in tourList {
@@ -320,49 +332,20 @@ class KakaoMapStartCoordinator: NSObject, MapControllerDelegate {
         
     }
     
-    // 테스트용
-//    func TESTPoi(to coord: CLLocationCoordinate2D) {
-//        let point = MapPoint(longitude: coord.longitude, latitude: coord.latitude)
-//        
-//        guard
-//            let mapView = controller?.getView("mapview") as? KakaoMap
-//        else {
-//            return
-//        }
-//        
-//        if userPoi == nil {
-//            let labelManager = mapView.getLabelManager()
-//            let dotImage = userDotImage ?? UIImage(named: "ZoneDot1")!
-//            let iconStyle = PoiIconStyle(
-//                symbol: dotImage,
-//                anchorPoint: CGPoint(x: 0.5, y: 1.0)
-//            )
-//            let levelStyle = PerLevelPoiStyle(iconStyle: iconStyle, level: 0)
-//            let poiStyle = PoiStyle(styleID: "UserDotStyle", styles: [levelStyle])
-//            
-//            labelManager.addPoiStyle(poiStyle)
-//            
-//            let layerOptions = LabelLayerOptions(
-//                layerID: "userLayer",
-//                competitionType: .none,
-//                competitionUnit: .poi,
-//                orderType: .rank,
-//                zOrder: 10000
-//            )
-//            
-//            guard let layer = labelManager.addLabelLayer(option: layerOptions)
-//            else {
-//                return
-//            }
-//            
-//            let poiOptions = PoiOptions(styleID: "UserDotStyle", poiID: "userPoi")
-//            let poi = layer.addPoi(option: poiOptions, at: point)
-//            poi?.show()
-//            userPoi = poi
-//        } else {
-//            userPoi?.position = point
-//        }
-//    }
+    func updateRegionMarkersIfNeeded(tourList: [DetailModel]) {
+        let currentIDs = tourList.compactMap { $0.stlid }
+        guard currentIDs != lastTourSpotIDs
+        else {
+            return
+        }
+        
+        lastTourSpotIDs = currentIDs
+        regionMarkers(tourList: tourList)
+    }
+    
+    func resetTourMarkersCache() {
+        lastTourSpotIDs = []
+    }
     
     func addViews() {
         let coord = initialLocation ?? CLLocationCoordinate2D(latitude:0, longitude:0)
