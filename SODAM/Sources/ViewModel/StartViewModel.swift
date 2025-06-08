@@ -61,7 +61,6 @@ final class StartViewModel: ObservableObject {
     ) async {
         isLoading = true
         errorMessage = nil
-        
         do {
             let items = try await APIService.shared.getStoryLocationBasedList(
                 lng: lon,
