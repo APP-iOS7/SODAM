@@ -79,7 +79,6 @@ struct KakaoMapStartView: UIViewRepresentable {
                     return
                 }
                 
-                context.coordinator.userPoi = nil
                 if let coord = markerCoordinate {
                     context.coordinator.updateUserPoi(to: coord)
                 }
@@ -92,6 +91,7 @@ struct KakaoMapStartView: UIViewRepresentable {
             DispatchQueue.main.async {
                 controller.pauseEngine()
                 controller.resetEngine()
+                context.coordinator.userPoi = nil
                 context.coordinator.resetTourMarkersCache()
             }
         }
@@ -166,9 +166,9 @@ class KakaoMapStartCoordinator: NSObject, MapControllerDelegate {
             object: initialHeight
         ))
         
-//        if let list = tourList, !list.isEmpty {
-//            regionMarkers(tourList: list)
-//        }
+        if let list = tourList, !list.isEmpty {
+            regionMarkers(tourList: list)
+        }
     }
     
     @objc private func sheetHeightChanged(_ note: Notification) {
