@@ -37,16 +37,36 @@ struct NearTouristSpotView: View {
                 .padding(EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15))
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            ScrollView {
-                LazyVStack(){
-                    Divider()
-                    ForEach(viewModel.theme, id: \.self){ theme in
-                        TouristSpotTestView(viewModel: viewModel, theme: theme)
+//            ScrollView {
+//                LazyVStack(){
+//                    Divider()
+//                    ForEach(viewModel.theme, id: \.self){ theme in
+//                        TouristSpotTestView(viewModel: viewModel, theme: theme)
+//                        Divider()
+//                    }
+//                }
+//                .padding(EdgeInsets(top: 10, leading: 20, bottom: 100, trailing: 20))
+//            }
+            if viewModel.theme.isEmpty {
+                // 테스트용
+                Spacer()
+                Text("이야기 없음")
+                    .foregroundColor(.gray)
+                    .font(.subheadline)
+                    .multilineTextAlignment(.center)
+                    .padding()
+                Spacer()
+            } else {
+                ScrollView {
+                    LazyVStack {
                         Divider()
+                        ForEach(viewModel.theme, id: \.self) { theme in
+                            TouristSpotTestView(viewModel: viewModel, theme: theme)
+                            Divider()
+                        }
                     }
+                    .padding(EdgeInsets(top: 10, leading: 20, bottom: 100, trailing: 20))
                 }
-                .padding(EdgeInsets(top: 10, leading: 20, bottom: 100, trailing: 20))
-                
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
