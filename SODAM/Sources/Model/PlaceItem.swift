@@ -10,7 +10,7 @@ import Foundation
 
 @Model
 class PlaceItem: Identifiable {
-    var id = UUID()
+    @Attribute(.unique) var id: UUID = UUID()
     var title: String
     var stlid: String?
     var mapX: String
@@ -24,9 +24,9 @@ class PlaceItem: Identifiable {
     var addr1: String?
     var addr2: String?
     var loc: String?
-    var distance: Double?
+    var distance: String?
 
-    init(title: String, stlid: String? = nil, mapX: String, mapY: String, audioTitle: String? = nil, script: String? = nil, playTime: String? = nil, audioURL: String? = nil, lanCode: String? = nil, imageUrl: String? = nil, addr1: String? = nil, addr2: String? = nil, loc: String? = nil, distance: Double? = nil) {
+    init(title: String, stlid: String? = nil, mapX: String, mapY: String, audioTitle: String? = nil, script: String? = nil, playTime: String? = nil, audioURL: String? = nil, lanCode: String? = nil, imageUrl: String? = nil, addr1: String? = nil, addr2: String? = nil, loc: String? = nil, distance: String? = nil) {
         self.title = title
         self.stlid = stlid
         self.mapX = mapX

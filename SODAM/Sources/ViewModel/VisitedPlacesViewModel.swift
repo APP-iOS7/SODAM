@@ -14,17 +14,12 @@ final class VisitedPlacesViewModel: ObservableObject {
     @Published var listItems: [[PlaceItem]] = [[]]
     @Published var isLoading: Bool = false
     @Published var selectSegment: SegmentState = .list
-    
-    private var dataManager: DataManager?
-    
-    func setContext(_ context: ModelContext) {
-        self.dataManager = DataManager(modelContext: context)
-    }
+
     
     func fetchItems() {
         do {
-            let fetchedItems = try dataManager?.fetchPlaceItems()
-            items = fetchedItems ?? []
+            let fetchedItems = try DataManager.shared.fetchPlaceItems()
+            items = fetchedItems
         } catch {
             print("Failed to fetch items:", error)
         }
@@ -33,7 +28,7 @@ final class VisitedPlacesViewModel: ObservableObject {
     func addItem(item: PlaceItem) {
         Task {
             do {
-                try await dataManager?.addPlaceItem(item: item)
+                try await DataManager.shared.addPlaceItem(item: item)
                 fetchItems()
             } catch {
                 print("Failed to add item:", error)
@@ -44,24 +39,26 @@ final class VisitedPlacesViewModel: ObservableObject {
     // fetch + grouping → 지역이름으로 정렬한 후 [[PlaceItem]] 반환
     func fetchGroupedItemsByLocation() {
         do {
-            let fetchedItems = try dataManager?.fetchPlaceItems() ?? []
+            let fetchedItems = try DataManager.shared.fetchPlaceItems()
             items = fetchedItems
 
+            print("✅ fetchedItems count: \(fetchedItems.count)")
+            
             let groupedDict = Dictionary(grouping: fetchedItems) { $0.loc ?? "Unknown" }
+            print("📌 groupedDict keys: \(groupedDict.keys)")
+            
+            listItems = groupedDict.values.sorted {
+                let loc1 = $0.first?.loc ?? "Unknown"
+                let loc2 = $1.first?.loc ?? "Unknown"
+                return loc1 < loc2
+            }
+            
+            print("📋 listItems count: \(listItems.count)")
 
-            // loc 기준 오름차순 정렬
-            listItems = groupedDict.values
-                .sorted {
-                    let loc1 = $0.first?.loc ?? "Unknown"
-                    let loc2 = $1.first?.loc ?? "Unknown"
-                    return loc1 < loc2
-                }
 
         } catch {
             print("Failed to fetch and group items:", error)
         }
     }
-
-
 }
 

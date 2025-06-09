@@ -130,6 +130,11 @@ struct TouristSpotTestView: View {
                 
                 Button {
                     sendPlayState(state: true, spot: theme)
+                    
+                    // Swift Data Insert
+                    Task {
+                        await saveItem(theme)
+                    }
                 } label: {
                     Image(systemName: "play.circle")
                         .resizable()
@@ -142,6 +147,22 @@ struct TouristSpotTestView: View {
             .foregroundStyle(Color.black)
             .padding(.trailing, 5)
         }
+    }
+    
+    // Swift Data로 방문한 관광지 추가하는 기능 추가
+    @MainActor
+    func saveItem(_ item: DetailModel) async {
+        let placeItem = detailItemToPlaceItem(item: item)
+
+        do {
+            try await DataManager.shared.addPlaceItem(item: placeItem)
+        } catch {
+            print(error)
+        }
+    }
+
+    func detailItemToPlaceItem(item: DetailModel) -> PlaceItem {
+        return PlaceItem(title: item.title, stlid: item.stlid, mapX: item.mapX, mapY: item.mapY, audioTitle: item.audioTitle, script: item.script, playTime: item.playTime, audioURL: item.audioUrl, lanCode: item.langCode, imageUrl: item.imageUrl, addr1: item.addr1, addr2: item.addr2)
     }
     
 }
