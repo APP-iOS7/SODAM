@@ -4,15 +4,17 @@ import CoreLocation
 
 @MainActor
 class HomeViewModel: ObservableObject {
-    @Query var visitedSpots: [PlaceItem]
+    
     @Environment(\.modelContext) private var modelContext
-//    @Published var visitedSpots: [PlaceItem]
+    
     @Published var isLoading: Bool = true
     @Published var playerState: Bool = false
     @Published var todaySpot: DetailModel? = nil
+    @Published var visitedSpots: [PlaceItem] = []
     
     init() {
-        fetchTodayStory()
+        fetchTodayStory()   // 오늘의 이야기
+        fetchVisitedPlace() // 방문한 관광지
     }
     
     let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
@@ -67,4 +69,15 @@ class HomeViewModel: ObservableObject {
         }
     }
     
+    // 방문한 관광지 가져오기
+    func fetchVisitedPlace() {
+        do {
+            visitedSpots = try DataManager.shared.fetchPlaceItems()
+            print("개수 : \(visitedSpots.count)")
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    
 }
+

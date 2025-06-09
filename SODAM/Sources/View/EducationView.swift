@@ -11,9 +11,10 @@ struct EducationView: View {
                         NavigationLink {
                             EducationListView(educationListViewModel: EducationListViewModel(spots: education.lists, title: education.name))
                         } label: {
-                            RoundedRectangle(cornerRadius: 10)
+                            RoundedRectangle(cornerRadius: 18)
+                                .frame(maxWidth: .infinity)
                                 .frame(height: geo.size.height / 4.3)
-                                .padding([.leading, .trailing], 5)
+                                .padding([.leading, .trailing], 15)
                                 .foregroundStyle(education.color)
                                 .overlay(
                                     ZStack {
@@ -25,7 +26,7 @@ struct EducationView: View {
                                                     .font(.title.bold())
                                                     .foregroundStyle(Color.textColor)
                                             }
-                                            .padding(10)
+                                            .padding(.trailing, 16)
                                         }
                                         .padding(10)
                                     }
