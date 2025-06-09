@@ -23,6 +23,7 @@ struct RoundedCorner: Shape {
 
 struct NearTouristSpotView: View {
     @ObservedObject var viewModel: StartViewModel
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack {
@@ -32,30 +33,14 @@ struct NearTouristSpotView: View {
                 .padding(.top, 10)
             
             Text("지금 들을 수 있는 이야기")
+                .foregroundStyle(Color.textColor)
                 .font(.system(size: 20))
                 .fontWeight(.bold)
                 .padding(EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15))
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-//            ScrollView {
-//                LazyVStack(){
-//                    Divider()
-//                    ForEach(viewModel.theme, id: \.self){ theme in
-//                        TouristSpotTestView(viewModel: viewModel, theme: theme)
-//                        Divider()
-//                    }
-//                }
-//                .padding(EdgeInsets(top: 10, leading: 20, bottom: 100, trailing: 20))
-//            }
             if viewModel.theme.isEmpty {
-                // 테스트용
-                Spacer()
-                Text("이야기 없음")
-                    .foregroundColor(.gray)
-                    .font(.subheadline)
-                    .multilineTextAlignment(.center)
-                    .padding()
-                Spacer()
+                isEmptyView
             } else {
                 ScrollView {
                     LazyVStack {
@@ -70,7 +55,7 @@ struct NearTouristSpotView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(.white)
+        .background(Color(UIColor.systemBackground))
         .clipShape(
             RoundedCorner(
                 radius: 20,
@@ -98,7 +83,7 @@ struct TouristSpotTestView: View {
             
             VStack(alignment: .leading) {
                 Text("\(theme.title)")
-                    .foregroundStyle(Color.black)
+                    .foregroundStyle(Color.textColor)
                     .fontWeight(.semibold)
                     .padding(.top, 2)
                 Text("\(theme.addr1 ?? "주소를 확인할 수 없습니다.") \(theme.addr2 ?? "")")
@@ -127,6 +112,7 @@ struct TouristSpotTestView: View {
             HStack(alignment: .center) {
                 Text("\(String(format: "%02d", (Int(theme.playTime ?? "0") ?? 0) / 60)):\(String(format: "%02d", (Int(theme.playTime ?? "0") ?? 0 ) % 60))")
                     .font(.system(size: 16))
+                    .foregroundStyle(Color.textColor)
                 
                 Button {
                     sendPlayState(state: true, spot: theme)
@@ -165,6 +151,16 @@ struct TouristSpotTestView: View {
         return PlaceItem(title: item.title, stlid: item.stlid, mapX: item.mapX, mapY: item.mapY, audioTitle: item.audioTitle, script: item.script, playTime: item.playTime, audioURL: item.audioUrl, lanCode: item.langCode, imageUrl: item.imageUrl, addr1: item.addr1, addr2: item.addr2)
     }
     
+}
+
+private var isEmptyView: some View {
+    VStack {
+        Image("NoneData")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+        Spacer()
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
 }
 
 //#Preview {
