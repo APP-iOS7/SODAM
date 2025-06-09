@@ -21,7 +21,6 @@ struct StartView: View {
     private let fractions: [CGFloat] = [0.1, 0.5, 0.95]
     @State private var screenHeight: CGFloat = 0
     @State private var safeHeight: CGFloat = 0
-    
     @State private var selectedTour: DetailModel? = nil
     
     var body: some View {
