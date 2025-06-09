@@ -216,7 +216,7 @@ struct TodaySpotView: View {
     let isLoading: Bool
     var body: some View {
         if !isLoading {
-            AsyncImage(url: URL(string: spot!.imageUrl!)) { image in
+            CustomAsyncImage(url: spot!.imageUrl!) { image in
                 image
                     .resizable()
                     .overlay(

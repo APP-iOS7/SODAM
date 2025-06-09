@@ -45,7 +45,6 @@ class HomeViewModel: ObservableObject {
     func fetchTodayStory() {
         let pageNo = Int.random(in: 1...5) // page 번호를 랜덤 난수
         let numOfRows = 100
-        print("pageNo : \(pageNo)")
         Task {
             isLoading = true
             do {
@@ -73,7 +72,6 @@ class HomeViewModel: ObservableObject {
     func fetchVisitedPlace() {
         do {
             visitedSpots = try DataManager.shared.fetchPlaceItems()
-            print("개수 : \(visitedSpots.count)")
         } catch {
             print(error.localizedDescription)
         }
