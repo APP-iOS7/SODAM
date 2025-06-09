@@ -6,12 +6,14 @@ let notificationSubject = PassthroughSubject<(DetailModel?, Bool), Never>()
 class ContentViewModel: ObservableObject {
     @Published var playerState: Bool = false
     private var cancellables: Set<AnyCancellable> = []
-
+    
     init() {
-        notificationSubject.sink {[weak self] (model, state) in
-            PlayerViewModel.shared.playModel = model
-            self?.playerState = state
-        }.store(in: &cancellables)
+        notificationSubject
+            .debounce(for: .milliseconds(100), scheduler: DispatchQueue.main) // 중복 호출 방지
+            .sink {[weak self] (model, state) in
+                self?.playerState = state
+                PlayerViewModel.shared.playModel = model
+            }.store(in: &cancellables)
     }
 }
 
@@ -22,7 +24,6 @@ class ContentViewModel: ObservableObject {
  */
 func sendPlayState(state: Bool, spot: DetailModel) {
     notificationSubject.send((spot, state))
-    print("0")
 }
 
 /** 오디오 플레이어 상태 변경
