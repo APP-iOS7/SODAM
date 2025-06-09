@@ -34,7 +34,7 @@ class RegionDetailListViewModel: ObservableObject {
         Task {
             isLoading = true
             do {
-                regionList = try await APIService.shared.getStoryLocationBasedList(lng: region.longitude, lat: region.latitude, radius: 10000, numOfRows: 10, pageNo: 1)
+                regionList = try await APIService.shared.getStoryLocationBasedList(lng: region.longitude, lat: region.latitude, radius: 10000, numOfRows: 100, pageNo: 1)
                 try await fetchRegionGetAddress()
             } catch {
                 print("리스트 불러오기 실패: \(error)")
