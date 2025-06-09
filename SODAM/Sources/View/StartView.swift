@@ -16,9 +16,9 @@ struct StartView: View {
     @EnvironmentObject private var userLocation: UserLocation
     @StateObject private var viewModel = StartViewModel()
     @State private var draw: Bool = false
-    @State private var sheetOffset: CGFloat = 0 // 시트 오프셋 상태
-    @State private var lastDrag: CGFloat = 0 // 드레그 상태
-    private let fractions: [CGFloat] = [0.1, 0.5, 0.95] // 높이 비율
+    @State private var sheetOffset: CGFloat = 0
+    @State private var lastDrag: CGFloat = 0
+    private let fractions: [CGFloat] = [0.1, 0.5, 0.95]
     @State private var screenHeight: CGFloat = 0
     @State private var safeHeight: CGFloat = 0
     
@@ -71,7 +71,7 @@ struct StartView: View {
                     )
                 }
             }
-            .onChange(of: sheetOffset) { newOffset in
+            .onChange(of: sheetOffset) { oldOffset, newOffset in
                 let updateBottomInset = screenHeight - newOffset
                 NotificationCenter.default.post(
                     name: .sheetVisibleHeightChanged,
