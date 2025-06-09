@@ -6,6 +6,8 @@ import MediaPlayer
 class PlayerViewModel: ObservableObject {
     static let shared = PlayerViewModel()
     
+    let audioPlayer = AudioPlayer()
+    
     @Published private(set) var duration: TimeInterval = 0.0
     @Published private(set) var currentTime: TimeInterval = 0.0
     @Published var isPlaying: Bool = false
@@ -14,166 +16,68 @@ class PlayerViewModel: ObservableObject {
     @Published var playerItem: AVPlayerItem?
     @Published var playModel: DetailModel? {
         didSet {
-            if playModel != nil {
-                setPlayer()
-                play()
-                addPeriodicTimeObserver()
+            if playModel != nil, let _ = playModel?.audioUrl {
+                setTimer()
+                self.setPlay()
             } else {
                 // playModel이 nil이 되면 플레이어 상태 초기화
                 self.isPlaying = false
                 self.currentTime = 0.0
                 self.duration = 0.0
-                // MPNowPlayingInfoCenter 정보 초기화
-                self.session?.nowPlayingInfoCenter.nowPlayingInfo = nil
-                // 오디오 세션 비활성화
-                
-            }
-        }
-        willSet {
-            if playModel != nil {
-                    removePeriodicTimeObserver()
-                    if let player = audioPlayer {
-                        self.session?.removePlayer(player)
-                    }
-                    // 플레이어를 닫을 때 원격 명령 센터에서 타겟을 제거합니다.
-                    self.session?.remoteCommandCenter.pauseCommand.removeTarget(nil)
-                    self.session?.remoteCommandCenter.playCommand.removeTarget(nil)
-                    self.session?.remoteCommandCenter.skipBackwardCommand.removeTarget(nil)
-                    self.session?.remoteCommandCenter.skipForwardCommand.removeTarget(nil)
-                    self.session = nil // 세션을 nil로 설정하여 리소스 해제
             }
         }
     }
+    private var timer: Timer?
     
-    private var audioPlayer: AVPlayer?
-    private var timeObserver: Any?
-    private var session: MPNowPlayingSession?
-    
-    private func setNowPlaying() {
-        
-        // Example of responding to play and pause commands
-        guard let player = audioPlayer,
-                  let playModel = playModel,
-                  let playerItem = playerItem else { return }
-            self.session = MPNowPlayingSession(players: [player])
-            self.session?.automaticallyPublishesNowPlayingInfo = true
-            
-            
-        let title = playModel.title
-            var nowPlayingInfo: [String: Any] = [
-                MPMediaItemPropertyTitle: title,
-                MPMediaItemPropertyPlaybackDuration: playerItem.duration.seconds,
-                MPNowPlayingInfoPropertyElapsedPlaybackTime: player.currentTime().seconds,
-                MPNowPlayingInfoPropertyPlaybackRate: player.rate,
-            ]
-            
-            //            if let imageUrl = URL(string: playModel.imageUrl ?? "") {
-            //                if let data = try? Data(contentsOf: imageUrl), let item = UIImage(data: data) {
-            //                    let artwork = MPMediaItemArtwork(boundsSize: item.size, requestHandler: {_ in item})
-            //                    playerItem.nowPlayingInfo = [
-            //                        MPMediaItemPropertyArtwork: artwork
-            //                    ]
-            //                } else {
-            if let item = UIImage(named: "defaultImage") {
-                let artwork = MPMediaItemArtwork(boundsSize: item.size) { _ in return item }
-                nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+    deinit {
+        timer?.invalidate()
+        timer = nil
+        // 플레이어가 더 이상 필요하지 않을 때 원격 제어 이벤트가 중지되었는지 확인
+        UIApplication.shared.endReceivingRemoteControlEvents()
+    }
+    /**타이머 세팅*/
+    func setTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            Task { @MainActor in // UI 업데이트가 메인 액터에서 이루어지도록 보장
+                self.currentTime = await self.audioPlayer.getCurrentTime()
             }
-            
-            playerItem.nowPlayingInfo = nowPlayingInfo
-            setupRemoteCommandCenter()
-    }
-    // Remote Command Center 설정
-    private func setupRemoteCommandCenter() {
-        guard let remoteCommandCenter = self.session?.remoteCommandCenter else { return }
-        remoteCommandCenter.playCommand.removeTarget(nil)
-        remoteCommandCenter.pauseCommand.removeTarget(nil)
-        remoteCommandCenter.skipBackwardCommand.removeTarget(nil)
-        remoteCommandCenter.skipForwardCommand.removeTarget(nil)
-        
-        remoteCommandCenter.playCommand.addTarget { [weak self] event in
-            self?.play()
-            return .success
         }
-        
-        remoteCommandCenter.pauseCommand.addTarget { [weak self] event in
-            self?.pause()
-            return .success
-        }
-        
-        remoteCommandCenter.skipBackwardCommand.preferredIntervals = [15.0]
-        remoteCommandCenter.skipBackwardCommand.addTarget { [weak self] event in
-            guard let self = self, let player = self.audioPlayer else { return .commandFailed }
-            let skipCommand = event as! MPSkipIntervalCommandEvent
-            let newTime = CMTimeAdd(player.currentTime(), CMTimeMakeWithSeconds(-skipCommand.interval, preferredTimescale: 1))
-            player.seek(to: newTime)
-            playerItem?.nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = newTime.seconds
-            return .success
-        }
-        remoteCommandCenter.skipForwardCommand.preferredIntervals = [15.0]
-        remoteCommandCenter.skipForwardCommand.addTarget { [weak self] event in
-            guard let self = self, let player = self.audioPlayer else { return .commandFailed }
-            let skipCommand = event as! MPSkipIntervalCommandEvent
-            let newTime = CMTimeAdd(player.currentTime(), CMTimeMakeWithSeconds(skipCommand.interval, preferredTimescale: 1))
-            player.seek(to: newTime)
-            playerItem?.nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = newTime.seconds
-            return .success
-        }
-    }
-    /**플레이어 세팅*/
-    private func setPlayer() {
-        do {
-            // 무음모드에서도 재생되도록 설정
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
-            try AVAudioSession.sharedInstance().setActive(true) // 오디오 세션 활성화. 앱이 백그라운드로 이동하거나 중단되었을 때, 다시 활성화해야함
-            guard let url = URL.init(string: playModel?.audioUrl ?? "") else { return }
-            playerItem = AVPlayerItem(url: url)
-            audioPlayer = AVPlayer.init(playerItem: playerItem)
-            setNowPlaying()
-        } catch {
-            print("Error loading audio: \(error)")
-        }
-    }
-    /// Adds an observer of the player timing.
-    private func addPeriodicTimeObserver() {
-        // Create a 0.5 second interval time.
-        let interval = CMTime(value: 1, timescale: 2)
-        timeObserver = audioPlayer?.addPeriodicTimeObserver(forInterval: interval,
-                                                            queue: .main) { [weak self] time in
-            guard let self else { return }
-            // Update the published currentTime and duration values.
-            currentTime = time.seconds
-            duration = audioPlayer?.currentItem?.duration.seconds ?? 0.0
-        }
+        RunLoop.current.add(timer!, forMode: .common) // 더 나은 안정성을 위해 common 런 루프 모드에 추가
     }
     
-    
-    /// Removes the time observer from the player.
-    private func removePeriodicTimeObserver() {
-        guard let timeObserver else { return }
-        audioPlayer?.removeTimeObserver(timeObserver)
-        self.timeObserver = nil
+    /**오디오 첫 재생*/
+    func setPlay() {
+        if let audioURL = playModel?.audioUrl {
+            Task { @MainActor in // UI 업데이트가 메인 액터에서 이루어지도록 보장
+                do {
+                    try await self.audioPlayer.setPlaySound(audioURL: audioURL, imageURL: self.playModel?.imageUrl ?? "", title: self.playModel?.title ?? "SODAM")
+                    self.duration = await self.audioPlayer.getDuration()
+                    self.currentTime = await self.audioPlayer.getCurrentTime() // 초기 현재 시간 가져오기
+                    self.isPlaying = true
+                } catch {
+                    print("Error playing sound: \(error.localizedDescription)")
+                    self.isPlaying = false // 오류 발생 시 isPlaying을 false로 설정
+                }
+            }
+        }
+        
     }
     /**오디오 재생*/
     func play() {
-        if currentTime >= duration && duration > 0 {
-            audioPlayer?.seek(to: .zero)
+        Task { @MainActor in // UI 업데이트가 메인 액터에서 이루어지도록 보장
+            await self.audioPlayer.playSound()
+            self.currentTime = await self.audioPlayer.getCurrentTime() // 초기 현재 시간 가져오기
+            self.isPlaying = true
         }
-        guard let audioPlayer = audioPlayer else { return }
-        audioPlayer.play()
-        self.isPlaying = true
-        playerItem?.nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = audioPlayer.currentTime().seconds
-        playerItem?.nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = audioPlayer.rate
-        print(audioPlayer.currentTime().seconds)
-        print(audioPlayer.rate)
     }
     
     /**오디오 정지*/
     func pause() {
-        guard let audioPlayer = audioPlayer else { return }
-        audioPlayer.pause()
-        self.isPlaying = false
-        playerItem?.nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = audioPlayer.currentTime().seconds
-        playerItem?.nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = audioPlayer.rate
+        Task { @MainActor in // UI 업데이트가 메인 액터에서 이루어지도록 보장
+            await audioPlayer.pauseSound()
+            self.isPlaying = false
+        }
     }
     
     /**이미지URL호출
@@ -189,24 +93,201 @@ class PlayerViewModel: ObservableObject {
     }
     
     final func close() {
-        do {
-            pause()
-            removePeriodicTimeObserver()
-            sendPlayState(state: false)
-            if let player = audioPlayer {
-                self.session?.removePlayer(player)
-            }
-            self.session?.automaticallyPublishesNowPlayingInfo = false
-            // 플레이어를 닫을 때 원격 명령 센터에서 타겟을 제거
-            self.session?.remoteCommandCenter.pauseCommand.removeTarget(nil)
-            self.session?.remoteCommandCenter.playCommand.removeTarget(nil)
-            self.session?.remoteCommandCenter.skipBackwardCommand.removeTarget(nil)
-            self.session?.remoteCommandCenter.skipForwardCommand.removeTarget(nil)
-            self.session = nil // 세션을 nil로 설정하여 리소스 해제
-            // 다른 앱에 오디오 세션 활성화가 해제되었음을 알립니다.
-            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-        } catch {
-            print("close audio error: \(error)")
+        pause()
+        timer?.invalidate() // 타이머 무효화
+        timer = nil
+        sendPlayState(state: false)
+        Task {
+            await audioPlayer.stopSound()
         }
+    }
+}
+
+actor AudioPlayer: NSObject {
+    
+    var player: AVAudioPlayer?
+    private let nowPlayingCenter: MPNowPlayingInfoCenter = .default()
+    private let audioPlayerDelegate = AudioPlayerDelegate()
+    
+    private var audioSession: AVAudioSession {
+        return AVAudioSession.sharedInstance()
+    }
+    
+    override init() {
+        super.init()
+    }
+    
+    func setPlaySound(audioURL: String, imageURL: String, title: String) async throws {
+        do {
+            self.stopSound()
+            if player?.currentTime ?? 0 >= player?.duration ?? 0 && player?.duration ?? 0 > 0 {
+                setTime(0)
+            }
+            
+            //get audio url
+            guard let audioURL = URL(string: audioURL) else {
+                throw NSError(domain: "audioError", code: 0, userInfo: [NSLocalizedDescriptionKey:"Invalid URL"])
+            }
+            
+            //fetch audio data from url
+            let (data, _) = try await URLSession.shared.data(from: audioURL)
+            try audioSession.setCategory(.playback)
+            try audioSession.setActive(true)
+            
+            //binding player
+            self.player = try AVAudioPlayer(data: data)
+            guard let player = self.player else {
+                throw NSError(domain: "audioError", code: 0,
+                              userInfo: [NSLocalizedDescriptionKey:"Failed to initialize AVAudioPlayer"])
+            }
+            
+            //setup delegate
+            player.delegate = self.audioPlayerDelegate
+            
+            //begin remote control event
+            await UIApplication.shared.beginReceivingRemoteControlEvents()
+            
+            //set remote control button actions
+            MPRemoteCommandCenter.shared().playCommand.addTarget { event in
+                PlayerViewModel.shared.play()
+                return .success
+            }
+            MPRemoteCommandCenter.shared().pauseCommand.addTarget { event in
+                PlayerViewModel.shared.pause()
+                return .success
+            }
+            MPRemoteCommandCenter.shared().changePlaybackPositionCommand.addTarget { event in
+                if let positionEvent = event as? MPChangePlaybackPositionCommandEvent {
+                    player.currentTime = TimeInterval(positionEvent.positionTime)
+                }
+                return .success
+            }
+            MPRemoteCommandCenter.shared().skipBackwardCommand.preferredIntervals = [15.0]
+            MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget { [weak self] event in
+                //                guard let player = self?.player else { return .commandFailed }
+                let skipCommand = event as! MPSkipIntervalCommandEvent
+                let newTime = player.currentTime - skipCommand.interval
+                Task {
+                    if player.currentTime >= 0 && player.currentTime <= player.duration && newTime >= 0 {
+                        await self?.setTime(newTime)
+                    } else {
+                        await self?.setTime(0)
+                    }
+                }
+                return .success
+            }
+            MPRemoteCommandCenter.shared().skipForwardCommand.preferredIntervals = [15.0]
+            MPRemoteCommandCenter.shared().skipForwardCommand.addTarget { [weak self] event in
+                //                guard let player = self?.player else { return .commandFailed }
+                let skipCommand = event as! MPSkipIntervalCommandEvent
+                let newTime = player.currentTime + skipCommand.interval
+                Task {
+                    if player.currentTime >= 0 && newTime <= player.duration {
+                        await self?.setTime(newTime)
+                    } else {
+                        await self?.setTime(player.duration)
+                    }
+                }
+                return .success
+            }
+            
+            //setup media property
+            var nowPlayingInfo: [String:Any] = [:]
+            
+            
+            //get image url
+            guard let imageURL = URL(string: imageURL) else {
+                throw NSError(domain: "audioError", code: 0, userInfo: [NSLocalizedDescriptionKey:"Invalid URL"])
+            }
+            
+            //fetch image data from url
+            let (imageData, _) = try await URLSession.shared.data(from: imageURL)
+            if let image = UIImage(data: imageData) {
+                nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
+                    return image
+                }
+            } else if let image = UIImage(systemName: "defaultImage") {
+                
+                nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
+                    return image
+                }
+            } else {
+                nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: CGSize(width: 100, height: 100)) { _ in
+                    return UIImage()
+                }
+            }
+            nowPlayingInfo[MPMediaItemPropertyTitle] = title
+            nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.duration
+            self.nowPlayingCenter.nowPlayingInfo = nowPlayingInfo
+            
+            //play audio
+            player.play()
+        } catch {
+            debugPrint(error.localizedDescription)
+        }
+    }
+    
+    func playSound() {
+        if player?.currentTime ?? 0 >= player?.duration ?? 0 && player?.duration ?? 0 > 0 {
+            setTime(0)
+        }
+        player?.play()
+        self.nowPlayingCenter.nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = self.player?.currentTime
+    }
+    
+    func setTime(_ time: TimeInterval) {
+        self.nowPlayingCenter.nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = time
+        self.player?.currentTime = time
+    }
+    
+    func pauseSound() {
+        player?.pause()
+        setTime(player?.currentTime ?? 0)
+    }
+    
+    func stopSound() {
+        do {
+            player?.stop()
+            self.player = nil
+            nowPlayingCenter.playbackState = .stopped
+            nowPlayingCenter.nowPlayingInfo?.removeAll()
+            nowPlayingCenter.nowPlayingInfo = nil
+            
+            MPRemoteCommandCenter.shared().playCommand.removeTarget(nil)
+            MPRemoteCommandCenter.shared().pauseCommand.removeTarget(nil)
+            MPRemoteCommandCenter.shared().changePlaybackPositionCommand.removeTarget(nil)
+            MPRemoteCommandCenter.shared().skipBackwardCommand.removeTarget(nil)
+            MPRemoteCommandCenter.shared().skipForwardCommand.removeTarget(nil)
+            
+            //deactive current audio playback & now playing center if exists
+            try self.audioSession.setActive(false, options: .notifyOthersOnDeactivation)
+        } catch {
+            debugPrint(error.localizedDescription)
+        }
+    }
+    
+    func getDuration() -> TimeInterval {
+        return player?.duration ?? 0
+    }
+    
+    func getCurrentTime() -> TimeInterval {
+        return player?.currentTime ?? 0
+    }
+}
+
+//MARK: AVAudioPlayerDelegate
+final class AudioPlayerDelegate: NSObject, AVAudioPlayerDelegate {
+    let audioSession: AVAudioSession = AVAudioSession.sharedInstance()
+    
+    override init() { super.init() }
+    
+    public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        debugPrint("Audio playback finished")
+        Task {
+            try audioSession.setActive(false, options: .notifyOthersOnDeactivation)
+        }
+        player.currentTime = 0
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = 0
+        PlayerViewModel.shared.isPlaying = false
     }
 }

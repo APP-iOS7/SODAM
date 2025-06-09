@@ -115,6 +115,6 @@ struct PlayerView: View {
     }
 }
 
-#Preview {
-    PlayerView(playerViewModel: PlayerViewModel())
-}
+//#Preview {
+//    PlayerView(playerViewModel: PlayerViewModel())
+//}
