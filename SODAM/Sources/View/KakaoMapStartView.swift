@@ -9,16 +9,6 @@ import SwiftUI
 import KakaoMapsSDK
 import CoreLocation
 
-// 테스트용 좌표
-// 성수역
-// 37.544577, 127.055991
-// 뚝섬역
-// 37.547206, 127.047405
-// 한양대역
-// 37.555632, 127.043638
-// 양재역
-// 37.483573, 127.034894
-
 /** KakaoMapView 파라미터 설명 */
 /** - draw : 생성과 소멸을 나타내는 값*/
 /** - defaultLevel :  현재 Zoom Level을 나타내는 파라미터  */
