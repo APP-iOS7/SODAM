@@ -80,7 +80,7 @@ struct HomeView: View {
                                 ForEach(homeViewModel.GetVisitedSpots()) { spot in
                                     
                                     NavigationLink{
-                                        //TODO: DetailView로 연결
+                                        DetailView(item: placeItemToDetailModel(from: spot))
                                     } label: {
                                         VisitedSpotListCellView(spot: spot)
                                     }
@@ -124,6 +124,11 @@ struct HomeView: View {
                 .offset(y: -10)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    // placeItem -> DetailModel
+    private func placeItemToDetailModel(from item: PlaceItem) -> DetailModel {
+        return  DetailModel(tid: nil, tlid: nil, stid: nil, stlid: item.stlid, themeCategory: nil, category: nil, addr1: item.addr1, addr2: item.addr2, title: item.title, mapX: item.mapX, mapY: item.mapY, audioTitle: item.audioTitle, script: item.script, playTime: item.playTime, audioUrl: item.audioURL, langCheck: nil, langCode: item.lanCode, imageUrl: item.imageUrl, createdTime: nil, modifiedtime: nil)
     }
 }
 
