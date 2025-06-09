@@ -55,13 +55,13 @@ final class StartViewModel: ObservableObject {
     func callAPI(
         lon: Double,
         lat: Double,
-        radius: Int = 10000,
+//        radius: Int = 10000,
+        radius: Int = 1000,
         numOfRows: Int = 10000,
         pageNo: Int = 1
     ) async {
         isLoading = true
         errorMessage = nil
-        
         do {
             let items = try await APIService.shared.getStoryLocationBasedList(
                 lng: lon,
