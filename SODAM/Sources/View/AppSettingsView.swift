@@ -96,6 +96,8 @@ struct AppSettingsView: View {
 
 // TODO: 약관 및 정책 화면 (Placeholder) - 예시 입니다.
 struct TermsAndPolicyView: View {
+    @Environment(\.dismiss) private var dismiss
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -124,6 +126,18 @@ struct TermsAndPolicyView: View {
             .padding()
         }
         .navigationTitle("약관 및 정책")
+        .navigationBarBackButtonHidden()
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                HStack {
+                    Image(systemName: "chevron.left")
+                }
+                .foregroundStyle(Color.primaryColor)
+                .onTapGesture {
+                    dismiss()
+                }
+            }
+        }
     }
 }
 
