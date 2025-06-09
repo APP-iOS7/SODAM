@@ -22,7 +22,7 @@ struct EducationView: View {
                                             VStack {
                                                 Spacer()
                                                 Text("\(education.name)")
-                                                    .font(.title)
+                                                    .font(.title.bold())
                                                     .foregroundStyle(Color.textColor)
                                             }
                                             .padding(10)
