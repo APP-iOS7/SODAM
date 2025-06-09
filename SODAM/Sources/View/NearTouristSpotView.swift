@@ -23,6 +23,7 @@ struct RoundedCorner: Shape {
 
 struct NearTouristSpotView: View {
     @ObservedObject var viewModel: StartViewModel
+    @Binding var selection: DetailModel?
     @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
@@ -46,7 +47,10 @@ struct NearTouristSpotView: View {
                     LazyVStack {
                         Divider()
                         ForEach(viewModel.theme, id: \.self) { theme in
-                            TouristSpotTestView(viewModel: viewModel, theme: theme)
+                            NavigationLink(value: theme) {
+                                TouristSpotTestView(viewModel: viewModel, theme: theme)
+                            }
+                            .buttonStyle(.plain)
                             Divider()
                         }
                     }
