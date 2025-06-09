@@ -38,7 +38,7 @@ struct PlayerView: View {
                                     ProgressView(value: playerViewModel.currentTime, total: playerViewModel.duration)
                                         .progressViewStyle(.linear)
                                         .tint(Color.white)
-                                    Text(formatTime(playerViewModel.duration))
+                                    Text("− \(formatTime(playerViewModel.duration - playerViewModel.currentTime))")
                                         .font(.caption)
                                         .foregroundStyle(Color.white)
                                 }
