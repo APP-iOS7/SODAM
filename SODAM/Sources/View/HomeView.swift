@@ -217,34 +217,35 @@ struct TodaySpotView: View {
     var body: some View {
         if !isLoading {
             AsyncImage(url: URL(string: spot!.imageUrl!)) { image in
-                image.resizable()
+                image
+                    .resizable()
+                    .overlay(
+                        ZStack {
+                            LinearGradient(gradient: Gradient(colors: [Color.clear, Color.clear, Color.black.opacity(0.7)]), startPoint: .top, endPoint: .bottom)
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Spacer()
+                                    Text("오늘의 이야기")
+                                        .font(.headline)
+                                        .foregroundStyle(Color.white)
+                                    Text(spot!.title)
+                                        .font(.title)
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(Color.white)
+                                    Text("\(spot!.addr1 ?? "") | \(spot!.audioTitle ?? "")")
+                                        .font(.caption)
+                                        .foregroundStyle(Color.white)
+                                        .padding(.bottom, 10)
+                                }
+                                .padding(.leading, 20)
+                                Spacer()
+                            }
+                        }
+                    )
             } placeholder: {
                 ProgressView()
             }
             .frame(height: 250)
-            .overlay(
-                ZStack {
-                    LinearGradient(gradient: Gradient(colors: [Color.clear, Color.clear, Color.black.opacity(0.7)]), startPoint: .top, endPoint: .bottom)
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Spacer()
-                            Text("오늘의 이야기")
-                                .font(.headline)
-                                .foregroundStyle(Color.white)
-                            Text(spot!.title)
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .foregroundStyle(Color.white)
-                            Text("\(spot!.addr1 ?? "") | \(spot!.audioTitle ?? "")")
-                                .font(.caption)
-                                .foregroundStyle(Color.white)
-                                .padding(.bottom, 10)
-                        }
-                        .padding(.leading, 20)
-                        Spacer()
-                    }
-                }
-            )
         } else {
             ProgressView()
         }
