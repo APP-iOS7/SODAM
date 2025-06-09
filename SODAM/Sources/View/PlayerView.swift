@@ -13,6 +13,7 @@ struct PlayerView: View {
                 RoundedRectangle(cornerRadius: 15)
                     .fill(Color.primaryColor)
                     .frame(height: 60)
+                    .shadow(radius: 5)
                     .padding(5)
                     .overlay(
                         HStack {
