@@ -55,8 +55,8 @@ final class StartViewModel: ObservableObject {
     func callAPI(
         lon: Double,
         lat: Double,
-//        radius: Int = 10000,
-        radius: Int = 1000,
+//        radius: Int = 10000, // 10km
+        radius: Int = 1000, // 1km
         numOfRows: Int = 10000,
         pageNo: Int = 1
     ) async {
