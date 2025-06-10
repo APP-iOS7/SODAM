@@ -54,13 +54,6 @@ struct KakaoMapView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: KMViewContainer, context: Self.Context) {
-        //        guard
-        //            let controller = context.coordinator.controller,
-        //            let mapView = controller.getView("mapview") as? KakaoMap
-        //        else {
-        //            return
-        //        }
-        
         if draw {
             DispatchQueue.main.async {
                 if context.coordinator.controller?.isEnginePrepared == false {
@@ -73,11 +66,6 @@ struct KakaoMapView: UIViewRepresentable {
             }
             
             context.coordinator.userPoi = nil
-            
-            if let coord = markerCoordinate {
-                
-                context.coordinator.updateUserPoi(to: coord)
-            }
             
         } else {
             DispatchQueue.main.async {
@@ -143,11 +131,10 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
         mapView.viewRect = container!.bounds
         mapView.eventDelegate = self
         
-        // 수정 필요
-        // 관광지 상세 페이지의 지도에서 관광지 위치 표시.
-        // 지역 선택의 지도에서 중심점 표시.
-        if let coord = initialLocation {
-            updateUserPoi(to: coord)
+        if userDotImage == UIImage(named: "mapPin") {
+            if let coord = initialLocation {
+                updateUserPoi(to: coord)
+            }
         }
         
         // tourList가 nil 이 아니라면 marker를 넣어주는 함수 실행
@@ -197,7 +184,6 @@ class KakaoMapCoordinator: NSObject, MapControllerDelegate {
     
     // tourList 를`func`해 지도에 Marker를 넣는 함수
     func regionMarkers(tourList: [DetailModel]) {
-        //        print("[D]regionMarkers CHECK ")
         guard let mapView = controller?.getView("mapview") as? KakaoMap else { return }
         let labelManager = mapView.getLabelManager()
         let layerId: String = "regionMarkerLayer"
