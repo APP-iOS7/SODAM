@@ -105,6 +105,9 @@ struct HomeView: View {
                 .padding(.bottom, 30) // 탭바에 가려지는 영역 때문에 추가
             }
         }
+        .onAppear() {
+            homeViewModel.fetchVisitedPlace()
+        }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
             let status = UserLocation.shared.getStatus()
             if status == .authorizedAlways || status == .authorizedWhenInUse {
