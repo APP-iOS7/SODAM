@@ -10,14 +10,15 @@ import SwiftUI
 
 struct AppSettingsView: View {
     @Environment(\.dismiss) private var dismiss
-    // [langCode: language] Dictionary
-    private let languages = ["ko":"한국어", "jn": "일본어", "cn":"중국어", "en":"영어"]
     
     // UserDefaults에 설정 된 값
     @AppStorage("selectedLanguage") var selectedLanguage: String = "ko"
-    //@AppStorage("isLocationEnabled") private var isLocationEnabled: Bool = true
     @State private var isLocationEnabled = true
     
+    /// 언어 설정에 필요한 정보입니다. ->  [langCode: language] Dictionary 형태
+    private let languages = ["ko":"한국어", "jn":"일본어", "cn":"중국어", "en":"영어"]
+    
+    // appVersion 정보
     private var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "버전 정보 없음"
     }
@@ -84,8 +85,13 @@ struct AppSettingsView: View {
         }
     }
     
-    // 설정항목 공통 뷰
-    private func settingTitleView(text: String, iconName: String ) -> some View {
+    /** 설정항목 리스트 뷰
+     * - Parameters:
+     *      - text: 항목 이름
+     *      - iconName: SFSymbol systemName 이미지 이름 정보
+     * - Returns: 설정항목 공통 뷰
+     */
+    private func settingTitleView(text: String, iconName: String) -> some View {
         HStack(spacing: 8)  {
             Image(systemName: "\(iconName)")
             Text("\(text)")

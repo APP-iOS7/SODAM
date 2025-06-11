@@ -11,6 +11,7 @@ import SwiftData
 import KakaoMapsSDK
 import CoreLocation
 
+// 상세화면 탭 정의
 enum Tab: String {
     case photo = "사진"
     case map = "지도"
@@ -18,20 +19,29 @@ enum Tab: String {
 
 public struct DetailView: View {
     @Environment(\.dismiss) private var dismiss
+    
+    /// 선택된 탭 (default = photo)
     @State private var selectedTab: Tab = .photo
     @State private var draw: Bool = false
     
+    /// 지도 위치 표시할 정보 객체
     private var regionLocation: CLLocationCoordinate2D?
+    /// 장소 정보 객체
     private var item: DetailModel?
     
     // detailView 초기화
     init(item: DetailModel? = nil) {
+        // kakaoMap 키 정보 조회
         if let kakaoAppKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY") as? String {
             SDKInitializer.InitSDK(appKey: kakaoAppKey)
         } else {
             print("Kakao App Key is missing in Info.plist")
         }
+        
+        // 장소 정보 주입
         self.item = item
+        
+        // 위치 정보 주입
         if let latitude = Double(item?.mapY ?? ""), let longitude = Double(item?.mapX ?? "") {
             self.regionLocation = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         } else {
@@ -54,8 +64,8 @@ public struct DetailView: View {
             .frame(maxHeight: .infinity, alignment: .top)
         }
         .onAppear {
+            // 지도 그리기
             draw = true
-            //print(item?.script ?? "")
         }
         .onDisappear { draw = false }
         .navigationBarBackButtonHidden()
@@ -109,7 +119,7 @@ struct DetailHeaderView: View {
     }
 }
 
-// MARK: 장소 이미지
+// MARK: 장소 이미지/맵 영역
 struct DetailImageView: View {
     var url: String
     var regionLocation: CLLocationCoordinate2D?
@@ -136,6 +146,7 @@ struct DetailImageView: View {
                     }
                 }
             } else {
+                // 맵 설정
                 KakaoMapView(
                     draw: $draw,
                     markerCoordinate: CLLocationCoordinate2D(
@@ -217,6 +228,7 @@ struct DetailInfoView: View {
             }
             DetailButtonView(model: model)
             
+            // script Text 가공
             let decoded = (model.script ?? "")
                 .replacingOccurrences(of: #"\t"#, with: "\n")
                 .replacingOccurrences(of: #" {2,}"#, with: "\n\n", options: .regularExpression)
