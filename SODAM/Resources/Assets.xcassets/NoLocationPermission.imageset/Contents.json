@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "위치권한거부.png",
+      "filename" : "locationPermisson 1.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "locationPermisson 2.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "locationPermisson 3.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
