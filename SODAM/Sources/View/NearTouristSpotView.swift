@@ -40,7 +40,11 @@ struct NearTouristSpotView: View {
                 .padding(EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15))
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            if viewModel.theme.isEmpty {
+            if viewModel.isLoading {
+                ProgressView()
+                    .scaleEffect(2.5, anchor: .center)
+                    .frame(width: 200, height: 200)
+            } else if viewModel.theme.isEmpty {
                 isEmptyView
             } else {
                 ScrollView {
@@ -159,9 +163,18 @@ struct TouristSpotTestView: View {
 
 private var isEmptyView: some View {
     VStack {
-        Image("NoneData")
+        Image("NotFind")
             .resizable()
-            .aspectRatio(contentMode: .fit)
+            .frame(width: 300, height: 300)
+        Text("1km 이내에 관광지 이야기가 없어요")
+            .foregroundStyle(Color.textColor)
+            .font(.system(size: 25))
+            .fontWeight(.semibold)
+            .offset(y: -20)
+        Text("이동 후 다시 확인해 주세요")
+            .foregroundStyle(Color.textColor)
+            .font(.system(size: 15))
+            .offset(y: -10)
         Spacer()
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
