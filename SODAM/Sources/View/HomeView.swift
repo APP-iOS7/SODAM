@@ -40,7 +40,10 @@ struct HomeView: View {
                         
                         VStack {
                             Divider()
-                            if myNearByListViewModel.isLoading {
+                            if UserLocation.shared.getStatus() == .denied {
+                                NoLocationPermissionView
+                            }
+                            else if myNearByListViewModel.isLoading {
                                 ProgressView()
                                     .padding(.top, 100)
                             } else if !myNearByListViewModel.sortedViewModel.isEmpty && !myNearByListViewModel.isLoading {
@@ -123,6 +126,18 @@ struct HomeView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
             Text("주변에 관광지가 없어요")
+                .offset(y: -10)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    /// 위치권한 거부 시
+    private var NoLocationPermissionView: some View {
+        VStack {
+            Image("NoLocationPermission")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+            Text("위치권한을 허용해주세요")
                 .offset(y: -10)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
