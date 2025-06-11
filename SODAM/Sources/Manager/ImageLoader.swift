@@ -31,7 +31,7 @@ class ImageCache {
     }
 }
 
-// MARK: - Image Loader
+// MARK: - Image Loader 뷰 모델
 @MainActor
 class ImageLoader: ObservableObject {
     @Published var image: UIImage?
@@ -70,6 +70,7 @@ class ImageLoader: ObservableObject {
         self.hasError = false
         self.image = nil
         
+        // 이미지 통신
         task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
             guard let self = self else { return }
             

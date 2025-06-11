@@ -16,9 +16,9 @@ class MyNearbyListViewModel: ObservableObject {
     @Published var isDataLoading: Bool = false
     @Published var isCreatedViewModel: Bool = false
     @Published var nearTourList: [DetailModel] = []
-    @Published var sortedViewModel: [DetailModel] = []
-    @Published var allAddress: [String : String] = .init()
-    @Published var radius: Int = 0 // default 반경
+    @Published var sortedViewModel: [DetailModel] = [] // 외부 View에서 사용할 최종 데이터 ( 거리 정렬 )
+    @Published var allAddress: [String : String] = .init() // 정렬된 데이터의 대응되는 주소
+    @Published var radius: Int = 0 // default 반경 -> publisher 값
     @Published var hasError:Bool = false
     @Published var errorMessage: String?
     
