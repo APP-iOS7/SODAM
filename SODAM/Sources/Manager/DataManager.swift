@@ -5,27 +5,33 @@
 //  Created by 박세라 on 5/15/25.
 //
 // SwiftData 연동을 위한 싱글톤 객체
+
 import SwiftData
 import Foundation
 
 @MainActor
 final class DataManager {
-    static let shared = DataManager()
-
     private var modelContext: ModelContext!
-
+    
+    // 싱글톤으로 지정
+    static let shared = DataManager()
     private init() { }
     
     func configure(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
     
+    // DataManger 실행중 발생하는 오류 정의
     enum DataManagerError: Error {
         case insertionFailed
         case deletionFailed
         case fetchFailed
     }
 
+    /** 장소정보 SwiftData에 추가
+     * - Parameters:
+     *      - item: 장소 정보를 담은 PlaceItem
+     */
     @MainActor
     func addPlaceItem(item: PlaceItem) async throws {
         guard let x = Double(item.mapX), let y = Double(item.mapY) else {
@@ -50,35 +56,49 @@ final class DataManager {
             let existingItems = try modelContext.fetch(fetchDescriptor)
             
             
+            // 중복된 항목이 있을경우 추가하지 않습니다.
             guard existingItems.isEmpty else {
                 print("⚠️ 중복된 아이템이 이미 존재합니다: \(item.title), \(item.mapX), \(item.mapY)")
                 return
             }
             
+            // 추가하기 전 항목에 location 정보를 추가합니다.
             let address = try await APIService.shared.getAddress(x: x, y: y)
             item.loc = address?.response.result?.first?.structure?.level1
+            
+            // modelContext에 추가
             modelContext.insert(item)
+            
+            // modelContext에 상황 저장
             try modelContext.save()
-            print("✅ 저장 성공")
         } catch {
-            print("❌ 저장 실패: \(error.localizedDescription)")
-            dump(error)
+            print(error.localizedDescription)
             throw DataManagerError.insertionFailed
         }
         
     }
     
+    /** 장소정보 SwiftData에 삭제
+     * - Parameters:
+     *      - item: 장소 정보를 담은 PlaceItem
+     */
     func deletePlaceItem(_ item: PlaceItem) throws {
         do {
+            // modelContext에서 항목 삭제
             modelContext.delete(item)
+            
+            // modelContext에 상황 저장
             try modelContext.save()
-            print("✅ 삭제 성공")
         } catch {
-            print("❌ 저장 실패: \(error.localizedDescription)")
+            print(error.localizedDescription)
             throw DataManagerError.deletionFailed
         }
     }
 
+    /** 장소정보 SwiftData에 삭제
+     * - Returns:
+     *      - SwiftData에 저장된 모든 PlaceItem의 배열
+     */
     func fetchPlaceItems() throws -> [PlaceItem] {
         do {
             return try modelContext.fetch(FetchDescriptor<PlaceItem>())

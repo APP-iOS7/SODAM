@@ -4,11 +4,10 @@
 //
 //  Created by 박세라 on 5/13/25.
 //
+//  장소/오디오 API 응답 모델
 
 
 import Foundation
-
-// MARK: - 장소/오디오 API 응답 모델
 
 struct StoryResponse: Codable {
     let response: StoryResponseBody

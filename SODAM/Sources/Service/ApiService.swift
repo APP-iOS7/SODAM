@@ -97,39 +97,7 @@ final class APIService {
             throw error
         }
     }
-    
-//<<<<<<< HEAD
-//    let storyResponse: StoryResponse = try await NetworkManager.shared.fetchItemsAsync(from: urlString, headers: ["Content-Type":"application/json"])
-//    let items = storyResponse.response.body.items.item
-//    return items
-//  }
-//  
-////  // 250523 1745 KTG
-////  func getThemeLocationBasedBodyFull(lng: Double, lat: Double, radius: Int, numOfRows: Int, pageNo: Int) async throws -> StoryResponse {
-////    guard let urlString = buildThemeURL(path: APIConfig.apiUrl.themeLocationBasedList, numOfRows: numOfRows, pageNo: pageNo, lng: lng, lat: lat, radius: radius)
-////    else {
-////      throw NetworkManager.NetworkError.invalidURL
-////    }
-////    
-////    return try await NetworkManager.shared.fetchItemsAsync(
-////      from: urlString,
-////      headers: ["Content-Type":"application/json"]
-////    )
-////  }
-//  
-//  /** 이야기 기본 정보 목록 조회
-//   * - Parameters:
-//   *      - numOfRows: 한 페이지 결과 수
-//   *      - pageNo: 페이지 번호
-//   *      - tid: 관광지아이디 ( key값으로 해당정보 조회시 tlid와 동시에 입력시 조회 가능함. )
-//   *      - tlid: 관광지언어아이디( key값으로 해당정보 조회시 tid와 동시에 입력시 조회 가능함. )
-//   * - Returns: 관광지 목록
-//   */
-//  func getStoryBasedList(numOfRows: Int, pageNo: Int, tid: Int? = nil, tlid: Int? = nil) async throws -> [DetailModel] {
-//    guard let urlString = buildThemeURL(path: APIConfig.apiUrl.storyBasedList, numOfRows: numOfRows, pageNo: pageNo) else {
-//      throw NetworkManager.NetworkError.invalidURL
-//=======
-    
+
     /** 관광지 위치기반 정보 목록 조회
      * - Parameters:
      *      - lng: 경도 - GPS X좌표(WGS84 경도 좌표) ex) 126.615455
@@ -333,7 +301,14 @@ final class APIService {
         }
     }
     
-    
+    /** 관광사진갤러리 키워드 검색 목록 조회
+     * - Parameters:
+     *      - numOfRows: 한 페이지 결과 수
+     *      - pageNo: 페이지 번호
+     *      - keyword: 요청 키워드(한글 경우, URL 인코딩 필요)
+     * - Returns: 관광지 목록
+     * - Description: 키워드검색을 통해 사진갤러리 목록을 조회하는 기능입니다. 키워드검색을 통해 키워드 항목데이터와 매칭되는 정보를 목록으로 표출하며, 제목에 해당하는 그룹화된 목록을 제공합니다.
+     */
     func getAddress(x: Double, y: Double) async throws -> AddressResponse? {
         guard let geocoderApiKey = Bundle.main.object(forInfoDictionaryKey: "GEOCODER_API_KEY") as? String else {
             print("GeoCoder Api Key is missing in Info.plist")
@@ -352,9 +327,25 @@ final class APIService {
         }
     }
     
-    
-    
-    /// url query 구성 함수
+
+    /** 관광 API 요청 url query 구성 함수
+     * - Parameters:
+     *      - path: api 종류 *필수
+     *      - keyword : 검색 키워드
+     *      - syncStatus: 컨텐츠상태(A=신규,U=수정,D=삭제)
+     *      - numOfRows: 한 페이지 결과 수
+     *      - pageNo: 페이지 번호
+     *      - lng: 경도 - GPS X좌표(WGS84 경도 좌표) ex) 126.615455
+     *      - lat: 위도 - GPS Y좌표(WGS84 위도 좌표) ex) 34.476566
+     *      - radius: 거리 반경 : 거리 반경(단위:m) ,Max값 20000m=20Km
+     *      - tid: 관광지 아이디
+     *      - tlid: 관광지 언어 아이디
+     *      - langCode: 언어 코드
+     * - Returns: 요청에 맞게 구성된 URL QueryString
+     * - Note:
+     *      - keyword와 같이 한글이 들어가는 요청 parameter는 인코딩을 해야 합니다.
+     *      - serviceKey는 인코딩 하면 안됩니다. rawData 그 자체로 들어가야 합니다.
+     */
     func buildThemeURL(path: APIConfig.apiUrl, keyword: String? = nil, syncStatus: String? = nil, numOfRows: Int = 10, pageNo: Int = 1, lng: Double? = nil, lat: Double? = nil, radius: Int? = nil, tid: Int? = nil, tlid: Int? = nil, langCode: String = "ko") -> String? {
         guard let tourApiKey = Bundle.main.object(forInfoDictionaryKey: "TOUR_API_KEY") as? String else {
             print("Tour Api Key is missing in Info.plist")
@@ -364,6 +355,7 @@ final class APIService {
         // serviceKey는 인코딩 하면 안됨
         let baseWithKey = "\(APIConfig.audioBaseURL)/\(path)?serviceKey=\(tourApiKey)"
         
+        // URLComponents로 구성
         var components = URLComponents()
         
         // 필수 queryItem
@@ -371,7 +363,7 @@ final class APIService {
             URLQueryItem(name: "numOfRows", value: "\(numOfRows)"),
             URLQueryItem(name: "pageNo", value: "\(pageNo)"),
             URLQueryItem(name: "MobileOS", value: "IOS"),
-            URLQueryItem(name: "MobileApp", value: "AppTest"),
+            URLQueryItem(name: "MobileApp", value: "SODAM"),
             URLQueryItem(name: "langCode", value: langCode),
             URLQueryItem(name: "_type", value: "json")
         ]
@@ -402,6 +394,7 @@ final class APIService {
         components.queryItems = items
         
         
+        // 추가된 parameter들을 앵커로 묶어서 URL 구성
         if let query = components.percentEncodedQuery {
             return baseWithKey + "&" + query
         } else {
@@ -410,7 +403,19 @@ final class APIService {
     }
     
     
-    /// url query 구성 함수
+    /** 관광사진 API 요청 url query 구성 함수
+     * - Parameters:
+     *      - path: api 종류 *필수
+     *      - keyword : 검색 키워드
+     *      - syncStatus: 컨텐츠상태(A=신규,U=수정,D=삭제)
+     *      - numOfRows: 한 페이지 결과 수
+     *      - pageNo: 페이지 번호
+     *      - title: 사진 제목
+     * - Returns: 요청에 맞게 구성된 URL QueryString
+     * - Note:
+     *      - keyword나 title 같이 한글이 들어가는 요청 parameter는 인코딩을 해야 합니다.
+     *      - serviceKey는 인코딩 하면 안됩니다. rawData 그 자체로 들어가야 합니다.
+     */
     func buildGalleryURL(path: APIConfig.apiUrl, keyword: String? = nil, numOfRows: Int = 10, pageNo: Int = 1, title: String? = nil) -> String? {
         guard let tourApiKey = Bundle.main.object(forInfoDictionaryKey: "TOUR_API_KEY") as? String else {
             print("Tour Api Key is missing in Info.plist")
@@ -420,6 +425,7 @@ final class APIService {
         // serviceKey는 인코딩 하면 안됨
         let baseWithKey = "\(APIConfig.galleryBaseURL)/\(path)?serviceKey=\(tourApiKey)"
         
+        // URLComponents로 구성
         var components = URLComponents()
         
         // 필수 queryItem
@@ -443,7 +449,7 @@ final class APIService {
         
         components.queryItems = items
         
-        
+        // 추가된 parameter들을 앵커로 묶어서 URL 구성
         if let query = components.percentEncodedQuery {
             return baseWithKey + "&" + query
         } else {
