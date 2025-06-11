@@ -17,15 +17,15 @@ public struct ContentView: View {
           PlayerView()
             .offset(offset)
             .gesture(
-              DragGesture()
+              DragGesture() // 플레이어 뷰 드래그에 따른 이동 조작
                 .onChanged { gesture in
-                  if playerViewModel.isLongVer {
+                  if playerViewModel.isLongVer { //롱버전일때 상하 위치만 조절
                     offset.height = accumulatedOffset.height + gesture.translation.height
-                  } else {
+                  } else { // 숏버전: 상하좌우 조작 가능
                     offset = accumulatedOffset + gesture.translation
                   }
                 }
-                .onEnded { gesture in
+                .onEnded { gesture in //이동 후 플레이어가 화면 밖으로 나간 경우 제어
                   if offset.height <= -(geo.size.height / 2) + (geo.size.height / 11) {
                     offset.height = -(geo.size.height / 2) + (geo.size.height / 11)
                     accumulatedOffset.height = -(geo.size.height / 2) + (geo.size.height / 11)
@@ -52,11 +52,11 @@ public struct ContentView: View {
             )
         }
       }
-      .onAppear(perform: {
+      .onAppear(perform: { //플레이어 첫 위치
         offset = CGSizeMake(0, (geo.size.height / 2.6))
         accumulatedOffset = CGSizeMake(0, (geo.size.height / 2.6))
       })
-      .onChange(of: playerViewModel.isLongVer, {
+      .onChange(of: playerViewModel.isLongVer, { //롱버전될 때 위치 조절
         if playerViewModel.isLongVer {
           offset.width = 0
           accumulatedOffset.width = 0
