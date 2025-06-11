@@ -4,10 +4,14 @@
 //
 //  Created by 박세라 on 5/14/25.
 //
+//  API URL 설정 파일
 
 struct APIConfig {
+    // 한국관광공사_관광지 오디오 가이드정보_GW baseURL
     static let audioBaseURL = "https://apis.data.go.kr/B551011/Odii"
+    // 한국관광공사_관광사진 정보_GW baseURL
     static let galleryBaseURL = "https://apis.data.go.kr/B551011/PhotoGalleryService1"
+    // Geocoder API 2.0 (좌표를 주소로 변환) baseURL
     static let geocoderBaseURL = "https://api.vworld.kr/req/address"
     
     enum apiUrl: String{
