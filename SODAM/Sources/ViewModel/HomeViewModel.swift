@@ -5,8 +5,6 @@ import CoreLocation
 @MainActor
 class HomeViewModel: ObservableObject {
     
-    @Environment(\.modelContext) private var modelContext
-    
     @Published var isLoading: Bool = true
     @Published var playerState: Bool = false
     @Published var todaySpot: DetailModel? = nil
@@ -19,20 +17,18 @@ class HomeViewModel: ObservableObject {
     
     let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     var item: GalleryItem?
-
-    func updateProperties(nears: [DetailModel], today: DetailModel ) {
-        self.isLoading = false
-    }
     
+    ///방문한 관광지 최대 5개 불러오기
     func GetVisitedSpots() -> [PlaceItem] {
         return Array(visitedSpots.prefix(5))
     }
     
+    ///방문한 관광지 비어있는지 확인
     func IsVisitedSpotEmpty() -> Bool {
         return visitedSpots.isEmpty
     }
     
-    // TODO: 거리 계산 함수식
+    /// 현재 사용자 위치에서 관광지까지의 거리 계산
     func GetDistance(spot: DetailModel) -> Double? {
         let userLat = UserLocation.shared.userLat
         let userLon = UserLocation.shared.userLon
@@ -69,7 +65,7 @@ class HomeViewModel: ObservableObject {
         }
     }
     
-    // 방문한 관광지 가져오기
+    /// 방문한 관광지 가져오기
     func fetchVisitedPlace() {
         do {
             visitedSpots = try DataManager.shared.fetchPlaceItems()
