@@ -7,6 +7,7 @@
 
 @MainActor
 class RegionDataCacheManager {
+    // 싱글 톤
     static let shared: RegionDataCacheManager = .init()
     
     // viewModel 캐시 저장소

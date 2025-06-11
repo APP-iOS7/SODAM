@@ -11,6 +11,7 @@ import UICommonExtension
 struct TabBarComponent: View {
     
     init() {
+        // botton 탭바 투명 제거 및 다크모드 호환
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = UIColor { traitCollection in
@@ -22,12 +23,10 @@ struct TabBarComponent: View {
             UITabBar.appearance().scrollEdgeAppearance = appearance
         }
     }
-    
-    
-    
     @StateObject private var viewModel = MyNearbyListViewModel()
     @State private var selectedTab: Tab = .home
     
+    // 상태 값 enum
     enum Tab {
         case home
         case navigation

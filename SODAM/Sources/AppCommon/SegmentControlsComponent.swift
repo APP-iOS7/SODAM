@@ -7,11 +7,12 @@
 
 import SwiftUI
 
-
+// 상태 값
 enum SegmentState: Int {
     case list
     case map
 }
+
 // 목록 모델
 struct Segment: Identifiable {
     let id: UUID = UUID()
