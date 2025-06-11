@@ -1,11 +1,15 @@
 import ProjectDescription
 
+let bundleId: String = "io.tuist.SODAM" // 번들 ID
+let minimumVersionIOS: String = "17.0" // IOS 최소 버젼
+let appVersion: Plist.Value = "1.0.0" // 앱 버젼 정보
 
 let sodamApp: Target = .target(
     name: "SODAM",
-    destinations: .iOS,
+    destinations: [.iPhone],
     product: .app,
-    bundleId: "io.tuist.SODAM",
+    bundleId: bundleId,
+    deploymentTargets: .iOS(minimumVersionIOS), // IOS 최소 버젼
     infoPlist: .extendingDefault(
         with: [
             "UILaunchScreen": [
@@ -31,7 +35,9 @@ let sodamApp: Target = .target(
                         "NSExceptionRequiresForwardSecrecy": false
                     ]
                 ]
-            ]
+            ],
+            "CFBundleShortVersionString": appVersion,  // version
+            "CFBundleVersion": "1"                  // build number
         ]
     ),
     sources: ["SODAM/Sources/**"],
@@ -57,9 +63,10 @@ let sodamApp: Target = .target(
 
 let sodamAppTests: Target = .target(
     name: "SODAMTests",
-    destinations: .iOS,
+    destinations: [.iPhone],
     product: .unitTests,
-    bundleId: "io.tuist.SODAMTests",
+    bundleId: "\(bundleId).SODAMTests",
+    deploymentTargets: .iOS(minimumVersionIOS), // IOS 최소 버젼
     infoPlist: .default,
     sources: ["SODAM/Tests/**"],
     resources: [],
@@ -69,9 +76,10 @@ let sodamAppTests: Target = .target(
 // TODO: 커스텀 컬러 사용을 위한 라이브러리
 let uiCommonExtension: Target = .target(
     name: "UICommonExtension",
-    destinations: .iOS,
+    destinations: [.iPhone],
     product: .staticLibrary,
-    bundleId: "io.tuist.UICommonExtension",
+    bundleId: "\(bundleId).UICommonExtension",
+    deploymentTargets: .iOS(minimumVersionIOS), // IOS 최소 버젼
     infoPlist: .default,
     sources: ["SODAM/UICommon/**"],
     dependencies: []
