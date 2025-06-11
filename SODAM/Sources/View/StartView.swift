@@ -18,7 +18,7 @@ struct StartView: View {
     @State private var draw: Bool = false
     @State private var sheetOffset: CGFloat = 0
     @State private var lastDrag: CGFloat = 0
-    private let fractions: [CGFloat] = [0.1, 0.5, 0.95]
+    private let fractions: [CGFloat] = [0.1, 0.5, 0.9]
     @State private var screenHeight: CGFloat = 0
     @State private var safeHeight: CGFloat = 0
     @State private var selectedTour: DetailModel? = nil
