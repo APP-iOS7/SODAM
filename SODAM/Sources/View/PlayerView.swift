@@ -108,14 +108,14 @@ struct PlayerView: View {
         })
     }
     
+    
+    /// 시간 포맷 변환
+    /// - Parameter time: 시간
+    /// - Returns: 시간을 00:00 형태로 하는 문자열
     private func formatTime(_ time: TimeInterval) -> String {
-        guard time.isFinite, time >= 0 else { return "0:00" }
+        guard time.isFinite, time >= 0 else { return "00:00" }
         let min = Int(time) / 60
         let sec = Int(time) % 60
         return String(format: "%02d:%02d", min, sec)
     }
 }
-
-//#Preview {
-//    PlayerView(playerViewModel: PlayerViewModel())
-//}
