@@ -15,24 +15,13 @@ final class VisitedPlacesViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var selectSegment: SegmentState = .list
 
-    
+    /// SwiftData에 저장된 placeItem을 불러옵니다.
     func fetchItems() {
         do {
             let fetchedItems = try DataManager.shared.fetchPlaceItems()
             items = fetchedItems
         } catch {
             print("Failed to fetch items:", error)
-        }
-    }
-
-    func addItem(item: PlaceItem) {
-        Task {
-            do {
-                try await DataManager.shared.addPlaceItem(item: item)
-                fetchItems()
-            } catch {
-                print("Failed to add item:", error)
-            }
         }
     }
     
