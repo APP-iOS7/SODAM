@@ -1,4 +1,5 @@
 import SwiftUI
+import UICommonExtension
 
 struct HomeView: View {
     @StateObject private var homeViewModel: HomeViewModel = HomeViewModel()
@@ -7,21 +8,19 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 VStack {
-                    if homeViewModel.todaySpot != nil {
+                    if !homeViewModel.isLoading {
                         NavigationLink{
                             DetailView(item: homeViewModel.todaySpot)
                         } label: {
-                            TodaySpotView(spot: homeViewModel.todaySpot, isLoading: homeViewModel.isLoading)
+                            TodaySpotView(
+                                spot: homeViewModel.todaySpot,
+                                isLoading: homeViewModel.isLoading,
+                                homeViewModel: homeViewModel
+                            )
                         }
                     }else {
-                        HStack {
-                            Text("오늘의 이야기를 가져오지 못했습니다")
-                            Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
-                        }
-                        .onTapGesture {
-                            // 실패 시 reload
-                            homeViewModel.fetchTodayStory()
-                        }
+                        ProgressView()
+                            .frame(height: 250)
                     }
                     
                     VStack {
@@ -45,11 +44,11 @@ struct HomeView: View {
                                 ProgressView()
                                     .padding(.top, 100)
                             } else if !myNearByListViewModel.sortedViewModel.isEmpty && !myNearByListViewModel.isLoading {
-                                ForEach(Array($myNearByListViewModel.sortedViewModel.prefix(3).enumerated()), id: \.offset) { index, bindingSpot in
+                                ForEach(Array(myNearByListViewModel.sortedViewModel.prefix(3).enumerated()), id: \.offset) { index, spot in
                                     NavigationLink {
-                                        DetailView(item: bindingSpot.wrappedValue)
+                                        DetailView(item: spot)
                                     } label: {
-                                        NearSpotListCellView(homeViewModel: homeViewModel, spot: bindingSpot)
+                                        NearSpotListCellView(homeViewModel: homeViewModel, spot: spot)
                                     }
                                     Divider()
                                 }
@@ -141,7 +140,7 @@ struct HomeView: View {
 
 struct NearSpotListCellView: View {
     var homeViewModel: HomeViewModel
-    @Binding var spot: DetailModel
+    let spot: DetailModel
     var body: some View {
         HStack(alignment: .top) {
             CustomAsyncImage(url: spot.imageUrl) { image in
@@ -212,45 +211,58 @@ struct VisitedSpotListCellView: View {
     }
 }
 
-
-
 struct TodaySpotView: View {
     let spot: DetailModel?
     let isLoading: Bool
+    let homeViewModel: HomeViewModel
     var body: some View {
         if !isLoading {
-            CustomAsyncImage(url: spot!.imageUrl!) { image in
-                image
-                    .resizable()
-                    .overlay(
-                        ZStack {
-                            LinearGradient(gradient: Gradient(colors: [Color.clear, Color.clear, Color.black.opacity(0.7)]), startPoint: .top, endPoint: .bottom)
-                            HStack {
-                                VStack(alignment: .leading) {
+            if spot != nil {
+                CustomAsyncImage(url: spot!.imageUrl!) { image in
+                    image
+                        .resizable()
+                        .overlay(
+                            ZStack {
+                                LinearGradient(gradient: Gradient(colors: [Color.clear, Color.clear, Color.black.opacity(0.7)]), startPoint: .top, endPoint: .bottom)
+                                HStack {
+                                    VStack(alignment: .leading) {
+                                        Spacer()
+                                        Text("오늘의 이야기")
+                                            .font(.headline)
+                                            .foregroundStyle(Color.white)
+                                        Text(spot!.title)
+                                            .font(.title)
+                                            .fontWeight(.bold)
+                                            .foregroundStyle(Color.white)
+                                        Text("\(spot!.addr1 ?? "") | \(spot!.audioTitle ?? "")")
+                                            .font(.caption)
+                                            .foregroundStyle(Color.white)
+                                            .padding(.bottom, 10)
+                                    }
+                                    .padding(.leading, 20)
                                     Spacer()
-                                    Text("오늘의 이야기")
-                                        .font(.headline)
-                                        .foregroundStyle(Color.white)
-                                    Text(spot!.title)
-                                        .font(.title)
-                                        .fontWeight(.bold)
-                                        .foregroundStyle(Color.white)
-                                    Text("\(spot!.addr1 ?? "") | \(spot!.audioTitle ?? "")")
-                                        .font(.caption)
-                                        .foregroundStyle(Color.white)
-                                        .padding(.bottom, 10)
                                 }
-                                .padding(.leading, 20)
-                                Spacer()
                             }
-                        }
-                    )
-            } placeholder: {
-                ProgressView()
+                        )
+                } placeholder: {
+                    ProgressView()
+                }
+                .frame(height: 250)
+            }else {
+                HStack {
+                    Text("오늘의 이야기를 가져오지 못했습니다")
+                    Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
+                }
+                .onTapGesture {
+                    // 실패 시 reload
+                    homeViewModel.fetchTodayStory()
+                }
+                .frame(height: 250)
+                .foregroundStyle(Color.textColor)
             }
-            .frame(height: 250)
         } else {
             ProgressView()
+                .frame(height: 250)
         }
     }
 }

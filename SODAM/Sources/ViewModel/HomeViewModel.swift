@@ -44,7 +44,8 @@ class HomeViewModel: ObservableObject {
     // TODO: 오늘의 이야기 비동기 통신 함수
     func fetchTodayStory() {
         let pageNo = Int.random(in: 1...5) // page 번호를 랜덤 난수
-        let numOfRows = 100
+        print(pageNo)
+        let numOfRows = 1000
         Task {
             isLoading = true
             do {
