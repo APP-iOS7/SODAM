@@ -16,6 +16,7 @@ struct NearbyMapView: View {
     @State private var selectTour: DetailModel?
     @State private var isDetailActive: Bool = false // 네비게이션 제어용 상태
     init(myLocation: CLLocationCoordinate2D, tourList: [DetailModel]) {
+        // KAKAO_APP_KEY 가져오기
         if let kakaoAppKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY") as? String {
             SDKInitializer.InitSDK(appKey: kakaoAppKey)
         } else {
@@ -39,20 +40,12 @@ struct NearbyMapView: View {
                             isDetailActive = true
                         }
                     )
-                    
-                    NavigationLink(
-                        destination: Group {
-                            if let tour = selectTour {
-                                DetailView(item: tour)
-                            } else {
-                                EmptyView()
-                            }
-                        },
-                        isActive: $isDetailActive
-                    ) {
-                        EmptyView()
+                }
+                // IOS 16 권장 방식으로 변경
+                .navigationDestination(isPresented: $isDetailActive) {
+                    if let tour = selectTour {
+                        DetailView(item: tour)
                     }
-                    .hidden()
                 }
                 .onAppear { draw = true }
                 .onDisappear { draw = false }
