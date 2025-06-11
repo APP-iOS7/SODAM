@@ -16,11 +16,12 @@ final class UserDefaultsManager {
     
     private init() {}
     
+    // 앱 시작시 호출되는 함수
     func setupDefaultsIfNeeded() {
+        // 앱이 처음 설치되었을때만 작동. (= hasLaunchedKey값이 false일때)
         if !defaults.bool(forKey: hasLaunchedKey) {
             defaults.set(true, forKey: hasLaunchedKey)
             defaults.set("ko", forKey: "selectedLanguage")
-            //defaults.set(true, forKey: "isLocationEnabled")
         }
     }
     
@@ -28,10 +29,4 @@ final class UserDefaultsManager {
         get { defaults.string(forKey: "selectedLanguage") ?? "ko" }
         set { defaults.set(newValue, forKey: "selectedLanguage") }
     }
-    /*
-    var isLocationEnabled: Bool {
-        get { defaults.bool(forKey: "isLocationEnabled") }
-        set { defaults.set(newValue, forKey: "isLocationEnabled") }
-    }
-     */
 }
