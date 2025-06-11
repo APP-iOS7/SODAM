@@ -27,6 +27,7 @@ struct AppSettingsView: View {
         NavigationStack {
             Form {
                 Section(header: Text("앱 설정")) {
+                    /*
                     // 언어 설정
                     HStack {
                         settingTitleView(text: "언어설정", iconName: "globe")
@@ -56,6 +57,7 @@ struct AppSettingsView: View {
                             }
                             .labelsHidden()
                     }
+                     */
                     
                     // 약관 및 정책
                     NavigationLink(destination: TermsAndPolicyView()) {
