@@ -23,11 +23,14 @@ public struct DetailView: View {
     /// 선택된 탭 (default = photo)
     @State private var selectedTab: Tab = .photo
     @State private var draw: Bool = false
+    @State private var item: DetailModel?
+    @State private var locationInfo: String?
     
     /// 지도 위치 표시할 정보 객체
     private var regionLocation: CLLocationCoordinate2D?
     /// 장소 정보 객체
-    private var item: DetailModel?
+    
+    private var originalItem: DetailModel?
     
     // detailView 초기화
     init(item: DetailModel? = nil) {
@@ -39,7 +42,7 @@ public struct DetailView: View {
         }
         
         // 장소 정보 주입
-        self.item = item
+        self.originalItem = item
         
         // 위치 정보 주입
         if let latitude = Double(item?.mapY ?? ""), let longitude = Double(item?.mapX ?? "") {
@@ -55,7 +58,7 @@ public struct DetailView: View {
             ScrollView(.vertical, showsIndicators: false) { // scroll Indicator 숨기기
                 if let detailItem = item {
                     DetailImageView(url: detailItem.imageUrl ?? "", regionLocation: regionLocation, selectedTab: $selectedTab, draw: $draw)
-                    DetailInfoView(model: detailItem)
+                    DetailInfoView(model: detailItem, locationInfo: locationInfo)
                 } else {
                     Text("데이터가 없습니다.")
                 }
@@ -66,6 +69,7 @@ public struct DetailView: View {
         .onAppear {
             // 지도 그리기
             draw = true
+            loadData()
         }
         .onDisappear { draw = false }
         .navigationBarBackButtonHidden()
@@ -77,6 +81,23 @@ public struct DetailView: View {
                 .foregroundStyle(Color.primaryColor)
                 .onTapGesture {
                     dismiss()
+                }
+            }
+        }
+    }
+    
+    // MARK: - 비동기 데이터 로딩
+    private func loadData() {
+        guard let item = originalItem else { return }
+        self.item = item
+        
+        Task {
+            if let addr1 = item.addr1, let addr2 = item.addr2 {
+                self.locationInfo = "\(addr1) \(addr2)"
+            } else {
+                if let x = Double(item.mapX), let y = Double(item.mapY) {
+                    let result = try? await APIService.shared.getAddress(x: x, y: y)
+                    self.locationInfo = "\(result?.response.result?.first?.structure?.level1 ?? "") \(result?.response.result?.first?.structure?.level2 ?? "")"
                 }
             }
         }
@@ -216,6 +237,7 @@ struct DetailButtonView: View {
 // MARK: script영역
 struct DetailInfoView: View {
     let model: DetailModel
+    let locationInfo: String?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -225,6 +247,8 @@ struct DetailInfoView: View {
             if let addr1 =  model.addr1 {
                 Text("\(addr1) \(model.addr2 ?? "")")
                     .font(.system(size: 16))
+            } else {
+                Text(locationInfo ?? "")
             }
             DetailButtonView(model: model)
             
