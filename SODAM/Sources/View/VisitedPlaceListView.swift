@@ -4,8 +4,7 @@
 //
 //  Created by 박세라 on 5/15/25.
 //
-
-//VisitedPlaceListView
+// VisitedPlaceListView
 
 import SwiftUI
 import SwiftData
@@ -20,6 +19,7 @@ struct VisitedPlaceListView: View {
     @State private var draw: Bool = false
     
     init() {
+        // kakaoMap 키 정보 조회
         if let kakaoAppKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY") as? String {
             SDKInitializer.InitSDK(appKey: kakaoAppKey)
         } else {
@@ -53,8 +53,8 @@ struct VisitedPlaceListView: View {
                 KakaoMapView(
                     draw: $draw,
                     markerCoordinate: CLLocationCoordinate2D(
-                        latitude: 37.5814159,
-                        longitude: 126.9656853
+                        latitude: UserLocation.shared.userLat,
+                        longitude: UserLocation.shared.userLon
                     ),
                     defaultLevel: 5,
                     tourList: placeItemToDetailModel(from: viewModel.items)
@@ -77,13 +77,14 @@ struct VisitedPlaceListView: View {
             }
         }
         .onAppear {
-            //fetchDummyData()
+            // fetch Data
             viewModel.fetchGroupedItemsByLocation()
             draw = true
         }
         .onDisappear { draw = false }
     }
     
+    /// PlaceItem -> DetailModel 모델링
     private func placeItemToDetailModel(from placeItem: [PlaceItem]) -> [DetailModel] {
         var ret = [DetailModel]()
         
@@ -94,18 +95,6 @@ struct VisitedPlaceListView: View {
         }
         
         return ret
-    }
-    
-    private func fetchDummyData() {
-        let items = [
-            PlaceItem(title: "경주 불국사", stlid: "16763", mapX: "129.331719", mapY: "35.7923277", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg"),
-            PlaceItem(title: "공주 공산성", stlid: "5892", mapX: "127.1266933", mapY: "36.4630408", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11173.jpg"),
-            PlaceItem(title: "재궁",  stlid: "1673", mapX: "126.9946507", mapY: "37.5739916", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/11153.jpg"),
-            PlaceItem(title: "공신당",  stlid: "1763", mapX: "126.9940848", mapY: "37.5742758", imageUrl: "https://sfj608538-sfj608538.ktcdn.co.kr/file/image/service/341.jpg")
-        ]
-        for item in items {
-            viewModel.addItem(item:item)
-        }
     }
     
     // MARK: isLoading이 true일 동안의 View
@@ -125,6 +114,8 @@ struct VisitedPlaceListView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
+    
+    // MARK: 지역별로 묶인 Row
     private func placeItemList(listItems: [PlaceItem]) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             if let locationName = listItems.first?.loc {
@@ -184,7 +175,7 @@ struct VisitedPlaceListView: View {
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity) // or a specific width like 80 if needed
+                    .frame(maxWidth: .infinity)
                 Spacer()
                     .frame(height: 8)
             }
