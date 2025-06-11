@@ -57,6 +57,9 @@ class HomeViewModel: ObservableObject {
                 if filteredSpots.count > 0 {
                     let selectedSpot = filteredSpots.randomElement()!
                     self.todaySpot = selectedSpot
+                    if let todaySpot = todaySpot {
+                        getAddress(spot: todaySpot)
+                    }
                 }
             } catch {
                 print("리스트 불러오기 실패: \(error)")
@@ -73,6 +76,27 @@ class HomeViewModel: ObservableObject {
             print(error.localizedDescription)
         }
     }
+    func getAddress(spot: DetailModel) {
+        Task {
+            do{
+                    if let x = Double(spot.mapX), let y = Double(spot.mapY) {
+                        let addr1 = try await APIService.shared.getAddress(x: x, y: y)?.response.result?.last?.structure?.level1
+                        let addr2 = try await APIService.shared.getAddress(x: x, y: y)?.response.result?.last?.structure?.level2
+                         self.updateProperties(addr1: String(addr1 ?? ""), addr2: String(addr2 ?? ""))
+                }
+            } catch {
+                print("get Address error: \(error)")
+            }
+        }
+    }
     
+    /// 관광지 주소 정보 업데이트
+    /// - Parameters:
+    ///   - addr1: 관광지의 시/도
+    ///   - addr2: 관광지의 시/구/
+    @MainActor func updateProperties(addr1: String, addr2: String) {
+        todaySpot?.addr1 = addr1
+        todaySpot?.addr2 = addr2
+    }
 }
 

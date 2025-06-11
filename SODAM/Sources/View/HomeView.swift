@@ -40,7 +40,10 @@ struct HomeView: View {
                         
                         VStack {
                             Divider()
-                            if myNearByListViewModel.isLoading {
+                            if UserLocation.shared.getStatus() == .denied {
+                                NoLocationPermissionView
+                            }
+                            else if myNearByListViewModel.isLoading {
                                 ProgressView()
                                     .padding(.top, 100)
                             } else if !myNearByListViewModel.sortedViewModel.isEmpty && !myNearByListViewModel.isLoading {
@@ -86,7 +89,7 @@ struct HomeView: View {
                                 }
                             }
                         } else {
-                            Text("방문한 관광지가 없습니다")
+                            Text("방문한 관광지가 없어요")
                                 .padding(30)
                         }
                     }
@@ -123,6 +126,18 @@ struct HomeView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
             Text("주변에 관광지가 없어요")
+                .offset(y: -10)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    /// 위치권한 거부 시
+    private var NoLocationPermissionView: some View {
+        VStack {
+            Image("NoLocationPermission")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+            Text("위치권한을 허용해주세요")
                 .offset(y: -10)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -171,7 +186,7 @@ struct NearSpotListCellView: View {
                             .font(.footnote)
                             .foregroundStyle(.gray)
                     } else {
-                        Text("거리를 알 수 없습니다.")
+                        Text("거리를 알 수 없어요")
                             .font(.footnote)
                             .foregroundStyle(.gray)
                     }
@@ -217,8 +232,8 @@ struct TodaySpotView: View {
     let homeViewModel: HomeViewModel
     var body: some View {
         if !isLoading {
-            if spot != nil {
-                CustomAsyncImage(url: spot!.imageUrl!) { image in
+            if let spot = spot {
+                CustomAsyncImage(url: spot.imageUrl!) { image in
                     image
                         .resizable()
                         .overlay(
@@ -230,11 +245,11 @@ struct TodaySpotView: View {
                                         Text("오늘의 이야기")
                                             .font(.headline)
                                             .foregroundStyle(Color.white)
-                                        Text(spot!.title)
+                                        Text(spot.title)
                                             .font(.title)
                                             .fontWeight(.bold)
                                             .foregroundStyle(Color.white)
-                                        Text("\(spot!.addr1 ?? "") | \(spot!.audioTitle ?? "")")
+                                        Text("\(spot.addr1 ?? "") \(spot.addr2 ?? "")")
                                             .font(.caption)
                                             .foregroundStyle(Color.white)
                                             .padding(.bottom, 10)
@@ -250,7 +265,7 @@ struct TodaySpotView: View {
                 .frame(height: 250)
             }else {
                 HStack {
-                    Text("오늘의 이야기를 가져오지 못했습니다")
+                    Text("오늘의 이야기를 가져오지 못했어요")
                     Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
                 }
                 .onTapGesture {
