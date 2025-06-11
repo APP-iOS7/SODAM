@@ -71,7 +71,7 @@ class MyNearbyListViewModel: ObservableObject {
                 guard let self = self else { return Fail(error: URLError(.badURL)).eraseToAnyPublisher() }
                 let lat = self.myLocation.currentLocation?.coordinate.latitude ?? 0
                 let lng = self.myLocation.currentLocation?.coordinate.longitude ?? 0
-                return self.getStoryLocationBasedListPublisher(lng: lng, lat: lat, radius: radius, numOfRows: 100, pageNo: 1)
+                return self.getStoryLocationBasedListPublisher(lng: lng, lat: lat, radius: radius, numOfRows: 10000, pageNo: 1)
             }
             .map { list in
                 list.filter {
