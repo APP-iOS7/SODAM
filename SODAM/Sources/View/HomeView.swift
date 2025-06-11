@@ -89,7 +89,7 @@ struct HomeView: View {
                                 }
                             }
                         } else {
-                            Text("방문한 관광지가 없습니다")
+                            Text("방문한 관광지가 없어요")
                                 .padding(30)
                         }
                     }
@@ -186,7 +186,7 @@ struct NearSpotListCellView: View {
                             .font(.footnote)
                             .foregroundStyle(.gray)
                     } else {
-                        Text("거리를 알 수 없습니다.")
+                        Text("거리를 알 수 없어요")
                             .font(.footnote)
                             .foregroundStyle(.gray)
                     }
@@ -265,7 +265,7 @@ struct TodaySpotView: View {
                 .frame(height: 250)
             }else {
                 HStack {
-                    Text("오늘의 이야기를 가져오지 못했습니다")
+                    Text("오늘의 이야기를 가져오지 못했어요")
                     Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
                 }
                 .onTapGesture {
