@@ -14,7 +14,7 @@ class RegionDetailListViewModel: ObservableObject {
     @Published var selectSegment: SegmentState = .list
     @Published var regionList: [DetailModel] = []
     @Published var isLoading: Bool = false
-    @Published var allAddress: [String : String] = .init()
+    @Published var allAddress: [String : String] = .init() // 필터링된 데이터와 대응되는 주소
     
     var filteredRegionList: [DetailModel] { // 데이터 필터링
         regionList.filter {
@@ -43,7 +43,7 @@ class RegionDetailListViewModel: ObservableObject {
         }
     }
     
-    // MARK: 각각의 관광지 주소 가져오는 함수
+    // MARK: 각각의 관광지 주소 가져오는 함수 ( 동시성 처리 )
     private func fetchRegionGetAddress() async throws {
         await withTaskGroup(of: (String, String)?.self ) { group in
             for region in filteredRegionList {
