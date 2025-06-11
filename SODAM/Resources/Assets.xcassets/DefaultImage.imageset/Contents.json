@@ -1,8 +1,19 @@
 {
   "images" : [
     {
-      "filename" : "소담아이콘참고2.png",
-      "idiom" : "universal"
+      "filename" : "소담아이콘참고2 (1).svg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "소담아이콘참고2 (1) 1.svg",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "소담아이콘참고2 (1) 2.svg",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {
