@@ -9,9 +9,6 @@ import SwiftUI
 import KakaoMapsSDK
 import CoreLocation
 
-/** KakaoMapView 파라미터 설명 */
-/** - draw : 생성과 소멸을 나타내는 값*/
-/** - defaultLevel :  현재 Zoom Level을 나타내는 파라미터  */
 struct KakaoMapStartView: UIViewRepresentable {
     @Binding var draw: Bool
     let markerCoordinate: CLLocationCoordinate2D?
@@ -36,6 +33,7 @@ struct KakaoMapStartView: UIViewRepresentable {
         self.userDotImage = userDotImage
     }
     
+    // Coordinator 생성
     func makeCoordinator() -> KakaoMapStartCoordinator {
         let coordinator = KakaoMapStartCoordinator(
             initialLocation: markerCoordinate,
@@ -47,12 +45,14 @@ struct KakaoMapStartView: UIViewRepresentable {
         return coordinator
     }
     
+    // 맵뷰 컨테이너 생성 및 엔진 초기화
     func makeUIView(context: Self.Context) -> KMViewContainer {
         let view: KMViewContainer = KMViewContainer()
         context.coordinator.createController(view)
         return view
     }
     
+    // draw 상태에 따라 맵 엔진 활성화/비활성화 및 POI 업데이트
     func updateUIView(_ uiView: KMViewContainer, context: Self.Context) {
         guard let controller = context.coordinator.controller
         else {
@@ -61,6 +61,7 @@ struct KakaoMapStartView: UIViewRepresentable {
         
         if draw {
             DispatchQueue.main.async {
+                // 엔진 준비 및 활성화
                 if controller.isEnginePrepared == false {
                     controller.prepareEngine()
                 }
@@ -69,16 +70,19 @@ struct KakaoMapStartView: UIViewRepresentable {
                     return
                 }
                 
+                // 사용자 위치
                 if let coord = markerCoordinate {
                     context.coordinator.updateUserPoi(to: coord)
                 }
                 
+                // 관광지 사진 마커
                 if let list = tourList, !list.isEmpty {
                     context.coordinator.updateRegionMarkersIfNeeded(tourList: list)
                 }
             }
         } else {
             DispatchQueue.main.async {
+                //엔진 일시정지 및 캐시 정리
                 controller.pauseEngine()
                 controller.resetEngine()
                 context.coordinator.userPoi = nil
@@ -88,6 +92,7 @@ struct KakaoMapStartView: UIViewRepresentable {
         
     }
     
+    //뷰 헤제 시 엔진 일시정지
     static func dismantleUIView(_ uiView: KMViewContainer, coordinator: KakaoMapStartCoordinator) {
         coordinator.controller?.pauseEngine()
     }
@@ -136,6 +141,7 @@ class KakaoMapStartCoordinator: NSObject, MapControllerDelegate {
         controller?.delegate = self
     }
     
+    // 맵 뷰 생성 완료시 호출
     func addViewSucceeded(_ viewName: String, viewInfoName: String) {
         guard
             let mapView = controller?.getView("mapview") as? KakaoMap
@@ -146,21 +152,25 @@ class KakaoMapStartCoordinator: NSObject, MapControllerDelegate {
         mapView.viewRect = container!.bounds
         mapView.eventDelegate = self
         
+        //사용자 위치
         if let coord = initialLocation {
             updateUserPoi(to: coord)
         }
         
+        //시트 초기 높이 관련
         let initialHeight = UIScreen.main.bounds.height * 0.4
         sheetHeightChanged(Notification(
             name: .sheetVisibleHeightChanged,
             object: initialHeight
         ))
         
+        //관광지 사진 마커
         if let list = tourList, !list.isEmpty {
             regionMarkers(tourList: list)
         }
     }
     
+    // 시트 높이에 따라 margin 및 카메라 변경
     @objc private func sheetHeightChanged(_ note: Notification) {
         guard
             let bottomInset = note.object as? CGFloat,
@@ -270,6 +280,7 @@ class KakaoMapStartCoordinator: NSObject, MapControllerDelegate {
         }
     }
     
+    // 사용자 위치 표시 생성 및 변경
     func updateUserPoi(to coord: CLLocationCoordinate2D) {
         guard
             let mapView = controller?.getView("mapview") as? KakaoMap

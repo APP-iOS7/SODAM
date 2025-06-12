@@ -11,6 +11,7 @@ struct RoundedCorner: Shape {
     var radius: CGFloat
     var corners: UIRectCorner
     
+    // 코너 처리
     func path(in rect: CGRect) -> Path {
         let bezier = UIBezierPath(
             roundedRect: rect,
@@ -28,6 +29,7 @@ struct NearTouristSpotView: View {
     
     var body: some View {
         VStack {
+            // 상단 드래그 핸들
             Capsule()
                 .frame(width: 40, height: 5)
                 .foregroundStyle(.secondary)
@@ -73,6 +75,7 @@ struct NearTouristSpotView: View {
     }
 }
 
+// 시트 뷰 안 관광지
 struct TouristSpotTestView: View {
     @EnvironmentObject private var userLocation: UserLocation
     @ObservedObject var viewModel: StartViewModel

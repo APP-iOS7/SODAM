@@ -9,6 +9,7 @@ import SwiftUI
 import CoreLocation
 
 extension Notification.Name {
+    // 시트의 높이 변화 알림
     static let sheetVisibleHeightChanged = Notification.Name("sheetVisibleHeightChanged")
 }
 
@@ -81,6 +82,7 @@ struct StartView: View {
                     )
                 }
             }
+            // 시트뷰의 리스트에서 상세페이지로 이동
             .navigationDestination(
                 for: DetailModel.self,
                 destination: { detail in
@@ -97,6 +99,7 @@ struct StartView: View {
         
     }
     
+    // 화면 높이에 따라서 시트의 높이 목록 반환
     private func calculateSnapOffsets(screenHeight: CGFloat, safeBottom: CGFloat) -> [CGFloat] {
         return fractions.map { frac in
             screenHeight * frac

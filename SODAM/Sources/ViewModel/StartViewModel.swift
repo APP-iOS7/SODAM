@@ -19,6 +19,8 @@ final class StartViewModel: ObservableObject {
     private var lastFetchedCoordinate: CLLocationCoordinate2D?
     private let distanceThreshold: CLLocationDistance = 100.0  // 100미터
     
+    // 시작탭 진입시 호출
+    // 최초 위치로부터 100미터 이상 이동하면 호출
     init() {
         let locationPub = UserLocation.shared.$currentLocation
             .compactMap { $0?.coordinate }
@@ -27,6 +29,7 @@ final class StartViewModel: ObservableObject {
             .sink { [weak self] coord in
                 guard let self = self else { return }
                 
+                // 최초 호출
                 if self.lastFetchedCoordinate == nil {
                     self.lastFetchedCoordinate = coord
                     Task {
@@ -36,6 +39,7 @@ final class StartViewModel: ObservableObject {
                     return
                 }
                 
+                // 기준 거리 초과시 재호출
                 let last = self.lastFetchedCoordinate!
                 let lastLocation = CLLocation(latitude: last.latitude, longitude: last.longitude)
                 let newLocation = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
@@ -72,6 +76,7 @@ final class StartViewModel: ObservableObject {
             )
 //            print("[D]API Data \n\(items)")
             
+            // 이미지 없는 것 제외
             let itemsWithImage = items.filter { model in
                 guard let urlString = model.imageUrl,
                       !urlString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -81,6 +86,7 @@ final class StartViewModel: ObservableObject {
                 return true
             }
             
+            // 사용자의 위치로부터 거리 판단
             func distanceFromUser(to model: DetailModel) -> Double {
                 let itemLat = Double(model.mapY) ?? 0
                 let itemLon = Double(model.mapX) ?? 0
@@ -91,15 +97,17 @@ final class StartViewModel: ObservableObject {
                     lon2: itemLon
                 )
             }
-            
+            // 10km 이내인지 필터
             let within10km = itemsWithImage.filter { model in
                 distanceFromUser(to: model) <= 10000
             }
             
+            // 가까운 거리순 필터
             let sortedWithin10km = within10km.sorted { a, b in
                 distanceFromUser(to: a) < distanceFromUser(to: b)
             }
             
+            // 가까운 거리순에서 10개 확인
             let top10 = Array(sortedWithin10km.prefix(10))
             var itemsWithAddress: [DetailModel] = []
             for var model in top10 {
