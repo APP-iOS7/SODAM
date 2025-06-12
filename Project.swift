@@ -3,6 +3,7 @@ import ProjectDescription
 let bundleId: String = "io.tuist.SODAM" // 번들 ID
 let minimumVersionIOS: String = "17.0" // IOS 최소 버젼
 let appVersion: Plist.Value = "1.0.0" // 앱 버젼 정보
+let appName: Plist.Value = "소담"
 
 let sodamApp: Target = .target(
     name: "SODAM",
@@ -37,7 +38,8 @@ let sodamApp: Target = .target(
                 ]
             ],
             "CFBundleShortVersionString": appVersion,  // version
-            "CFBundleVersion": "1"                  // build number
+            "CFBundleVersion": "1",                  // build number
+            "CFBundleDisplayName": appName
         ]
     ),
     sources: ["SODAM/Sources/**"],
