@@ -16,7 +16,7 @@
 
 ## Git & Foldering Convention
 
-![git](https://github.com/user-attachments/assets/9638eb3e-b751-4a43-8346-967d5258c000)
+![git](https://github.com/user-attachments/assets/659b52c0-c169-4c40-8dfb-f0b02ad835df)
 
 <br /><br />
 
@@ -101,15 +101,15 @@
 
 |                                          내 주변 관광지(목록)                                           |                                          내 주변 관광지(지도)                                           |                                                지역 선택                                                |
 | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: |
-| <img src="https://github.com/user-attachments/assets/4c0f8db4-7ede-40b3-85d4-1712524d3a00" width="200"> | <img src="https://github.com/user-attachments/assets/77a32085-1baf-4ee3-a95d-8c7176a31621" width="200"> | <img src="https://github.com/user-attachments/assets/0f5a3fad-3f6b-4033-85a4-e97ce9fe035b" width="200"> |
+| <img src="https://github.com/user-attachments/assets/4c0f8db4-7ede-40b3-85d4-1712524d3a00" width="200"> | <img src="https://github.com/user-attachments/assets/75565596-4a91-4f02-b98b-bd7da970e4fa" width="200"> | <img src="https://github.com/user-attachments/assets/0f5a3fad-3f6b-4033-85a4-e97ce9fe035b" width="200"> |
 
 |                                           지역별 관광지(목록)                                           |                                           지역별 관광지(지도)                                           |                                                  설정                                                   |
 | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: |
-| <img src="https://github.com/user-attachments/assets/998c0f19-b2de-4065-ba76-b132ad18b443" width="200"> | <img src="https://github.com/user-attachments/assets/52bdda84-3135-452e-9bff-099ac19ef057" width="200"> | <img src="https://github.com/user-attachments/assets/4ac07672-a563-4600-b118-9e785856f5fb" width="200"> |
+| <img src="https://github.com/user-attachments/assets/998c0f19-b2de-4065-ba76-b132ad18b443" width="200"> | <img src="https://github.com/user-attachments/assets/d49f8bca-3afd-4676-a489-886b56dec431" width="200"> | <img src="https://github.com/user-attachments/assets/f800bbb7-74e9-4ce1-ab56-9a1cd1d6b8c8" width="200"> |
 
 |                                               상세 페이지                                               |                                        상세 페이지(오디오 재생)                                         |                                            초등 교육 관광지                                             |
 | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: |
-| <img src="https://github.com/user-attachments/assets/7a17f2b3-2a90-4589-8b15-c6f4c7c5e10f" width="200"> | <img src="https://github.com/user-attachments/assets/b89aa7f7-65e6-4b0f-b920-0b2529de4415" width="200"> | <img src="https://github.com/user-attachments/assets/e4b09446-b485-4ab0-85ba-c8f406df9fd4" width="200"> |
+| <img src="https://github.com/user-attachments/assets/4bb714e4-b2c5-4928-b4fd-6133a32b0783" width="200"> | <img src="https://github.com/user-attachments/assets/4c36f209-10c7-4921-8876-ab7b3d48c8ec" width="200"> | <img src="https://github.com/user-attachments/assets/e4b09446-b485-4ab0-85ba-c8f406df9fd4" width="200"> |
 
 |                                           교과서 속 문화 여행                                           |                                           교과서 속 역사 여행                                           |                                           교과서 속 인물 여행                                           |                                           교과서 속 과학 여행                                           |
 | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: |
