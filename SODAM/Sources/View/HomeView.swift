@@ -51,7 +51,7 @@ struct HomeView: View {
                                     NavigationLink {
                                         DetailView(item: spot)
                                     } label: {
-                                        NearSpotListCellView(homeViewModel: homeViewModel, spot: spot)
+                                        NearSpotListCellView(homeViewModel: homeViewModel, spot: spot, viewModel: myNearByListViewModel)
                                     }
                                     Divider()
                                 }
@@ -155,7 +155,19 @@ struct HomeView: View {
 
 struct NearSpotListCellView: View {
     var homeViewModel: HomeViewModel
-    let spot: DetailModel
+    var spot: DetailModel
+    var address: String = "주소를 알 수 없어요"
+    
+    @State var viewModel: MyNearbyListViewModel
+    
+    init(homeViewModel: HomeViewModel, spot: DetailModel, viewModel: MyNearbyListViewModel) {
+        self.homeViewModel = homeViewModel
+        self.spot = spot
+        self.viewModel = viewModel
+        
+        guard let stlid = spot.stlid else { return }
+        self.address = viewModel.allAddress[stlid]?.split(separator: " ")[0..<2].joined(separator: " ") ?? "주소를 알 수 없어요"
+    }
     var body: some View {
         HStack(alignment: .top) {
             CustomAsyncImage(url: spot.imageUrl) { image in
@@ -174,7 +186,7 @@ struct NearSpotListCellView: View {
                     .foregroundStyle(Color.textColor)
                     .fontWeight(.semibold)
                     .padding(.top, 2)
-                Text("\(spot.addr1 ?? "") \(spot.addr2 ?? "")")
+                Text(address)
                     .font(.caption)
                     .foregroundStyle(.gray)
                 HStack {
