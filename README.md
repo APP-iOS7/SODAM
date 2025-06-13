@@ -3,12 +3,11 @@
 
 # 소담<img src="https://github.com/user-attachments/assets/46692dd8-448e-4a55-b689-8d078aa6f765" align=left width=200>
 
-소담은 위치기반 음성 안내 기능을 통해 사용자에게 특정 장소의 정보를 제공함으로써  
+소담은 위치기반 음성 안내 기능을 통해 사용자에게 특정 장소의 정보를 제공함으로써
 편리하고 깊이있는 경험을 제공하는 오디오 가이드 앱입니다.
 
-사용자가 특정 장소를 이동하며 현장의 분위기에 어울리는 음성 안내를 이야기 형식으로  
-들을 수 있으며, 장소의 역사와 정보 등을 음성으로 전달하여 시각적, 청각적 정보를  
-동시에 습득해 높은 몰입감을 경험할 수 있습니다.
+사용자가 특정 장소를 이동하며 현장의 분위기에 어울리는 음성 안내를 이야기 형식으로 들을 수 있으며,
+장소의 역사와 정보 등을 음성으로 전달하여 시각적, 청각적 정보를 동시에 습득해 높은 몰입감을 경험할 수 있습니다.
 
 <br /><br />
 
@@ -18,7 +17,7 @@
 
 - 사용자는 자신의 위치를 중심으로 최대 **20km** 까지 주변 관광지를 확인 할 수 있으며, 해당 장소의 **1km 이내**에 접근하면 장소의 문화와 역사 등의 정보들이 담긴 이야기 형식의 음성 안내를 들을 수 있습니다.
 
-- **한 번 방문했던 관광지**는 거리가 멀어져도 이야기를 다시 들을 수 있습니다.
+- **방문한 관광지**는 거리가 멀어져도 이야기를 다시 들을 수 있습니다.
 
 - **오늘의 이야기**를 통해 새로운 관광지의 이야기를 들을 수 있습니다.
 
@@ -34,8 +33,8 @@
 
 - 관광지에 대한 **역사와 문화에 관심이 있는 사람**
 - 팸플릿이나 안내문 같은 **시각 자료 외에 음성 안내가 필요한 사람**
-- **간편한 방법으로 관광지의 이야기를 듣고 싶은 사람**
-- **초등 교과서 속 역사·문화 내용을 생생하게 체험하고 싶은 학부모와 자녀**
+- **간편한 방법**으로 관광지의 이야기를 듣고 싶은 사람
+- **초등 교과서 속 역사·문화 내용**을 생생하게 체험하고 싶은 학부모와 자녀
 
 <br/> <br/>
 
@@ -47,7 +46,7 @@
 
 ## Folder Convention
 
-<pre lang="markdown"> <code> 
+<pre lang="markdown"> <code>
 📱 SODAM
 ┣ 📂 Configurations
 ┃ ┣ ⚙️ config.xcconfig
@@ -79,35 +78,35 @@
 ┃   ┃ ┣ 📂 Service
 ┃   ┃ ┃ ┃ ┣📄 APIService
 ┃   ┃ ┣ 📂 View
-┃   ┃ ┃ ┃ ┣📄 AppSettingsView  
-┃   ┃ ┃ ┃ ┣📄 ContentView  
-┃   ┃ ┃ ┃ ┣📄 DetailView  
-┃   ┃ ┃ ┃ ┣📄 EducationListView  
-┃   ┃ ┃ ┃ ┣📄 EducationView  
-┃   ┃ ┃ ┃ ┣📄 HomeView  
-┃   ┃ ┃ ┃ ┣📄 KakaoMapStartView  
-┃   ┃ ┃ ┃ ┣📄 KakaoMapView  
-┃   ┃ ┃ ┃ ┣📄 MapView  
-┃   ┃ ┃ ┃ ┣📄 MenuView  
-┃   ┃ ┃ ┃ ┣📄 MyNearbyListView  
-┃   ┃ ┃ ┃ ┣📄 NearbyMapView  
-┃   ┃ ┃ ┃ ┣📄 NearTouristSpotView  
-┃   ┃ ┃ ┃ ┣📄 PlayerView  
-┃   ┃ ┃ ┃ ┣📄 RegionalListView  
-┃   ┃ ┃ ┃ ┣📄 RegionDetailListView  
-┃   ┃ ┃ ┃ ┣📄 RegionMapView  
-┃   ┃ ┃ ┃ ┣📄 StartView  
-┃   ┃ ┃ ┃ ┣📄 VisitedPlaceListView  
+┃   ┃ ┃ ┃ ┣📄 AppSettingsView
+┃   ┃ ┃ ┃ ┣📄 ContentView
+┃   ┃ ┃ ┃ ┣📄 DetailView
+┃   ┃ ┃ ┃ ┣📄 EducationListView
+┃   ┃ ┃ ┃ ┣📄 EducationView
+┃   ┃ ┃ ┃ ┣📄 HomeView
+┃   ┃ ┃ ┃ ┣📄 KakaoMapStartView
+┃   ┃ ┃ ┃ ┣📄 KakaoMapView
+┃   ┃ ┃ ┃ ┣📄 MapView
+┃   ┃ ┃ ┃ ┣📄 MenuView
+┃   ┃ ┃ ┃ ┣📄 MyNearbyListView
+┃   ┃ ┃ ┃ ┣📄 NearbyMapView
+┃   ┃ ┃ ┃ ┣📄 NearTouristSpotView
+┃   ┃ ┃ ┃ ┣📄 PlayerView
+┃   ┃ ┃ ┃ ┣📄 RegionalListView
+┃   ┃ ┃ ┃ ┣📄 RegionDetailListView
+┃   ┃ ┃ ┃ ┣📄 RegionMapView
+┃   ┃ ┃ ┃ ┣📄 StartView
+┃   ┃ ┃ ┃ ┣📄 VisitedPlaceListView
 ┃   ┃ ┣ 📂 ViewModel
-┃   ┃ ┃ ┃ ┣📄 ContentViewModel  
-┃   ┃ ┃ ┃ ┣📄 EducationListViewModel  
-┃   ┃ ┃ ┃ ┣📄 EducationViewModel  
-┃   ┃ ┃ ┃ ┣📄 HomeViewModel  
-┃   ┃ ┃ ┃ ┣📄 MyNearbyListViewModel  
-┃   ┃ ┃ ┃ ┣📄 PlayerViewModel  
-┃   ┃ ┃ ┃ ┣📄 RegionDetailListViewModel  
-┃   ┃ ┃ ┃ ┣📄 StartViewModel  
-┃   ┃ ┃ ┃ ┣📄 VisitedPlacesViewModel  
+┃   ┃ ┃ ┃ ┣📄 ContentViewModel
+┃   ┃ ┃ ┃ ┣📄 EducationListViewModel
+┃   ┃ ┃ ┃ ┣📄 EducationViewModel
+┃   ┃ ┃ ┃ ┣📄 HomeViewModel
+┃   ┃ ┃ ┃ ┣📄 MyNearbyListViewModel
+┃   ┃ ┃ ┃ ┣📄 PlayerViewModel
+┃   ┃ ┃ ┃ ┣📄 RegionDetailListViewModel
+┃   ┃ ┃ ┃ ┣📄 StartViewModel
+┃   ┃ ┃ ┃ ┣📄 VisitedPlacesViewModel
 ┃ ┣ 📦 UICommon
 ┃   ┃ ┣📄 ColorExtension
 ┃   ┃ ┣📄 UIImageExtension
@@ -118,9 +117,9 @@
 
 ## 주요기능과 스크린샷
 
-|                                                 홈화면                                                  |                                                시작화면                                                 |                                                전체메뉴                                                 |                                              방문한 관광지                                              |
-| :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: |
-| <img src="https://github.com/user-attachments/assets/330114b4-7cff-4730-8e09-ddb8bc18ac93" width="200"> | <img src="https://github.com/user-attachments/assets/2f7fc99a-816a-452e-9a31-bc6d669ade48" width="200"> | <img src="https://github.com/user-attachments/assets/50a0b395-229a-4ddd-8e16-93530c6e703c" width="200"> | <img src="https://github.com/user-attachments/assets/32adebd5-2992-4ad2-8c45-70f1d3fd02dc" width="200"> |
+|                                                 홈화면                                                  |                                                시작화면                                                 |                                                전체메뉴                                                 |
+| :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | ------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/dac955e3-219c-4963-b9a1-1e88374f7f66" width="200"> | <img src="https://github.com/user-attachments/assets/2f7fc99a-816a-452e-9a31-bc6d669ade48" width="200"> | <img src="https://github.com/user-attachments/assets/50a0b395-229a-4ddd-8e16-93530c6e703c" width="200"> | <img src="https://github.com/user-attachments/assets/32adebd5-2992-4ad2-8c45-70f1d3fd02dc" width="200"> |
 
 |                                          내 주변 관광지(목록)                                           |                                          내 주변 관광지(지도)                                           |                                                지역 선택                                                |
 | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: |
@@ -138,6 +137,10 @@
 | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: |
 | <img src="https://github.com/user-attachments/assets/f49bcdeb-f8de-4ea2-848a-e80781411f5d" width="200"> | <img src="https://github.com/user-attachments/assets/296b2a60-0a68-4398-84ff-2ba73809daae" width="200"> | <img src="https://github.com/user-attachments/assets/b3eaf75e-d2a0-43aa-91d7-a4142289697d" width="200"> | <img src="https://github.com/user-attachments/assets/34b162c4-1b96-4ac8-baa0-6da2cd441468" width="200"> |
 
+|                                              방문한 관광지                                              |                                                잠금 화면                                                |                                             백그라운드 재생                                             |
+| :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: |
+| <img src="https://github.com/user-attachments/assets/32adebd5-2992-4ad2-8c45-70f1d3fd02dc" width="200"> | <img src="https://github.com/user-attachments/assets/99403720-bbd2-4e9a-a229-b2fabbff7794" width="200"> | <img src="https://github.com/user-attachments/assets/559e4aec-935c-4a02-882b-1b32f11ff4a1" width="200"> |
+
 <br /><br />
 
 ## 개발 도구 및 활용 기술
@@ -154,10 +157,17 @@
   - Tuist
   - Combine
   - KaKaoMapSDK
-  - AVFoundation  
+  - AVFoundation
     <br /><br />
 
 ![Platform](https://img.shields.io/badge/Platforms-iOS%2017.0+-007AFF?logo=apple) ![Framework](https://img.shields.io/badge/Framework-Xcode%2016.2+-0047AB?logo=apple) ![Swift](https://img.shields.io/badge/Swift-6.0-F05138?logo=swift)
+
+<img src="https://img.shields.io/badge/Figma-F24E1E?style=flat-square&logo=Figma&logoColor=white"/>
+<img src="https://img.shields.io/badge/Notion-000000?style=flat-square&logo=Notion&logoColor=white"/>
+<img src="https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=Discord&logoColor=white"/>/tn/
+<img src="https://img.shields.io/badge/Git-F05032?style=flat-square&logo=Git&logoColor=white"/>
+<img src="https://img.shields.io/badge/Github-181717?style=flat-square&logo=Github&logoColor=white"/>
+<img src="https://img.shields.io/badge/카카오-FFCD00?style=flat-square&logo=카카오&logoColor=white"/>
 
 <br /><br />
 
@@ -165,6 +175,6 @@
 
 |                                                        김태건                                                        |                                                        박세라                                                        |                                                        김용해                                                        |                                                        최하진                                                        |
 | :------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------: |
-| <img src="https://github.com/user-attachments/assets/2dc5f59b-dbf9-4a3b-bcba-e39eb39c09e9" alt="김태건" width="150"> | <img src="https://github.com/user-attachments/assets/8595069a-e433-4d7a-8902-7df506f99228" alt="박세라" width="150"> | <img src="https://github.com/user-attachments/assets/0d97371c-e8eb-47d5-9dc8-f23dead9e067" alt="김용해" width="150"> | <img src="https://github.com/user-attachments/assets/83e8e853-67f4-4ff5-9f68-1486e143b7ee" alt="최하진" width="150"> |
+| <img src="https://github.com/user-attachments/assets/73dec387-ff6d-4da9-8484-de5108dcf095" alt="김태건" width="150"> | <img src="https://github.com/user-attachments/assets/d03792e7-ec24-4f76-88f6-82088c250a5e" alt="박세라" width="150"> | <img src="https://github.com/user-attachments/assets/4d1ea315-c734-4db6-aeb5-23e011d31192" alt="김용해" width="150"> | <img src="https://github.com/user-attachments/assets/4780a228-a67c-4247-b3f6-742c768c881d" alt="최하진" width="150"> |
 |                                                        PM,IOS                                                        |                                                         iOS                                                          |                                                         iOS                                                          |                                                         iOS                                                          |
 |                                        [GitHub](https://github.com/ktg-tfot)                                         |                                       [GitHub](https://github.com/hiereit-dev)                                       |                                        [GitHub](https://github.com/Kimyonhae)                                        |                                        [GitHub](https://github.com/hajinCHOI)                                        |
