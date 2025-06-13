@@ -1,7 +1,7 @@
 ![Image](https://github.com/user-attachments/assets/a5a14f53-07ed-45f7-902c-3c8a2d5dc415)
 <br /><br />
 
-# 소담<img src="https://github.com/user-attachments/assets/46692dd8-448e-4a55-b689-8d078aa6f765" align=left width=200>
+# 소담<img src="https://github.com/user-attachments/assets/59001f59-83f4-49bf-9d27-5318e7baf0c1" align=left width=200>
 
 소담은 위치기반 음성 안내 기능을 통해 사용자에게 특정 장소의 정보를 제공함으로써
 편리하고 깊이있는 경험을 제공하는 오디오 가이드 앱입니다.
@@ -118,8 +118,8 @@
 ## 주요기능과 스크린샷
 
 |                                                 홈화면                                                  |                                                시작화면                                                 |                                                전체메뉴                                                 |
-| :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | ------------------------------------------------------------------------------------------------------- |
-| <img src="https://github.com/user-attachments/assets/dac955e3-219c-4963-b9a1-1e88374f7f66" width="200"> | <img src="https://github.com/user-attachments/assets/2f7fc99a-816a-452e-9a31-bc6d669ade48" width="200"> | <img src="https://github.com/user-attachments/assets/50a0b395-229a-4ddd-8e16-93530c6e703c" width="200"> | <img src="https://github.com/user-attachments/assets/32adebd5-2992-4ad2-8c45-70f1d3fd02dc" width="200"> |
+| :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: |
+| <img src="https://github.com/user-attachments/assets/dac955e3-219c-4963-b9a1-1e88374f7f66" width="200"> | <img src="https://github.com/user-attachments/assets/2f7fc99a-816a-452e-9a31-bc6d669ade48" width="200"> | <img src="https://github.com/user-attachments/assets/50a0b395-229a-4ddd-8e16-93530c6e703c" width="200"> |
 
 |                                          내 주변 관광지(목록)                                           |                                          내 주변 관광지(지도)                                           |                                                지역 선택                                                |
 | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: |
@@ -164,10 +164,9 @@
 
 <img src="https://img.shields.io/badge/Figma-F24E1E?style=flat-square&logo=Figma&logoColor=white"/>
 <img src="https://img.shields.io/badge/Notion-000000?style=flat-square&logo=Notion&logoColor=white"/>
-<img src="https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=Discord&logoColor=white"/>/tn/
+<img src="https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=Discord&logoColor=white"/>
 <img src="https://img.shields.io/badge/Git-F05032?style=flat-square&logo=Git&logoColor=white"/>
 <img src="https://img.shields.io/badge/Github-181717?style=flat-square&logo=Github&logoColor=white"/>
-<img src="https://img.shields.io/badge/카카오-FFCD00?style=flat-square&logo=카카오&logoColor=white"/>
 
 <br /><br />
 
